@@ -1,0 +1,112 @@
+\documentclass[twoside,a4paper,12pt]{article}
+%TC:group tabularx 1 1
+
+\usepackage[left=1.5cm, right=1.5cm, top=2.5cm, bottom=1.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[british]{babel}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+\usepackage[scaled=0.9]{DejaVuSansMono}
+\usepackage{eurosym}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\def\arraystretch{1.5}
+\usepackage{pbox}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{comment}
+\definecolor{lightgrey}{RGB}{240,240,240}
+\setlength{\fboxsep}{7pt}
+\captionsetup[figure]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
+\captionsetup[table]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
+\usepackage[
+  backend=bibtex,
+  style=ieee,
+]{biblatex}
+\addbibresource{references}
+
+\usepackage{afterpage}
+
+\usepackage{xcolor}
+\definecolor{lightGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mediumGray}{rgb}{0.3,0.3,0.3}
+\usepackage{listings}
+\lstdefinestyle{base}{
+	language=Python,
+	basicstyle=\footnotesize\ttfamily,
+	commentstyle=\color{lightGray},
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+	stringstyle=\color{lightGray},
+	keywordstyle=\color{mediumGray}
+}
+\lstset{xleftmargin=10pt,xrightmargin=10pt}
+\lstset{framesep=10pt}
+
+\usepackage{charter}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+
+\pagestyle{fancy}
+\fancyhead[LO,RE]{GPIG Initial Report -- Group D}
+\fancyhead[RO,LE]{\thepage}
+\cfoot{}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
+
+
+\begin{document}
+	\pagenumbering{roman}
+	\title{ 
+	\vspace{1cm}
+	{\includegraphics[scale=0.25]{images/shield}} \\
+	\vspace{1.5cm}
+	{GPIG -- Initial Report}\\
+	{\large Department of Computer Science, University of York}\\
+	\vspace{1cm}
+    }
+    \author{\textbf{Group D} \\ Kieran McHugh \\ Liam Wellacott \\ Andrei Zisu \\ Lloyd Still \\ Oliver Lea \\ Mark Woosey \\ Paulius Kazakas }
+    \date{Submission on 11th May 2017}
+    \maketitle 
+
+    \thispagestyle{empty}
+    
+    \setlength{\parskip}{0.5em}
+    
+    \newpage
+    \tableofcontents
+    
+	\newpage
+	\pagenumbering{arabic}
+
+	\section{Introduction}
+	
+	\section{The Shipping Industry}
+	
+	\section{Collaborative Autonomy in 2030}
+	
+	\section{System Description}
+	
+	\section{Advantages and Benefits}
+	
+	\section{System Prototype}
+	
+	\section{Team Structure}
+	
+	\section{Key Processes}
+	
+	\section{Communication Strategy}
+	
+	\section{Risk Register}
+	
+	\section{Conclusion}
+		
+	\newpage
+	\section*{References}
+	\addcontentsline{toc}{section}{\protect\numberline{}References}
+	
+	\printbibliography[heading=none]
+
+\end{document}
