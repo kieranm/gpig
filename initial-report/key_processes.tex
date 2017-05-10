@@ -15,3 +15,15 @@ Progress will be presented to the team in the form of daily `stand ups’, which
 We will conduct unit tests in order to assess the functionality of each component to ensure correct integration with other product interfaces. Alongside continual code review within each pair, code will be reviewed before merged to the main branch. This is handled by the designated product owner, to ensure compatibility between functional components.
 
 \section{Metrics}
+
+In an agile development setting, measuring progress is often difficult. Hartmann and Dymond \cite{hartmann2006appropriate} identify 11 properties of effective agile measurements. It is important for metrics to be meaningful, and focus on highlighting delivered value as opposed to output quantity. This ensures that they accurately represent the progress of the team, and the quality of the product. In view of these properties, we opt to measure the following key performance indicators:
+
+\begin{description}[noitemsep,topsep=0pt]
+	\item [Story Points Completed per Day] -- represents the velocity of progress with the amount of value added to the product, in the form of a reduction in complexity. Reducing the risk associated with components is an effective velocity measure, compared to a quantity output such as lines of code \cite{davis2015agile}. Measuring on a per day basis allows for trends to quickly be established, despite the short project duration.
+
+	\item [Estimated vs. Actual Time] -- represents the deviation from our initial effort estimates, plotted on a graph on a daily basis. Deviation has been shown to be an effective performance measure, and will act as an indicator that team efforts need distributing more effectively \cite{greening2015agile}.
+	\item [Number and Severity of Faults per Day] -- represents the maturity and correctness of the system. By logging number of defects alone, one cannot obtain a representative measure of maturity, because a fault could be a simple one line code change, or require significant functionality change. We therefore opt to log the severity of faults on a scale of Minor, Major and Critical -- with the aim of observing a decrease in severity of faults over time.
+	\item [Team Satisfaction] -- represents the extent to which scrum members are satisfied with both their own, and team progress. Measured on a linear scale that ranges from 1 (very dissatisfied) and 5 (very satisfied). The success of the solution during development has been shown to be reflected significantly in the morale of the team \cite{prowarenessagile}.
+\end{description}
+
+The collection of these metrics will be aided by the use of kanban boards and a Gantt chart, allowing us to keep track of development time, story points, number of defects and fault severity. Soft metrics such as team satisfaction will be collected via an automated process in Slack which questions team members.
