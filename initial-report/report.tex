@@ -1,5 +1,4 @@
 \documentclass[twoside,a4paper,12pt]{article}
-%TC:group tabularx 1 1
 
 \usepackage[left=1.5cm, right=1.5cm, top=2.5cm, bottom=1.5cm]{geometry}
 \usepackage{graphicx}
@@ -19,14 +18,10 @@
 \setlength{\fboxsep}{7pt}
 \captionsetup[figure]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
 \captionsetup[table]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
-\usepackage[
-  backend=bibtex,
-  style=ieee,
-]{biblatex}
-\addbibresource{references}
+
+\usepackage[numbers,sort&compress,square,comma]{natbib}
 
 \usepackage{afterpage}
-
 \usepackage{xcolor}
 \definecolor{lightGray}{rgb}{0.5,0.5,0.5}
 \definecolor{mediumGray}{rgb}{0.3,0.3,0.3}
@@ -113,6 +108,7 @@
 	\section*{References}
 	\addcontentsline{toc}{section}{\protect\numberline{}References}
 	
-	\printbibliography[heading=none]
+	\bibliographystyle{IEEEtranSN}
+	\bibliography{references}
 
 \end{document}
