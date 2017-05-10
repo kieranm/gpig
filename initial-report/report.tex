@@ -19,7 +19,7 @@
 \captionsetup[figure]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
 \captionsetup[table]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
 
-\usepackage[numbers,sort&compress,square,comma]{natbib}
+\usepackage{url}
 
 \usepackage{afterpage}
 \usepackage{xcolor}
@@ -105,10 +105,9 @@
 	\input{conclusion}
 		
 	\newpage
-	\section*{References}
+
 	\addcontentsline{toc}{section}{\protect\numberline{}References}
-	
-	\bibliographystyle{IEEEtranSN}
 	\bibliography{references}
+	\bibliographystyle{IEEEtran}
 
 \end{document}
