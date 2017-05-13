@@ -19,10 +19,10 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-map-gl": "^2.0.0",
-    "webpack": "^2.5.1"
+    "webpack": "^2.5.1",
+    "buble-loader": "^0.4.0"
   },
   "devDependencies": {
-    "buble-loader": "^0.4.0",
     "webpack-dev-server": "^2.2.0"
   }
 }
