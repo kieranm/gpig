@@ -35,11 +35,11 @@
     "react-map-gl": "^2.0.0",
     "sass-loader": "^6.0.3",
     "style-loader": "^0.16.1",
-    "webpack": "^2.3.3"
+    "webpack": "^2.3.3",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.2",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "eslint": "^3.19.0",
     "eslint-loader": "^1.7.1",
     "eslint-plugin-jsx-a11y": "^4.0.0",
