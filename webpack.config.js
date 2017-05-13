@@ -1,43 +1,41 @@
-// NOTE: To use this example standalone (e.g. outside of deck.gl repo)
-// delete the local development overrides at the bottom of this file
-
-// avoid destructuring for older Node version support
-const resolve = require('path').resolve;
 const webpack = require('webpack');
+const path = require('path');
+const resolve = require('path').resolve;
 
 module.exports = {
-  entry: {
-    app: resolve('./app.js')
-  },
-
-  devtool: 'source-map',
-
+  entry: [
+    './src/index'
+  ],
   module: {
-    rules: [{
-      // Compile ES2015 using buble
-      test: /\.js$/,
-      loader: 'buble-loader',
-      include: [resolve('.')],
-      exclude: [/node_modules/],
-      options: {
-        objectAssign: 'Object.assign'
-      }
-    }]
+    loaders: [
+      { test: /\.js?$/, loader: 'babel-loader', exclude: /node_modules/ },
+      { test: /\.s?css$/, loader: 'style-loader!css-loader!sass-loader' },
+    ]
   },
-
   resolve: {
-    alias: {
-      // From mapbox-gl-js README. Required for non-browserify bundlers (e.g. webpack):
-      'mapbox-gl$': resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js')
-    }
+    extensions: ['.js','.scss'],
+      alias: {
+          // From mapbox-gl-js README. Required for non-browserify bundlers (e.g. webpack):
+          'mapbox-gl$': resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js')
+      }
   },
-
-  // Optional: Enables reading mapbox token from environment variable
+  output: {
+    path: path.join(__dirname, '/dist'),
+    publicPath: '/',
+    filename: 'bundle.js'
+  },
+  devtool: 'cheap-eval-source-map',
+  devServer: {
+    contentBase: './dist',
+    hot: true
+  },
   plugins: [
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.EnvironmentPlugin(['MAPBOX_ACCESS_TOKEN', 'MapboxAccessToken'])
-  ]
+  ],
+    node: {
+        fs: "empty"
+    }
 };
-
-// DELETE THIS LINE WHEN COPYING THIS EXAMPLE FOLDER OUTSIDE OF DECK.GL
-// It enables bundling against src in this repo rather than installed deck.gl module
-//module.exports = require('../webpack.config.local')(module.exports);
