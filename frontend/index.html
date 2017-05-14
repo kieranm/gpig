@@ -1,11 +1,8 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset='UTF-8' />
-    <title>OceanX - World Simulation</title>
-    <!-- Page Styles -->
-
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+<head>
+    <meta charset='UTF-8'/>
+    <title>OceanX - Shipping Simulation Engine</title>
 
     <!-- Logo Font -->
     <link href="https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,700" rel="stylesheet">
@@ -13,12 +10,59 @@
     <!-- Body Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
 
-  </head>
-  <body>
-  <nav>
-    <div class="title">O<small>cean</small>X</div>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+    <!-- Semantic UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.js">
+    </script>
+
+    <!-- Page Styles -->
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+
+    <!-- Control Panel -->
+    <script src="control_panel.js"></script>
+
+</head>
+<body>
+<nav>
+    <div class="title">
+        O<small>cean</small>X
+    </div>
     <div class="description">Shipping Simulation Engine</div>
-  </nav>
-    <script src='bundle.js'></script>
-  </body>
+</nav>
+<div class="control panel ui orange segment">
+    <h1>Controls</h1>
+    <div class="ui horizontal divider">Simulation Speed</div>
+    <div class="ui fluid buttons">
+        <a class="ui icon orange button"><i class="play icon"></i> 1x</a>
+        <a class="ui icon orange button"><i class="play icon"></i> 5x</a>
+        <a class="ui icon orange button"><i class="play icon"></i> 10x</a>
+        <a class="ui icon orange button"><i class="play icon"></i> 20x</a>
+        <a class="ui icon orange button"><i class="pause icon"></i></a>
+    </div>
+
+    <div class="ui horizontal divider">Mode</div>
+    <div class="ui fluid buttons">
+        <a class="ui orange button">Legacy</a>
+        <a class="ui orange button">OceanX</a>
+    </div>
+
+    <div class="ui horizontal divider">Presets</div>
+    <a class="ui fluid orange button">Coastal Port</a>
+    <a class="ui fluid orange button">Offshore Smart Port</a>
+    <a class="ui fluid orange button">Shuttle Ship Interactions</a>
+    <a class="ui fluid orange button">Road Traffic</a>
+    <a class="ui fluid orange button">Global Movements</a>
+
+    <div class="ui horizontal divider">Map Style</div>
+    <div class="ui fluid buttons">
+        <a class="ui orange button">Satellite</a>
+        <a class="ui orange button">Light</a>
+        <a class="ui orange button">Dark</a>
+    </div>
+</div>
+<script src='bundle.js'></script>
+</body>
 </html>
