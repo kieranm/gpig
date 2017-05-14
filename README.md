@@ -1,2 +1,0 @@
-# gpig
-MEng Group Project
