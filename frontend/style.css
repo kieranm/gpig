@@ -1,0 +1,28 @@
+body {margin: 0; padding: 0; overflow: hidden;}
+
+nav {
+    width: 100%;
+    background-color: rgba(0,0,0, 0.9);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    color: white;
+    padding: 10px 20px;
+    font-family: 'Roboto', sans-serif;
+}
+
+nav .title {
+    font-size: 30px;
+    font-family: 'Cinzel Decorative', cursive;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav .description {
+    font-size: 20px;
+    position: relative;
+    bottom: 3px;
+    display: inline-block;
+}
