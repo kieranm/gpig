@@ -5,8 +5,8 @@
   "version": "1.0.0",
   "repository": "https://github.com/kieranm/gpig/tree/frontend",
   "scripts": {
-    "start-local": "webpack-dev-server --env.local --progress --hot --port 3030 --open",
-    "start": "webpack-dev-server --progress --hot --port 3030 --open",
+    "start-local": "webpack-dev-server --env.local --progress --hot --port 3030",
+    "start": "webpack-dev-server --progress --hot --port 3030",
     "build": "webpack",
     "server": "node server.js"
   },
@@ -20,7 +20,8 @@
     "react-dom": "^15.4.1",
     "react-map-gl": "^2.0.0",
     "webpack": "^2.5.1",
-    "buble-loader": "^0.4.0"
+    "buble-loader": "^0.4.0",
+    "socket.io-client": "2.0.0"
   },
   "devDependencies": {
     "webpack-dev-server": "^2.2.0"

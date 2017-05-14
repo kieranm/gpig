@@ -4,7 +4,6 @@
 // avoid destructuring for older Node version support
 const resolve = require('path').resolve;
 const webpack = require('webpack');
-const path = require('path');
 
 module.exports = {
     entry: {
