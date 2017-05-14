@@ -20,6 +20,8 @@ public class SimulationHandler {
 
     @OnWebSocketClose
     public void onClose(Session sess, int statusCode, String reason) throws Exception {
+        System.out.println("Connection closed");
+        Server.getSessions().get(sess).end();
         Server.getSessions().remove(sess);
     }
 

@@ -25,7 +25,7 @@ public class Simulation {
     private Session session;
 
     private List<Agent> agents = Arrays.asList(new Agent[] {
-            new SmartBoat(new Location(4.23434, -3.23345))
+            new SmartBoat(new Location(-2.69165,49.91741))
     });
 
     public Simulation(Session session) {
@@ -41,6 +41,10 @@ public class Simulation {
         };
         this.timer = new Timer();
         this.timer.schedule(tt, INITIAL_DELAY, PERIOD);
+    }
+
+    public void end() {
+        this.timer.cancel();
     }
 
     private void tick() {
