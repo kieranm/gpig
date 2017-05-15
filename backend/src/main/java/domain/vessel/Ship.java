@@ -86,7 +86,7 @@ public abstract class Ship extends Agent implements Carrier {
         // calculate distance include direction in vector
         double xdiff = this.next.getCoordinates().getLatitude() - this.getCoordinates().getLatitude();
         double ydiff = this.next.getCoordinates().getLongitude() - this.getCoordinates().getLongitude();
-        
+
         double length = this.getCoordinates().distance(this.next.getCoordinates());
         this.positionUpdateVector = new Coordinates(xdiff/length, ydiff/length);
         this.positionUpdateVector.mul(DISTANCE_PER_TICK_MULTIPLIER); // TODO figure out a good amount of travel per tick
@@ -115,5 +115,10 @@ public abstract class Ship extends Agent implements Carrier {
         return super.toJSON()
                 .put("load", this.load)
                 .put("capacity", this.capacity);
+    }
+
+    @Override
+    public void setLoad(int load) {
+        this.load = load;
     }
 }

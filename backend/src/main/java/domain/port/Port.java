@@ -35,7 +35,10 @@ public abstract class Port extends Agent implements Carrier {
     }
 
     @Override
-    public int getLoad() {
-        return this.load;
+    public int getLoad() { return this.load; }
+
+    @Override
+    public void setLoad(int load) {
+        this.load = load;
     }
 }
