@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import DeckGL, {PolygonLayer} from 'deck.gl';
+import DeckGL, {HexagonLayer} from 'deck.gl';
 
 import ShipsLayer from './components/ships-layer';
 
@@ -31,9 +31,9 @@ export default class DeckGLOverlay extends Component {
   }
 
   render() {
-    const {viewport, buildings, agents, time} = this.props;
+    const {viewport, coastal_ports, agents, time} = this.props;
 
-    if (!buildings || !agents) {
+    if (!coastal_ports || !agents) {
       return null;
     }
 
@@ -44,19 +44,16 @@ export default class DeckGLOverlay extends Component {
         getColor: d => d.vendor === 0 ? [253, 128, 93] : [23, 184, 190],
         opacity: 0.4
       }),
-      new PolygonLayer({
-        id: 'buildings',
-        data: buildings,
-        extruded: true,
-        filled: true,
-        opacity: 1,
-        wireframe: false,
-        fp64: true,
-        getPolygon: f => f.polygon,
-        getElevation: f => f.height,
-        getFillColor: f => [74, 80, 87],
-        lightSettings: LIGHT_SETTINGS
+
+      new HexagonLayer({
+          id: 'coastal_ports',
+          data: coastal_ports,
+          getPosition: e => e.COORDINATES,
+          extruded: true,
+          elevationRange: [0, 10000],
+          radius: 500
       })
+
     ];
 
     return (
