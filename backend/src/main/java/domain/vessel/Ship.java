@@ -108,4 +108,34 @@ public abstract class Ship extends Agent implements Carrier {
         this.next = route.get(1);
         calculatePositionUpdateVector();
     }
+
+    @Override
+    public int loadContainers(int count)
+    {
+        int loadDifference = this.load + count - this.capacity;
+
+        if(loadDifference > 0)
+        {
+            this.load = this.capacity;
+            return loadDifference; // returns number of containers that are over the capacity
+        }
+
+        this.load += count;
+        return 0;
+    }
+
+    @Override
+    public int unloadContainers(int count)
+    {
+        int loadDifference = this.load - count;
+
+        if(loadDifference < 0)
+        {
+            this.load = 0;
+            return -loadDifference; // returns number of containers that are under the capacity
+        }
+
+        this.load = loadDifference;
+        return 0;
+    }
 }
