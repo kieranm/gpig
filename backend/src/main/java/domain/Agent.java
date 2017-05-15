@@ -1,8 +1,8 @@
 package domain;
 
 import domain.util.AgentType;
-import domain.util.JSONable;
-import domain.util.Location;
+import domain.util.Coordinates;
+import utils.JSONable;
 import org.json.JSONObject;
 import utils.IdGenerator;
 
@@ -12,13 +12,15 @@ import utils.IdGenerator;
 public abstract class Agent implements JSONable {
 
     private int id;
-    private Location location;
+    private boolean alive;
+    private Coordinates coordinates;
     private AgentType agentType;
 
-    public Agent(AgentType agentType, Location initialLocation) {
+    public Agent(AgentType agentType, Coordinates initialCoordinates) {
         this.id = IdGenerator.getId();
         this.agentType = agentType;
-        this.location = initialLocation;
+        this.coordinates = initialCoordinates;
+        this.alive = true;
     }
 
     public abstract void tick(World world);
@@ -28,22 +30,26 @@ public abstract class Agent implements JSONable {
         return new JSONObject()
                 .put("id", this.id)
                 .put("type", this.agentType.toString())
-                .put("location", this.location.toJSON());
+                .put("coordinates", this.coordinates.toJSON());
     }
 
     public int getId() {
         return id;
     }
 
+    public boolean isAlive() {
+        return alive;
+    }
+
     public AgentType getAgentType() {
         return agentType;
     }
 
-    public Location getLocation() {
-        return location;
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
     }
 }

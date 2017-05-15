@@ -6,6 +6,7 @@ package domain.util;
 public enum AgentType {
     LAND_PORT,
     SMART_PORT,
-    SHIP,
-    SMART_BOAT,
+    FREIGHT_SHIP,
+    SMART_SHIP,
+    WEATHER,
 }

@@ -1,21 +1,31 @@
 package domain.vessel;
 
 import domain.Agent;
-import domain.World;
 import domain.util.AgentType;
-import domain.util.Location;
+import domain.util.Carrier;
+import domain.util.Coordinates;
 
 /**
  * @author Oliver Lea
  */
-public class Ship extends Agent {
+public abstract class Ship extends Agent implements Carrier {
 
-    public Ship(Location initialLoc) {
-        super(AgentType.SHIP, initialLoc);
+    private int capacity;
+    private int load;
+
+    public Ship(AgentType agentType, Coordinates initialLoc, int capacity, int load) {
+        super(agentType, initialLoc);
+        this.capacity = capacity;
+        this.load = load;
     }
 
     @Override
-    public void tick(World world) {
-        // TODO
+    public int getCapacity() {
+        return capacity;
+    }
+
+    @Override
+    public int getLoad() {
+        return load;
     }
 }
