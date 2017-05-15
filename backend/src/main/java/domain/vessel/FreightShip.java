@@ -17,4 +17,5 @@ public class FreightShip extends Ship {
     public void tick(World world) {
         // TODO
     }
+
 }

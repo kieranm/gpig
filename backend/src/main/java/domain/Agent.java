@@ -2,9 +2,9 @@ package domain;
 
 import domain.util.AgentType;
 import domain.util.Coordinates;
-import utils.JSONable;
 import org.json.JSONObject;
 import utils.IdGenerator;
+import utils.JSONable;
 
 /**
  * @author Oliver Lea

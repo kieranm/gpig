@@ -2,15 +2,14 @@ package domain.port;
 
 import domain.World;
 import domain.util.AgentType;
-import domain.util.Coordinates;
-
+import domain.world.Node;
 /**
  * @author Oliver Lea
  */
 public class LandPort extends Port {
 
-    public LandPort(Coordinates coord, String name, int capacity, int load) {
-        super(AgentType.LAND_PORT, name, coord, capacity, load);
+    public LandPort(String name, Node node, int capacity, int load) {
+        super(AgentType.LAND_PORT, name, node, capacity, load);
     }
 
     @Override

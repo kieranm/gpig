@@ -30,4 +30,23 @@ public class Coordinates implements JSONable {
                 .put("latitude", latitude)
                 .put("longitude", longitude);
     }
+
+    public double distance(Coordinates c) {
+
+        double xdiff = 0;
+        if (c.getLatitude() > this.getLatitude()) {
+            xdiff = c.getLatitude() - this.getLatitude();
+        } else {
+            xdiff = this.getLatitude() - c.getLongitude();
+        }
+
+        double ydiff = 0;
+        if (c.getLongitude() > this.getLongitude()) {
+            ydiff = c.getLongitude() - this.getLongitude();
+        } else {
+            ydiff = this.getLongitude() - c.getLongitude();
+        }
+
+        return Math.sqrt((xdiff*xdiff) * (ydiff*ydiff));
+    }
 }

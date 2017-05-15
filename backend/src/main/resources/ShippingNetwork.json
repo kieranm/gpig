@@ -1,0 +1,15 @@
+{
+  "ports": [
+      {"name":"Liverpool", "node_id":0, "capacity":10, "load":10},
+      {"name":"Dublin", "node_id":1, "capacity":10, "load":10}
+  ],
+  "nodes": [
+    {"id":0, "latitude":53.460571, "longitude":-3.035125},
+    {"id":1, "latitude":53.346959, "longitude":-6.207841},
+    {"id":2, "latitude":53.765149, "longitude": -4.992063}
+  ],
+  "edges" : [
+      {"start":0, "end":2},
+      {"start":1, "end":2}
+  ]
+}
