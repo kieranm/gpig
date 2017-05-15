@@ -25,8 +25,6 @@ attribute vec3 positions;
 attribute vec3 colors;
 
 uniform float opacity;
-uniform float currentTime;
-uniform float trailLength;
 
 varying vec4 vColor;
 varying float vAlpha;

@@ -6,9 +6,6 @@ import tripsVertex from './trips-layer-vertex.glsl';
 import tripsFragment from './trips-layer-fragment.glsl';
 
 const defaultProps = {
-  trailLength: 120,
-  currentTime: 0,
-  getPath: d => d.path,
   getColor: d => d.color
 };
 
@@ -78,11 +75,7 @@ export default class TripsLayer extends Layer {
   }
 
   draw({uniforms}) {
-    const {trailLength, currentTime} = this.props;
-    this.state.model.render(Object.assign({}, uniforms, {
-      trailLength,
-      currentTime
-    }));
+    this.state.model.render(Object.assign({}, uniforms));
   }
 
   calculateIndices(attribute) {
@@ -123,7 +116,7 @@ export default class TripsLayer extends Layer {
           positions[index++] = 1/(1+Math.pow(1.5,-15+7*j)); // This dictates the opacity of the vertex
       }
     }
-    
+
     attribute.value = positions;
   }
 
