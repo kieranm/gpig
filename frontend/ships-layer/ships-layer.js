@@ -2,14 +2,14 @@ import {Layer, assembleShaders} from 'deck.gl';
 
 import {Model, Program, Geometry} from 'luma.gl';
 
-import tripsVertex from './trips-layer-vertex.glsl';
-import tripsFragment from './trips-layer-fragment.glsl';
+import shipsVertexShader from './ships-layer-vertex.glsl';
+import shipsFragmentShader from './ships-layer-fragment.glsl';
 
 const defaultProps = {
   getColor: d => d.color
 };
 
-export default class TripsLayer extends Layer {
+export default class ShipsLayer extends Layer {
 
   initializeState() {
     const {gl} = this.context;
@@ -36,8 +36,8 @@ export default class TripsLayer extends Layer {
   getModel(gl) {
     return new Model({
       program: new Program(gl, assembleShaders(gl, {
-        vs: tripsVertex,
-        fs: tripsFragment
+        vs: shipsVertexShader,
+        fs: shipsFragmentShader
       })),
       geometry: new Geometry({
         id: this.props.id,
@@ -140,5 +140,5 @@ export default class TripsLayer extends Layer {
 
 }
 
-TripsLayer.layerName = 'TripsLayer';
-TripsLayer.defaultProps = defaultProps;
+ShipsLayer.layerName = 'ShipsLayer';
+ShipsLayer.defaultProps = defaultProps;

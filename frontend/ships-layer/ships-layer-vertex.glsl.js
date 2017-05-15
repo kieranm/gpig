@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 export default `\
-#define SHADER_NAME trips-layer-vertex-shader
+#define SHADER_NAME ships-layer-vertex-shader
 
 attribute vec3 positions;
 attribute vec3 colors;

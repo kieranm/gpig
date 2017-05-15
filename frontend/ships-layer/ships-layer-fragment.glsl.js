@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 export default `\
-#define SHADER_NAME trips-layer-fragment-shader
+#define SHADER_NAME ships-layer-fragment-shader
 
 #ifdef GL_ES
 precision highp float;
