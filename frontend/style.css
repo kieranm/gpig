@@ -13,7 +13,7 @@ nav {
     font-family: 'Roboto', sans-serif;
 }
 
-nav .title {
+nav div {
     font-size: 30px;
     font-family: 'Cinzel Decorative', cursive;
     display: inline-block;
@@ -22,7 +22,7 @@ nav .title {
     top: 3px;
 }
 
-nav .description {
+nav span {
     font-size: 20px;
     display: inline-block;
 }
@@ -48,6 +48,6 @@ nav .description {
     color: white !important;
 }
 
-.control.panel a.fluid.button {
+.control.panel button.fluid.button {
     margin-bottom: 2px;
 }
