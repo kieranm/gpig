@@ -6,6 +6,7 @@
 
 # CMake
 cmake-build-debug/
+target
 
 ## File-based project format:
 *.iws

@@ -1,11 +1,12 @@
 package domain;
 
-import domain.util.JSONable;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import utils.JSONable;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Oliver Lea
@@ -21,13 +22,14 @@ public class World implements JSONable {
 
     public void tick() {
         agents.forEach(a -> a.tick(this));
+        agents = agents.stream().filter(Agent::isAlive).collect(toList());
     }
 
     @Override
     public JSONObject toJSON() {
         JSONObject obj = new JSONObject();
         obj.put("agents", new JSONArray(
-                this.agents.stream().map(Agent::toJSON).collect(Collectors.toList())
+                this.agents.stream().map(Agent::toJSON).collect(toList())
         ));
         return obj;
     }

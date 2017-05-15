@@ -2,8 +2,8 @@ package server;
 
 import domain.Agent;
 import domain.World;
-import domain.util.Location;
-import domain.vessel.SmartBoat;
+import domain.util.Coordinates;
+import domain.vessel.SmartShip;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class Simulation {
     private Session session;
 
     private List<Agent> agents = Arrays.asList(new Agent[] {
-            new SmartBoat(new Location(4.23434, -3.23345))
+            new SmartShip(new Coordinates(-2.69165,49.91741), 10, 5)
     });
 
     public Simulation(Session session) {
@@ -41,6 +41,10 @@ public class Simulation {
         };
         this.timer = new Timer();
         this.timer.schedule(tt, INITIAL_DELAY, PERIOD);
+    }
+
+    public void end() {
+        this.timer.cancel();
     }
 
     private void tick() {
