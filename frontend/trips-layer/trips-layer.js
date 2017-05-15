@@ -6,7 +6,7 @@ import tripsVertex from './trips-layer-vertex.glsl';
 import tripsFragment from './trips-layer-fragment.glsl';
 
 const defaultProps = {
-  trailLength: 5,
+  trailLength: 120,
   currentTime: 0,
   getPath: d => d.path,
   getColor: d => d.color
@@ -16,17 +16,16 @@ export default class TripsLayer extends Layer {
 
   initializeState() {
     const {gl} = this.context;
-    const {attributeManager} = this.state;
 
-    const model = this.getModel(gl);
+    const model = this.getModel(this.context.gl);
 
-    attributeManager.add({
+    this.state.attributeManager.add({
       indices: {size: 1, update: this.calculateIndices, isIndexed: true},
       positions: {size: 3, update: this.calculatePositions},
       colors: {size: 3, update: this.calculateColors}
     });
 
-    gl.getExtension('OES_element_index_uint');
+    this.context.gl.getExtension('OES_element_index_uint');
     this.setState({model});
   }
 
@@ -68,13 +67,13 @@ export default class TripsLayer extends Layer {
       return;
     }
 
-    const {getPath} = this.props;
     let vertexCount = 0;
     const pathLengths = data.reduce((acc, d) => {
-      const l = getPath(d).length;
+      const l = d.positions.length;
       vertexCount += l;
       return [...acc, l];
     }, []);
+
     this.setState({pathLengths, vertexCount});
   }
 
@@ -109,20 +108,22 @@ export default class TripsLayer extends Layer {
   }
 
   calculatePositions(attribute) {
-    const {data, getPath} = this.props;
+    const {data} = this.props;
     const {vertexCount} = this.state;
     const positions = new Float32Array(vertexCount * 3);
 
     let index = 0;
+
     for (let i = 0; i < data.length; i++) {
-      const path = getPath(data[i]);
-      for (let j = 0; j < path.length; j++) {
-        const pt = path[j];
-        positions[index++] = pt[0];
-        positions[index++] = pt[1];
-        positions[index++] = pt[2];
+      const agent_positions = data[i].positions;
+
+      for (let j = 0; j < agent_positions.length; j++) {
+          positions[index++] = agent_positions[j].latitude;
+          positions[index++] = agent_positions[j].longitude;
+          positions[index++] = 1/(1+Math.pow(1.5,-15+7*j)); // This dictates the opacity of the vertex
       }
     }
+    
     attribute.value = positions;
   }
 

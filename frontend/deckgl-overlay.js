@@ -31,21 +31,20 @@ export default class DeckGLOverlay extends Component {
   }
 
   render() {
-    const {viewport, buildings, trips, trailLength, time} = this.props;
+    const {viewport, buildings, agents, time} = this.props;
 
-    if (!buildings || !trips) {
+    if (!buildings || !agents) {
       return null;
     }
 
     const layers = [
       new TripsLayer({
         id: 'trips',
-        data: trips,
-        getPath: d => d.segments,
+        data: agents,
         getColor: d => d.vendor === 0 ? [253, 128, 93] : [23, 184, 190],
-        opacity: 0.3,
+        opacity: 0.4,
         strokeWidth: 2,
-        trailLength,
+        trailLength: 2,
         currentTime: time
       }),
       new PolygonLayer({
