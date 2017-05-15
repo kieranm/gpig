@@ -19,26 +19,16 @@
 // THE SOFTWARE.
 
 export default `\
-#define SHADER_NAME trips-layer-vertex-shader
+#define SHADER_NAME ships-layer-fragment-shader
 
-attribute vec3 positions;
-attribute vec3 colors;
+#ifdef GL_ES
+precision highp float;
+#endif
 
-uniform float opacity;
-uniform float currentTime;
-uniform float trailLength;
-
-varying float vTime;
 varying vec4 vColor;
+varying float vAlpha;
 
 void main(void) {
-  vec2 p = preproject(positions.xy);
-  // the magic de-flickering factor
-  vec4 shift = vec4(0., 0., mod(positions.z, trailLength) * 1e-4, 0.);
-
-  gl_Position = project(vec4(p, 1., 1.)) + shift;
-
-  vColor = vec4(colors / 255.0, opacity);
-  vTime = 1.0 - (currentTime - positions.z) / trailLength;
+    gl_FragColor = vec4(vColor.rgb, vColor.a * vAlpha);
 }
 `;

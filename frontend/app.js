@@ -20,27 +20,66 @@ class Root extends Component {
         height: 500
       },
       buildings: null,
-      trips: null,
+      agents: [],
       time: 0
     };
+
+    this.connection = new WebSocket('ws://localhost:4567/sim');
 
     requestJson('./data/buildings.json', (error, response) => {
       if (!error) {
         this.setState({buildings: response});
       }
     });
-
-    requestJson('./data/trips.json', (error, response) => {
-      if (!error) {
-        this.setState({trips: response});
-      }
-    });
   }
 
   componentDidMount() {
+    var self = this;
+    this.connection.onmessage = function(e) {
+      var d = JSON.parse(e.data);
+      var new_agents = [];
+
+      for (var i = 0; i < d.agents.length; i++) {
+        var agent = d.agents[i];
+        var found = false;
+
+        for (var j = 0; j < self.state.agents.length; j++) {
+          var target_agent = self.state.agents[j];
+
+          if(agent.id == target_agent.id) {
+            found = true;
+
+            var positions = target_agent.positions.slice();
+
+            positions.unshift(agent.coordinates);
+            if (positions.length > 5) { // Hardcoding this because I'm lazy and I can't be asked
+                positions.pop();
+            }
+
+            new_agents.push({
+                id: agent.id,
+                positions: positions
+            });
+          }
+        }
+
+        if (found == false) {
+          new_agents.push({
+            id: agent.id,
+            positions: [agent.coordinates]
+          });
+        }
+      }
+
+      self.setState({
+          agents: new_agents
+      });
+    };
+
     window.addEventListener('resize', this._resize.bind(this));
     this._resize();
     this._animate();
+
   }
 
   componentWillUnmount() {
@@ -49,14 +88,19 @@ class Root extends Component {
     }
   }
 
-  _animate() {
-    const timestamp = Date.now();
-    const loopLength = 14;
-    const loopTime = 30000;
+  _initialize(data) {
+    this.setState({});
+  }
 
+  _updatePositions(message) {
+    this.setState({});
+  }
+
+  _animate() {
     this.setState({
-      time: ((timestamp % loopTime) / loopTime) * loopLength
+      time: Date.now()
     });
+
     this._animationFrame = window.requestAnimationFrame(this._animate.bind(this));
   }
 
@@ -74,7 +118,7 @@ class Root extends Component {
   }
 
   render() {
-    const {viewport, buildings, trips, time} = this.state;
+    const {viewport, buildings, agents, time} = this.state;
 
     return (
       <MapGL
@@ -85,8 +129,7 @@ class Root extends Component {
         mapboxApiAccessToken={MAPBOX_TOKEN}>
         <DeckGLOverlay viewport={viewport}
           buildings={buildings}
-          trips={trips}
-          trailLength={180}
+          agents={agents}
           time={time}
           />
       </MapGL>

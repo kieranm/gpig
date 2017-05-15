@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import DeckGL, {PolygonLayer} from 'deck.gl';
 
-import TripsLayer from './trips-layer';
+import ShipsLayer from './ships-layer';
 
 const LIGHT_SETTINGS = {
   lightsPosition: [-8.42627, 43.32463, 3000],
@@ -31,22 +31,18 @@ export default class DeckGLOverlay extends Component {
   }
 
   render() {
-    const {viewport, buildings, trips, trailLength, time} = this.props;
+    const {viewport, buildings, agents, time} = this.props;
 
-    if (!buildings || !trips) {
+    if (!buildings || !agents) {
       return null;
     }
 
     const layers = [
-      new TripsLayer({
-        id: 'trips',
-        data: trips,
-        getPath: d => d.segments,
+      new ShipsLayer({
+        id: 'ships',
+        data: agents,
         getColor: d => d.vendor === 0 ? [253, 128, 93] : [23, 184, 190],
-        opacity: 0.3,
-        strokeWidth: 2,
-        trailLength,
-        currentTime: time
+        opacity: 0.4
       }),
       new PolygonLayer({
         id: 'buildings',
