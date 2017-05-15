@@ -7,4 +7,4 @@
 4. Right click the `main` function located in `App.java`, and run the application.
 
 Testable by going to [this website](https://www.websocket.org/echo.html), using the URL `ws://localhost:4567/sim`.
-Messages should be received detailing the moving location of a smart boat.
+Messages should be received detailing the moving coordinates of a smart boat.

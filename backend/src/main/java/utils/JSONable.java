@@ -1,4 +1,4 @@
-package domain.util;
+package utils;
 
 import org.json.JSONObject;
 
