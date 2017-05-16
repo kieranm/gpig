@@ -11,7 +11,6 @@
     "server": "node server.js"
   },
   "dependencies": {
-    "buble-loader": "^0.4.0",
     "d3-request": "^1.0.5",
     "deck.gl": "^4.0.0",
     "express": "^4.15.2",
@@ -20,9 +19,9 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-map-gl": "^2.0.0",
-    "semantic-ui-react": "^0.68.3",
-    "socket.io-client": "2.0.0",
-    "webpack": "^2.5.1"
+    "webpack": "^2.5.1",
+    "buble-loader": "^0.4.0",
+    "socket.io-client": "2.0.0"
   },
   "devDependencies": {
     "webpack-dev-server": "^2.2.0"
