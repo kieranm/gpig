@@ -5,6 +5,8 @@ import domain.World;
 import domain.util.Coordinates;
 import domain.vessel.SmartShip;
 import org.eclipse.jetty.websocket.api.Session;
+import org.json.JSONObject;
+
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -51,9 +53,22 @@ public class Simulation {
         world.tick();
     }
 
+
+    /**
+     * Method to embed message object in an object with details considering the message context (messageType).
+     * Example types include 'update', 'settings', etc.
+     */
+    private JSONObject formatMessage(JSONObject jsonBody, String messageType) {
+        JSONObject obj = new JSONObject()
+        .put("message_type", messageType)
+        .put("message_body", jsonBody);
+
+        return obj;
+    }
+
     private void sendToRemote() {
         try {
-            session.getRemote().sendString(String.valueOf(world.toJSON()));
+            session.getRemote().sendString(String.valueOf(formatMessage(world.toJSON(), "update")));
         } catch (IOException e) {
             e.printStackTrace();
         }
