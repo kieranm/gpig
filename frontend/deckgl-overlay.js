@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import DeckGL, {PolygonLayer} from 'deck.gl';
 
-import ShipsLayer from './ships-layer';
+import ShipsLayer from './components/ships-layer';
 
 const LIGHT_SETTINGS = {
   lightsPosition: [-8.42627, 43.32463, 3000],
