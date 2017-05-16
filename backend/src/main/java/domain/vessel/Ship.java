@@ -17,8 +17,7 @@ public abstract class Ship extends Agent implements Carrier {
     private int capacity;
     private int load;
 
-    private static final double DISTANCE_PER_TICK_MULTIPLIER = 1.0;
-    private static final double MAXIMUM_ON_POINT_DISTANCE = 1.0;
+    private static final double DISTANCE_PER_TICK_MULTIPLIER = 0.1;
 
     private List<Node> route;
     private Node next;
@@ -49,9 +48,10 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     public void followRoute() {
+
         // check if we have reached the next waypoint
         // TODO figure out what a sensible distance is to be considered "on" the next waypoint
-        if (this.next.getCoordinates().distance(this.getCoordinates()) < MAXIMUM_ON_POINT_DISTANCE) {
+        if (hasReachedPoint()) {
 
             // if the end of the route has been reached start a return trip
             // else set the next route point
@@ -68,6 +68,13 @@ public abstract class Ship extends Agent implements Carrier {
 
         // move toward next
         this.setCoordinates(this.getCoordinates().add(this.positionUpdateVector));
+        if (this.getCoordinates().distance(this.next.getCoordinates()) < this.positionUpdateVector.length()) {
+            this.setCoordinates(new Coordinates(this.next.getCoordinates()));
+        }
+    }
+
+    private boolean hasReachedPoint() {
+        return this.next.getCoordinates().equals(this.getCoordinates());
     }
 
     private boolean routeEndReached() {
@@ -75,13 +82,11 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     private void calculatePositionUpdateVector() {
-
         // calculate distance include direction in vector
         double xdiff = this.next.getCoordinates().getLatitude() - this.getCoordinates().getLatitude();
         double ydiff = this.next.getCoordinates().getLongitude() - this.getCoordinates().getLongitude();
-
-        // normalise vector
-        double length = this.next.getCoordinates().distance(this.getCoordinates());
+        
+        double length = this.getCoordinates().distance(this.next.getCoordinates());
         this.positionUpdateVector = new Coordinates(xdiff/length, ydiff/length);
         this.positionUpdateVector.mul(DISTANCE_PER_TICK_MULTIPLIER); // TODO figure out a good amount of travel per tick
     }
@@ -95,6 +100,12 @@ public abstract class Ship extends Agent implements Carrier {
 
     public void startReturnTrip() {
         Collections.reverse(route);
-        this.next = route.get(0);
+        startRoute(route);
+    }
+
+    public void startRoute(List<Node> route) {
+        this.route = route;
+        this.next = route.get(1);
+        calculatePositionUpdateVector();
     }
 }

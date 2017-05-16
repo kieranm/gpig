@@ -27,8 +27,7 @@ public class ShippingNetwork {
         ArrayList<Node> route = astar(start, end);
         if (route == null) { throw new NoRouteFoundException(); }
 
-        ship.setRoute(route);
-        ship.setNext(start);
+        ship.startRoute(route);
     }
 
     private ArrayList<Node> astar(Node start, Node end) {

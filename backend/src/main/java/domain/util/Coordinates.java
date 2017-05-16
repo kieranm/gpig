@@ -16,6 +16,11 @@ public class Coordinates implements JSONable {
         this.longitude = longitude;
     }
 
+    public Coordinates(Coordinates coordinates) {
+        this.latitude = coordinates.getLatitude();
+        this.longitude = coordinates.getLongitude();
+    }
+
     public double getLatitude() {
         return latitude;
     }
@@ -29,6 +34,10 @@ public class Coordinates implements JSONable {
         return new JSONObject()
                 .put("latitude", latitude)
                 .put("longitude", longitude);
+    }
+
+    public String toString() {
+        return String.format("lat %f long %f", latitude, longitude);
     }
 
     /**
@@ -62,13 +71,27 @@ public class Coordinates implements JSONable {
         return this;
     }
 
+    public double length() {
+        return Math.sqrt((this.latitude*this.latitude) + (this.longitude*this.longitude));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Coordinates) {
+            Coordinates c = ((Coordinates) o);
+            return this.latitude == c.getLatitude() &&
+                    this.longitude == c.getLongitude();
+        }
+        return false;
+    }
+
     public double distance(Coordinates c) {
 
         double xdiff = 0;
         if (c.getLatitude() > this.getLatitude()) {
             xdiff = c.getLatitude() - this.getLatitude();
         } else {
-            xdiff = this.getLatitude() - c.getLongitude();
+            xdiff = this.getLatitude() - c.getLatitude();
         }
 
         double ydiff = 0;
@@ -78,6 +101,6 @@ public class Coordinates implements JSONable {
             ydiff = this.getLongitude() - c.getLongitude();
         }
 
-        return Math.sqrt((xdiff*xdiff) * (ydiff*ydiff));
+        return Math.sqrt((xdiff*xdiff) + (ydiff*ydiff));
     }
 }

@@ -23,7 +23,7 @@ import java.util.*;
  */
 public class Simulation {
 
-    private static final long PERIOD = 1000l;
+    private static final long PERIOD = 200l;
     private static final long INITIAL_DELAY = 1000l;
     public static final String EDGE_MAP_SEPERATOR = "CONNECTION";
 

@@ -34,7 +34,6 @@ public class World implements JSONable {
         obj.put("agents", new JSONArray(
                 this.agents.stream().map(Agent::toJSON).collect(toList())
         ));
-        System.out.println(obj);
         return obj;
     }
 
