@@ -168,7 +168,7 @@ public abstract class Port extends Agent implements Carrier {
         for(Dock dock: this.docks)
         {
             if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_RELEASE) continue;
-            dock.releaseShip();
+            Ship releasedShip  = dock.releaseShip(); // TODO decide what to do whit that ship
         }
     }
 }

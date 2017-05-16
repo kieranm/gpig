@@ -18,7 +18,14 @@ public class Dock {
     }
 
     public boolean isEmtpy(){return ship == null;}
-    public void releaseShip() {this.ship = null;}
+
+    public Ship releaseShip()
+    {
+        Ship ship = this.ship;
+        this.ship = null;
+
+        return  ship;
+    }
 
     public void moorShip(Ship ship)
     {
