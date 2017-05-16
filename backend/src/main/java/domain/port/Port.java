@@ -94,14 +94,13 @@ public abstract class Port extends Agent implements Carrier {
     private void updateWaitingShips()
     {
         // Docks waiting ships if slot is free
-        for(int i = 0; i < this.docks.length; i++)
-        {
-            if(this.docks[i].isEmtpy())
+        for (Dock dock : this.docks)
+            if (dock.isEmtpy())
             {
-                if(this.waitingShips.size() == 0) return;
-                this.docks[i].moorShip(this.waitingShips.remove());
+                if (this.waitingShips.size() == 0) return;
+                dock.moorShip(this.waitingShips.remove());
             }
-        }
+
     }
 
     private void unloadDockedShips(int unloadSpeed)
