@@ -1,11 +1,8 @@
 package control;
 
-import domain.Node;
+import domain.world.Node;
 import java.util.*;
 
-/**
- * Created by Paulius on 2017-05-16.
- */
 public class Dispatcher {
 
     // All nodes in the world. Used for route Generation. Might need to change into presset routes in future

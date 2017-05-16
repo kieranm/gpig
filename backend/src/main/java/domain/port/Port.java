@@ -26,8 +26,6 @@ public abstract class Port extends Agent implements Carrier {
 
     private Dispatcher dispatcher;
 
-    private Node portNode;
-
     public Port(AgentType agentType, String name,
                 Node node, int capacity, int load, int portSize, int cargoMoveSpeed, Dispatcher dispatcher) {
         super(agentType, node.getCoordinates());
@@ -156,7 +154,7 @@ public abstract class Port extends Agent implements Carrier {
         {
             if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_NEW_ORDERS) continue;
 
-            List<Node> newRoute = this.dispatcher.generateRoute(this.portNode);
+            List<Node> newRoute = this.dispatcher.generateRoute(this.node);
             // TODO assign route to ship
             dock.cargoToLoad = dock.ship.getCapacity(); // TODO decide whether always fill ships to full capacity
             dock.state = Dock.DockState.LOADING_NEW_CARGO;
