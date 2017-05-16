@@ -73,15 +73,14 @@ public class Simulation {
         }
 
         // TODO have the agents defined in a json file?
-        Ship s = new FreightShip(nodes.get(0).getCoordinates(), 5, 5);
+        Coordinates c = new Coordinates(nodes.get(0).getCoordinates().getLatitude(), nodes.get(0).getCoordinates().getLongitude());
+        Ship s = new FreightShip(c, 5, 5);
         try {
             sn.calculateRoute(s, nodes.get(0), nodes.get(1));
         } catch (ShippingNetwork.NoRouteFoundException e) {
             e.printStackTrace();
         }
         agents.add(s);
-
-
 
         this.world = new World(agents, sn);
     }

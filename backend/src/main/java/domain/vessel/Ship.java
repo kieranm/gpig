@@ -17,8 +17,8 @@ public abstract class Ship extends Agent implements Carrier {
     private int capacity;
     private int load;
 
-    private static final double DISTANCE_PER_TICK_MULTIPLIER = 0.1;
-    private static final double MAXIMUM_ON_POINT_DISTANCE = 0.1;
+    private static final double DISTANCE_PER_TICK_MULTIPLIER = 1.0;
+    private static final double MAXIMUM_ON_POINT_DISTANCE = 1.0;
 
     private List<Node> route;
     private Node next;
@@ -67,7 +67,7 @@ public abstract class Ship extends Agent implements Carrier {
         }
 
         // move toward next
-        this.getCoordinates().add(this.positionUpdateVector);
+        this.setCoordinates(this.getCoordinates().add(this.positionUpdateVector));
     }
 
     private boolean routeEndReached() {
