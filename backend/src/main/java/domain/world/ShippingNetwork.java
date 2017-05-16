@@ -31,7 +31,7 @@ public class ShippingNetwork {
         ship.setNext(start);
     }
 
-    public ArrayList<Node> astar(Node start, Node end) {
+    private ArrayList<Node> astar(Node start, Node end) {
         List<Node> closedSet = new ArrayList<Node>();
         List<Node> openSet = new ArrayList<Node>();
         openSet.add(start);

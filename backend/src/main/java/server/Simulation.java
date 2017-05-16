@@ -5,6 +5,7 @@ import domain.World;
 import domain.port.LandPort;
 import domain.util.Coordinates;
 import domain.vessel.FreightShip;
+import domain.vessel.Ship;
 import domain.world.Edge;
 import domain.world.Node;
 import domain.world.ShippingNetwork;
@@ -57,6 +58,7 @@ public class Simulation {
             nodes.get(start).addNeighbor(nodes.get(end));
             nodes.get(end).addNeighbor(nodes.get(start));
         }
+        ShippingNetwork sn = new ShippingNetwork(nodes, edges);
 
         for (Object port : object.getJSONArray("ports")) {
             JSONObject jPort = ((JSONObject) port);
@@ -71,9 +73,16 @@ public class Simulation {
         }
 
         // TODO have the agents defined in a json file?
-        agents.add(new FreightShip(nodes.get(0).getCoordinates(), 5, 5));
+        Ship s = new FreightShip(nodes.get(0).getCoordinates(), 5, 5);
+        try {
+            sn.calculateRoute(s, nodes.get(0), nodes.get(1));
+        } catch (ShippingNetwork.NoRouteFoundException e) {
+            e.printStackTrace();
+        }
+        agents.add(s);
 
-        ShippingNetwork sn = new ShippingNetwork(nodes, edges);
+
+
         this.world = new World(agents, sn);
     }
 
