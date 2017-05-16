@@ -24,7 +24,10 @@ public abstract class Port extends Agent implements Carrier {
         this.load = load;
     }
 
-    public Node getNode() { return node; }
+    public Node getNode() {
+        return node;
+    }
+
     public String getName() {
         return name;
     }
