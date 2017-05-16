@@ -20,6 +20,7 @@ export default class Root extends Component {
                 height: 500
             },
             ships: [],
+            coastal_ports: [],
             time: 0
         };
 
@@ -63,9 +64,39 @@ export default class Root extends Component {
         return new_ship;
     }
 
-    coastalPort(agent) {
+    coastalPort(port) {
         // Add coastal port or change its load
+        var self = this;
+        var new_port;
 
+        const bar_width = 0.001;
+        const bar_height = 0.001;
+        const port_height = 500;
+
+        for (var j = 0; j < self.state.coastal_ports.length; j++) {
+            var target_port = self.state.coastal_ports[j];
+            if (port.id == target_port.id) {
+                return target_port;
+            }
+        }
+
+        var latitude = port.coordinates.latitude;
+        var longitude = port.coordinates.longitude;
+
+        new_port = {
+            height: port_height,
+            polygon: [
+                [longitude - bar_width, latitude + bar_height],
+                [longitude + bar_width, latitude + bar_height],
+                [longitude + bar_width, latitude - bar_height],
+                [longitude - bar_width, latitude - bar_height],
+                [longitude - bar_width, latitude + bar_height],
+            ]
+        };
+
+        console.log(new_port);
+
+        return new_port;
     }
 
     processAgents(d) {
@@ -80,7 +111,7 @@ export default class Root extends Component {
 
             if (agent.type === "FREIGHT_SHIP") {
                 ships.push(self.freightShip(agent));
-            } else if (agent.type === "COASTAL_PORT") {
+            } else if (agent.type === "LAND_PORT") {
                 coastal_ports.push(self.coastalPort(agent));
             }
         }
@@ -97,7 +128,6 @@ export default class Root extends Component {
         this.connection.onmessage = function(e) {
             var d = JSON.parse(e.data);
             self.processAgents(d);
-            console.log('process agents');
         };
 
         window.addEventListener('resize', this._resize.bind(this));
@@ -134,7 +164,7 @@ export default class Root extends Component {
     }
 
     render() {
-        const {viewport, ships, time} = this.state;
+        const {viewport, ships, coastal_ports, time} = this.state;
 
         return (
             <div>
@@ -148,6 +178,7 @@ export default class Root extends Component {
                     mapboxApiAccessToken={MAPBOX_TOKEN}>
                     <DeckGLOverlay viewport={viewport}
                                    ships={ships}
+                                   coastal_ports={coastal_ports}
                                    time={time}
                     />
                 </MapGL>
