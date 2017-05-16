@@ -18,11 +18,10 @@ public abstract class Port extends Agent implements Carrier {
 
     private int capacity;
     private int load;
-    private Node node;
 
     private List<Ship> queueingShips;
 
-    private Node portNode;
+    private Node node;
 
     public Port(AgentType agentType, String name, Node node, int capacity, int load) {
         super(agentType, node.getCoordinates());
