@@ -20,18 +20,12 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
-            coastal_ports: null,
             agents: [],
             time: 0
         };
 
         this.connection = new WebSocket('ws://localhost:4567/sim');
 
-        requestJson('./data/coastal_ports.json', (error, response) => {
-            if (!error) {
-                this.setState({coastal_ports: response});
-            }
-        });
     }
 
     componentDidMount() {
@@ -119,7 +113,7 @@ export default class Root extends Component {
     }
 
     render() {
-        const {viewport, coastal_ports, agents, time} = this.state;
+        const {viewport, agents, time} = this.state;
 
         return (
             <div>
@@ -132,7 +126,6 @@ export default class Root extends Component {
                     onChangeViewport={this._onChangeViewport.bind(this)}
                     mapboxApiAccessToken={MAPBOX_TOKEN}>
                     <DeckGLOverlay viewport={viewport}
-                                   coastal_ports={coastal_ports}
                                    agents={agents}
                                    time={time}
                     />
