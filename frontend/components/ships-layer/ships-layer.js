@@ -111,9 +111,9 @@ export default class ShipsLayer extends Layer {
       const agent_positions = data[i].positions;
 
       for (let j = 0; j < agent_positions.length; j++) {
-          positions[index++] = agent_positions[j].latitude;
           positions[index++] = agent_positions[j].longitude;
-          positions[index++] = 1/(1+Math.pow(1.5,-15+7*j)); // This dictates the opacity of the vertex
+          positions[index++] = agent_positions[j].latitude;
+          positions[index++] = 1/(1+Math.pow(1.5,-5+0.5*j)); // This dictates the opacity of the vertex
       }
     }
 
