@@ -80,6 +80,19 @@ public abstract class Port extends Agent implements Carrier {
         return loadDifference < 0 ? count + loadDifference : count;
     }
 
+    public void DockShip(Ship ship)
+    {
+        if(this.waitingShips.size() == 0)
+            for(Dock dock : this.docks)
+                if(dock.isEmtpy())
+                {
+                    dock.moorShip(ship);
+                    return;
+                }
+
+        this.waitingShips.add(ship); // add to waiting queue if docks are full
+    }
+
     public void updateDocks(int simulationSpeed)
     {
         this.updateWaitingShips();
@@ -100,7 +113,6 @@ public abstract class Port extends Agent implements Carrier {
                 if (this.waitingShips.size() == 0) return;
                 dock.moorShip(this.waitingShips.remove());
             }
-
     }
 
     private void unloadDockedShips(int unloadSpeed)
