@@ -4,7 +4,7 @@ import DeckGL, {PolygonLayer} from 'deck.gl';
 import ShipsLayer from './ships-layer';
 
 const LIGHT_SETTINGS = {
-    lightsPosition: [-2.991573, 53.408371, 30000],
+    lightsPosition: [-2.991573, 53.408371, 15000],
     ambientRatio: 0.05,
     diffuseRatio: 0.6,
     specularRatio: 0.8,
@@ -47,7 +47,8 @@ export default class DeckGLOverlay extends Component {
                 getFillColor: d => [23, 184, 190],
                 extruded: true,
                 filled: true,
-                lightSettings: LIGHT_SETTINGS
+                getElevation: d => d.height,
+                //lightSettings: LIGHT_SETTINGS
             })
         ];
 

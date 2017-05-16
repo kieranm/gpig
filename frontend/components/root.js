@@ -68,33 +68,54 @@ export default class Root extends Component {
         // Add coastal port or change its load
         var self = this;
         var new_port;
+        var found = false;
 
         const bar_width = 0.001;
         const bar_height = 0.001;
-        const port_height = 500;
-
-        for (var j = 0; j < self.state.coastal_ports.length; j++) {
-            var target_port = self.state.coastal_ports[j];
-            if (port.id == target_port.id) {
-                return target_port;
-            }
-        }
+        const initial_port_height = 500;
 
         var latitude = port.coordinates.latitude;
         var longitude = port.coordinates.longitude;
 
-        new_port = {
-            height: port_height,
-            polygon: [
-                [longitude - bar_width, latitude + bar_height],
-                [longitude + bar_width, latitude + bar_height],
-                [longitude + bar_width, latitude - bar_height],
-                [longitude - bar_width, latitude - bar_height],
-                [longitude - bar_width, latitude + bar_height],
-            ]
-        };
+        for (var j = 0; j < self.state.coastal_ports.length; j++) {
+            var target_port = self.state.coastal_ports[j];
+            if (port.id == target_port.id) {
+                found = true;
 
-        console.log(new_port);
+                var height;
+                if(target_port.height < 1000) {
+                    height = target_port.height + 10;
+                } else {
+                    height = 0;
+                }
+
+                new_port = {
+                    id: port.id,
+                    height: height,
+                    polygon: [
+                        [longitude - bar_width, latitude + bar_height],
+                        [longitude + bar_width, latitude + bar_height],
+                        [longitude + bar_width, latitude - bar_height],
+                        [longitude - bar_width, latitude - bar_height],
+                        [longitude - bar_width, latitude + bar_height],
+                    ]
+                };
+            }
+        }
+
+        if(!found) {
+            new_port = {
+                id: port.id,
+                height: initial_port_height,
+                polygon: [
+                    [longitude - bar_width, latitude + bar_height],
+                    [longitude + bar_width, latitude + bar_height],
+                    [longitude + bar_width, latitude - bar_height],
+                    [longitude - bar_width, latitude - bar_height],
+                    [longitude - bar_width, latitude + bar_height],
+                ]
+            };
+        }
 
         return new_port;
     }
