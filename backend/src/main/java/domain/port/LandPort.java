@@ -1,5 +1,6 @@
 package domain.port;
 
+import control.Dispatcher;
 import domain.World;
 import domain.util.AgentType;
 import domain.world.Node;
@@ -8,8 +9,8 @@ import domain.world.Node;
  */
 public class LandPort extends Port {
 
-    public LandPort(String name, Node node, int capacity, int load) {
-        super(AgentType.LAND_PORT, name, node, capacity, load);
+    public LandPort(String name, Node node, int capacity, int load, Dispatcher dispatcher) {
+        super(AgentType.LAND_PORT, name, node, capacity, load, dispatcher);
     }
 
     @Override

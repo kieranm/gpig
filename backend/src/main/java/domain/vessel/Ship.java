@@ -110,32 +110,22 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     @Override
+    // Returns number of containers that are over capacity
     public int loadContainers(int count)
     {
         int loadDifference = this.load + count - this.capacity;
+        this.load = loadDifference > 0 ? this.capacity : this.load + count;
 
-        if(loadDifference > 0)
-        {
-            this.load = this.capacity;
-            return loadDifference; // returns number of containers that are over the capacity
-        }
-
-        this.load += count;
-        return 0;
+        return loadDifference > 0 ? loadDifference : 0;
     }
 
     @Override
+    // Returns number of containers unloaded
     public int unloadContainers(int count)
     {
         int loadDifference = this.load - count;
+        this.load = loadDifference < 0 ? 0 : loadDifference;
 
-        if(loadDifference < 0)
-        {
-            this.load = 0;
-            return -loadDifference; // returns number of containers that are under the capacity
-        }
-
-        this.load = loadDifference;
-        return 0;
+        return loadDifference < 0 ? count + loadDifference : count;
     }
 }
