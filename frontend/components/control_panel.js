@@ -11,10 +11,10 @@ export default class ControlPanel extends Component {
                 <Divider horizontal>Simulation Speed</Divider>
                 <Button.Group fluid>
                     <Button color={"orange"} icon={"pause"}/>
-                    <Button color={"orange"}>1x</Button>
-                    <Button color={"orange"}>5x</Button>
-                    <Button color={"orange"}>10x</Button>
-                    <Button color={"orange"}>20x</Button>
+                    <Button color={"orange"} >1x</Button>
+                    <Button color={"orange"} >5x</Button>
+                    <Button color={"orange"} >10x</Button>
+                    <Button color={"orange"} >20x</Button>
                 </Button.Group>
 
                 <Divider horizontal>Mode</Divider>

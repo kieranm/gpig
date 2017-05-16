@@ -4,9 +4,6 @@ import DeckGLOverlay from '../deckgl-overlay.js';
 
 import {json as requestJson} from 'd3-request';
 
-import Branding from './branding'
-import ControlPanel from './control_panel'
-
 // Set your mapbox token here
 const MAPBOX_TOKEN = "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
 
@@ -20,12 +17,18 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
+            buildings: null,
             agents: [],
             time: 0
         };
 
         this.connection = new WebSocket('ws://localhost:4567/sim');
 
+        requestJson('./data/buildings.json', (error, response) => {
+            if (!error) {
+                this.setState({buildings: response});
+            }
+        });
     }
 
     componentDidMount() {
@@ -113,24 +116,21 @@ export default class Root extends Component {
     }
 
     render() {
-        const {viewport, agents, time} = this.state;
+        const {viewport, buildings, agents, time} = this.state;
 
         return (
-            <div>
-                <Branding/>
-                <ControlPanel/>
-                <MapGL
-                    {...viewport}
-                    mapStyle="mapbox://styles/mapbox/satellite-v9"
-                    perspectiveEnabled={true}
-                    onChangeViewport={this._onChangeViewport.bind(this)}
-                    mapboxApiAccessToken={MAPBOX_TOKEN}>
-                    <DeckGLOverlay viewport={viewport}
-                                   agents={agents}
-                                   time={time}
-                    />
-                </MapGL>
-            </div>
+            <MapGL
+                {...viewport}
+                mapStyle="mapbox://styles/mapbox/satellite-v9"
+                perspectiveEnabled={true}
+                onChangeViewport={this._onChangeViewport.bind(this)}
+                mapboxApiAccessToken={MAPBOX_TOKEN}>
+                <DeckGLOverlay viewport={viewport}
+                               buildings={buildings}
+                               agents={agents}
+                               time={time}
+                />
+            </MapGL>
         );
     }
 
