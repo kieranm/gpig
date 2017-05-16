@@ -24,19 +24,19 @@ public abstract class Port extends Agent implements Carrier {
     private Dock[] docks;
     private Queue<Ship> waitingShips = new LinkedList<>();
 
-    private Dispatcher dispacher;
+    private Dispatcher dispatcher;
 
     private Node portNode;
 
     public Port(AgentType agentType, String name,
-                Node node, int capacity, int load, int portSize, int cargoMoveSpeed, Dispatcher dispacher) {
+                Node node, int capacity, int load, int portSize, int cargoMoveSpeed, Dispatcher dispatcher) {
         super(agentType, node.getCoordinates());
         this.node = node;
         this.name = name;
         this.capacity = capacity;
         this.load = load;
         this.cargoMoveSpeed = cargoMoveSpeed;
-        this.dispacher = dispacher;
+        this.dispatcher = dispatcher;
 
         this.docks = new Dock[portSize];
         for(int i = 0; i < portSize; i++) this.docks[i] = new Dock();
@@ -144,7 +144,7 @@ public abstract class Port extends Agent implements Carrier {
         {
             if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_NEW_ORDERS) continue;
 
-            List<Node> newRoute = this.dispacher.generateRoute(this.portNode);
+            List<Node> newRoute = this.dispatcher.generateRoute(this.portNode);
             // TODO assign route to ship
             dock.cargoToLoad = dock.ship.getCapacity(); // TODO decide whether always fill ships to full capacity
             dock.state = Dock.DockState.LOADING_NEW_CARGO;
