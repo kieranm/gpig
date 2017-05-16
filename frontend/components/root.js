@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import MapGL from 'react-map-gl';
-import DeckGLOverlay from '../deckgl-overlay.js';
-
-import {json as requestJson} from 'd3-request';
+import DeckGLOverlay from './deckgl-overlay';
 
 import Branding from './branding'
 import ControlPanel from './control_panel'
 
 // Set your mapbox token here
-const MAPBOX_TOKEN = "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
+const MAPBOX_TOKEN =
+    "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
 
 export default class Root extends Component {
 

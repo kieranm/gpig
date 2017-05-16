@@ -1,16 +1,7 @@
 import React, {Component} from 'react';
 import DeckGL from 'deck.gl';
 
-import ShipsLayer from './components/ships-layer';
-
-const LIGHT_SETTINGS = {
-  lightsPosition: [-8.42627, 43.32463, 3000],
-  ambientRatio: 0.05,
-  diffuseRatio: 0.6,
-  specularRatio: 0.8,
-  lightsStrength: [2.0, 0.0, 0.0, 0.0],
-  numberOfLights: 1
-};
+import ShipsLayer from './ships-layer';
 
 export default class DeckGLOverlay extends Component {
 
@@ -41,7 +32,7 @@ export default class DeckGLOverlay extends Component {
       new ShipsLayer({
         id: 'ships',
         data: agents,
-        getColor: d => d.vendor === 0 ? [253, 128, 93] : [23, 184, 190],
+        getColor: d => [23, 184, 190],
         opacity: 0.4
       })
     ];
