@@ -10,12 +10,15 @@ import domain.world.Node;
  */
 public class SmartPort extends Port {
 
-    public SmartPort(String name, Node node, int capacity, int load,  Dispatcher dispacher) {
-        super(AgentType.SMART_PORT, name, node, capacity, load, dispacher);
+    public SmartPort(String name,  Node node, int capacity, int load, int portSize, int cargoMoveSpeed, Dispatcher dispacher) {
+        super(AgentType.SMART_PORT, name, node, capacity, load, portSize, cargoMoveSpeed, dispacher);
     }
 
     @Override
     public void tick(World world) {
-        // TODO
+        int simulationSpeed = 1; // TODO decide how we process this value
+
+        this.updateDocks(simulationSpeed);
+        // TODO, extend potentially
     }
 }

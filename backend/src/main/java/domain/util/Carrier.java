@@ -9,4 +9,6 @@ public interface Carrier {
     int getLoad();
     int loadContainers(int count);
     int unloadContainers(int count);
+    boolean isEmpty();
+    boolean isFull();
 }

@@ -110,6 +110,12 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     @Override
+    public boolean isEmpty() { return this.load == 0; }
+
+    @Override
+    public boolean isFull() { return this.load == this.capacity; }
+
+    @Override
     // Returns number of containers that are over capacity
     public int loadContainers(int count)
     {
