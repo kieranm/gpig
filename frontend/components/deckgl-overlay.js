@@ -22,16 +22,16 @@ export default class DeckGLOverlay extends Component {
   }
 
   render() {
-    const {viewport, agents, time} = this.props;
+    const {viewport, ships, time} = this.props;
 
-    if (!agents) {
+    if (!ships) {
       return null;
     }
 
     const layers = [
       new ShipsLayer({
         id: 'ships',
-        data: agents,
+        data: ships,
         getColor: d => [23, 184, 190],
         opacity: 0.4
       })
