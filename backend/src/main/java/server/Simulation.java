@@ -16,7 +16,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Oliver Lea
@@ -32,9 +37,9 @@ public class Simulation {
     private Session session;
 
     private void initialiseWorld(Path worldFilePath) throws IOException {
-        List<Agent> agents = new ArrayList<Agent>();
-        Map<Integer, Node> nodes = new HashMap<Integer, Node>();
-        Map<String, Edge> edges = new HashMap<String, Edge>();
+        List<Agent> agents = new ArrayList<>();
+        Map<Integer, Node> nodes = new HashMap<>();
+        Map<String, Edge> edges = new HashMap<>();
 
         String jsonReader = new String(Files.readAllBytes(worldFilePath));
         JSONObject object = new JSONObject(jsonReader);
@@ -66,6 +71,10 @@ public class Simulation {
             int nodeID = jPort.getInt("node_id");
             int capacity = jPort.getInt("capacity");
             int load = jPort.getInt("load");
+
+            //TODO double check whether default values are needed or attributes are guaranteed to be in JSON object
+            int portSize = jPort.has("portSize") ? jPort.getInt("portSize") : 100 ;
+            int cargoMoveSpeed = jPort.has("cargoMoveSpeed") ? jPort.getInt("cargoMoveSpeed") : 100;
 
             // TODO port variants
             LandPort p = new LandPort(name, nodes.get(nodeID), capacity, load);
