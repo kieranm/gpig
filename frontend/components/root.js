@@ -30,12 +30,11 @@ export default class Root extends Component {
 
     freightShip(ship) {
         // Update position of freight ship agent or move it on the map
-        var self = this;
         var new_ship;
         var found = false;
 
-        for (var j = 0; j < self.state.ships.length; j++) {
-            var target_ship = self.state.ships[j];
+        for (var j = 0; j < this.state.ships.length; j++) {
+            var target_ship = this.state.ships[j];
 
             if(ship.id == target_ship.id) {
                 found = true;
@@ -66,7 +65,6 @@ export default class Root extends Component {
 
     coastalPort(port) {
         // Add coastal port or change its load
-        var self = this;
         var new_port;
         var found = false;
 
@@ -77,8 +75,8 @@ export default class Root extends Component {
         var latitude = port.coordinates.latitude;
         var longitude = port.coordinates.longitude;
 
-        for (var j = 0; j < self.state.coastal_ports.length; j++) {
-            var target_port = self.state.coastal_ports[j];
+        for (var j = 0; j < this.state.coastal_ports.length; j++) {
+            var target_port = this.state.coastal_ports[j];
             if (port.id == target_port.id) {
                 found = true;
 
@@ -123,7 +121,6 @@ export default class Root extends Component {
     processAgents(d) {
         // Parse the update from the backend
 
-        var self = this;
         var ships = [];
         var coastal_ports = [];
 
@@ -131,13 +128,13 @@ export default class Root extends Component {
             var agent = d.agents[i];
 
             if (agent.type === "FREIGHT_SHIP") {
-                ships.push(self.freightShip(agent));
+                ships.push(this.freightShip(agent));
             } else if (agent.type === "LAND_PORT") {
-                coastal_ports.push(self.coastalPort(agent));
+                coastal_ports.push(this.coastalPort(agent));
             }
         }
 
-        self.setState({
+        this.setState({
             ships: ships,
             coastal_ports: coastal_ports
         });
@@ -145,11 +142,7 @@ export default class Root extends Component {
     }
 
     componentDidMount() {
-        var self = this;
-        this.connection.onmessage = function(e) {
-            var d = JSON.parse(e.data);
-            self.processAgents(d);
-        };
+        this.connection.onmessage = this._onMessage.bind(this);
 
         window.addEventListener('resize', this._resize.bind(this));
         this._resize();
@@ -160,6 +153,14 @@ export default class Root extends Component {
     componentWillUnmount() {
         if (this._animation) {
             window.cancelAnimationFrame(this._animationFrame);
+        }
+    }
+
+    _onMessage(e) {
+        var d = JSON.parse(e.data);
+
+        if(d.message_type == "update") {
+            this.processAgents(d.message_body);
         }
     }
 
