@@ -15,6 +15,8 @@ export default class Root extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            message_type: "",
+            message_body: null,
             viewport: {
                 ...DeckGLOverlay.defaultViewport,
                 width: 500,
@@ -31,7 +33,8 @@ export default class Root extends Component {
     componentDidMount() {
         var self = this;
         this.connection.onmessage = function(e) {
-            var d = JSON.parse(e.data);
+            var message = JSON.parse(e.data);
+            var d = message.message_body;
             var new_agents = [];
 
             for (var i = 0; i < d.agents.length; i++) {
