@@ -1,5 +1,6 @@
 package domain;
 
+import domain.world.ShippingNetwork;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import utils.JSONable;
@@ -15,9 +16,11 @@ public class World implements JSONable {
 
 
     private List<Agent> agents;
+    private ShippingNetwork shippingNetwork;
 
-    public World(List<Agent> agents) {
+    public World(List<Agent> agents, ShippingNetwork sn) {
         this.agents = agents;
+        this.shippingNetwork = sn;
     }
 
     public void tick() {

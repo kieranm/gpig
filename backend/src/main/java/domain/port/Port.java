@@ -3,25 +3,28 @@ package domain.port;
 import domain.Agent;
 import domain.util.AgentType;
 import domain.util.Carrier;
-import domain.util.Coordinates;
+import domain.world.Node;
 
 /**
  * @author Oliver Lea
  */
-abstract class Port extends Agent implements Carrier {
+public abstract class Port extends Agent implements Carrier {
 
     private String name;
     private int capacity;
     private int load;
+    private Node node;
 
     public Port(AgentType agentType, String name,
-                Coordinates coord, int capacity, int load) {
-        super(agentType, coord);
+                Node node, int capacity, int load) {
+        super(agentType, node.getCoordinates());
+        this.node = node;
         this.name = name;
         this.capacity = capacity;
         this.load = load;
     }
 
+    public Node getNode() { return node; }
     public String getName() {
         return name;
     }

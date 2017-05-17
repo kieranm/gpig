@@ -38,6 +38,10 @@ export default class Root extends Component {
                 var agent = d.agents[i];
                 var found = false;
 
+                if (agent.type != "FREIGHT_SHIP") {
+                    continue;
+                }
+
                 for (var j = 0; j < self.state.agents.length; j++) {
                     var target_agent = self.state.agents[j];
 
@@ -47,7 +51,7 @@ export default class Root extends Component {
                         var positions = target_agent.positions.slice();
 
                         positions.unshift(agent.coordinates);
-                        if (positions.length > 5) { // Hardcoding this because I'm lazy and I can't be asked
+                        if (positions.length > 30) { // Hardcoding this because I'm lazy and I can't be asked
                             positions.pop();
                         }
 
@@ -81,14 +85,6 @@ export default class Root extends Component {
         if (this._animation) {
             window.cancelAnimationFrame(this._animationFrame);
         }
-    }
-
-    _initialize(data) {
-        this.setState({});
-    }
-
-    _updatePositions(message) {
-        this.setState({});
     }
 
     _animate() {
