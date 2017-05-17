@@ -16,8 +16,8 @@ export default class DeckGLOverlay extends Component {
 
   static get defaultViewport() {
     return {
-      longitude:  -10.87085,
-      latitude: 46.0049,
+      longitude:  -3.87085,
+      latitude: 53.0049,
       zoom: 6,
       maxZoom: 16,
       pitch: 45,
@@ -31,7 +31,7 @@ export default class DeckGLOverlay extends Component {
   }
 
   render() {
-    const {viewport, agents, time} = this.props;
+    const {viewport, agents} = this.props;
 
     if (!agents) {
       return null;
@@ -41,8 +41,7 @@ export default class DeckGLOverlay extends Component {
       new ShipsLayer({
         id: 'ships',
         data: agents,
-        getColor: d => d.vendor === 0 ? [253, 128, 93] : [23, 184, 190],
-        opacity: 0.4
+        opacity: 1
       })
     ];
 
