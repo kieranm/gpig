@@ -5,6 +5,7 @@ import domain.util.AgentType;
 import domain.util.Carrier;
 import domain.util.Coordinates;
 import domain.world.Node;
+import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -107,5 +108,12 @@ public abstract class Ship extends Agent implements Carrier {
         this.route = route;
         this.next = route.get(1);
         calculatePositionUpdateVector();
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        return super.toJSON()
+                .put("load", this.load)
+                .put("capacity", this.capacity);
     }
 }
