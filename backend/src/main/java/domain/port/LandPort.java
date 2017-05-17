@@ -1,5 +1,6 @@
 package domain.port;
 
+import control.Dispatcher;
 import domain.World;
 import domain.util.AgentType;
 import domain.world.Node;
@@ -8,12 +9,15 @@ import domain.world.Node;
  */
 public class LandPort extends Port {
 
-    public LandPort(String name, Node node, int capacity, int load) {
-        super(AgentType.LAND_PORT, name, node, capacity, load);
+    public LandPort(String name, Node node, int capacity, int load,  int portSize, int cargoMoveSpeed, Dispatcher dispatcher) {
+        super(AgentType.LAND_PORT, name, node, capacity, load, portSize, cargoMoveSpeed, dispatcher);
     }
 
     @Override
     public void tick(World world) {
-        // TODO
+        int simulationSpeed = 1; // TODO decide how we process this value
+
+        this.updateDocks(simulationSpeed);
+        // TODO, extend potentially
     }
 }
