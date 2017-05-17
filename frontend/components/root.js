@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import MapGL from 'react-map-gl';
-import DeckGLOverlay from '../deckgl-overlay.js';
-
-import {json as requestJson} from 'd3-request';
+import DeckGLOverlay from './deckgl-overlay';
 
 import Branding from './branding'
 import ControlPanel from './control_panel'
 
 // Set your mapbox token here
-const MAPBOX_TOKEN = "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
+const MAPBOX_TOKEN =
+    "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
 
 export default class Root extends Component {
 
@@ -20,7 +19,8 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
-            agents: [],
+            ships: [],
+            coastal_ports: [],
             time: 0
         };
 
@@ -28,51 +28,127 @@ export default class Root extends Component {
 
     }
 
+    freightShip(ship) {
+        // Update position of freight ship agent or move it on the map
+        var self = this;
+        var new_ship;
+        var found = false;
+
+        for (var j = 0; j < self.state.ships.length; j++) {
+            var target_ship = self.state.ships[j];
+
+            if(ship.id == target_ship.id) {
+                found = true;
+
+                var positions = target_ship.positions.slice();
+
+                positions.unshift(ship.coordinates);
+                if (positions.length > 30) {
+                    positions.pop();
+                }
+
+                new_ship = {
+                    id: ship.id,
+                    positions: positions
+                };
+            }
+        }
+
+        if (found == false) {
+            new_ship = {
+                id: ship.id,
+                positions: [ship.coordinates]
+            };
+        }
+
+        return new_ship;
+    }
+
+    coastalPort(port) {
+        // Add coastal port or change its load
+        var self = this;
+        var new_port;
+        var found = false;
+
+        const bar_width = 0.001;
+        const bar_height = 0.001;
+        const initial_port_height = 500;
+
+        var latitude = port.coordinates.latitude;
+        var longitude = port.coordinates.longitude;
+
+        for (var j = 0; j < self.state.coastal_ports.length; j++) {
+            var target_port = self.state.coastal_ports[j];
+            if (port.id == target_port.id) {
+                found = true;
+
+                var height;
+                if(target_port.height < 1000) {
+                    height = target_port.height + 10;
+                } else {
+                    height = 0;
+                }
+
+                new_port = {
+                    id: port.id,
+                    height: height,
+                    polygon: [
+                        [longitude - bar_width, latitude + bar_height],
+                        [longitude + bar_width, latitude + bar_height],
+                        [longitude + bar_width, latitude - bar_height],
+                        [longitude - bar_width, latitude - bar_height],
+                        [longitude - bar_width, latitude + bar_height],
+                    ]
+                };
+            }
+        }
+
+        if(!found) {
+            new_port = {
+                id: port.id,
+                height: initial_port_height,
+                polygon: [
+                    [longitude - bar_width, latitude + bar_height],
+                    [longitude + bar_width, latitude + bar_height],
+                    [longitude + bar_width, latitude - bar_height],
+                    [longitude - bar_width, latitude - bar_height],
+                    [longitude - bar_width, latitude + bar_height],
+                ]
+            };
+        }
+
+        return new_port;
+    }
+
+    processAgents(d) {
+        // Parse the update from the backend
+
+        var self = this;
+        var ships = [];
+        var coastal_ports = [];
+
+        for (var i = 0; i < d.agents.length; i++) {
+            var agent = d.agents[i];
+
+            if (agent.type === "FREIGHT_SHIP") {
+                ships.push(self.freightShip(agent));
+            } else if (agent.type === "LAND_PORT") {
+                coastal_ports.push(self.coastalPort(agent));
+            }
+        }
+
+        self.setState({
+            ships: ships,
+            coastal_ports: coastal_ports
+        });
+
+    }
+
     componentDidMount() {
         var self = this;
         this.connection.onmessage = function(e) {
             var d = JSON.parse(e.data);
-            var new_agents = [];
-
-            for (var i = 0; i < d.agents.length; i++) {
-                var agent = d.agents[i];
-                var found = false;
-
-                if (agent.type != "FREIGHT_SHIP") {
-                    continue;
-                }
-
-                for (var j = 0; j < self.state.agents.length; j++) {
-                    var target_agent = self.state.agents[j];
-
-                    if(agent.id == target_agent.id) {
-                        found = true;
-
-                        var positions = target_agent.positions.slice();
-
-                        positions.unshift(agent.coordinates);
-                        if (positions.length > 30) { // Hardcoding this because I'm lazy and I can't be asked
-                            positions.pop();
-                        }
-
-                        new_agents.push({
-                            id: agent.id,
-                            positions: positions
-                        });
-                    }
-                }
-
-                if (found == false) {
-                    new_agents.push({
-                        id: agent.id,
-                        positions: [agent.coordinates]
-                    });
-                }
-            }
-
-            self.setState({
-                agents: new_agents
-            });
+            self.processAgents(d);
         };
 
         window.addEventListener('resize', this._resize.bind(this));
@@ -109,7 +185,7 @@ export default class Root extends Component {
     }
 
     render() {
-        const {viewport, agents, time} = this.state;
+        const {viewport, ships, coastal_ports, time} = this.state;
 
         return (
             <div>
@@ -122,7 +198,8 @@ export default class Root extends Component {
                     onChangeViewport={this._onChangeViewport.bind(this)}
                     mapboxApiAccessToken={MAPBOX_TOKEN}>
                     <DeckGLOverlay viewport={viewport}
-                                   agents={agents}
+                                   ships={ships}
+                                   coastal_ports={coastal_ports}
                                    time={time}
                     />
                 </MapGL>
