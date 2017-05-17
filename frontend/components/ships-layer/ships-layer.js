@@ -110,7 +110,7 @@ export default class ShipsLayer extends Layer {
       for (let j = 0; j < agent_positions.length; j++) {
           positions[index++] = agent_positions[j].longitude;
           positions[index++] = agent_positions[j].latitude;
-          positions[index++] = 1/(1+Math.pow(1.5,-5+0.5*j)); // This dictates the opacity of the vertex
+          positions[index++] = 1/(1+Math.pow(20,-1+0.5*j)); // This dictates the opacity of the vertex
       }
     }
 
