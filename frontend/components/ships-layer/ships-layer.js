@@ -5,10 +5,6 @@ import {Model, Program, Geometry} from 'luma.gl';
 import shipsVertexShader from './ships-layer-vertex.glsl';
 import shipsFragmentShader from './ships-layer-fragment.glsl';
 
-const defaultProps = {
-  getColor: d => d.color
-};
-
 export default class ShipsLayer extends Layer {
 
   initializeState() {
@@ -49,6 +45,7 @@ export default class ShipsLayer extends Layer {
         gl.enable(gl.BLEND);
         gl.enable(gl.POLYGON_OFFSET_FILL);
         gl.polygonOffset(2.0, 1.0);
+        gl.lineWidth(3);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.blendEquation(gl.FUNC_ADD);
       },
@@ -121,13 +118,15 @@ export default class ShipsLayer extends Layer {
   }
 
   calculateColors(attribute) {
-    const {data, getColor} = this.props;
+    const {data} = this.props;
     const {pathLengths, vertexCount} = this.state;
     const colors = new Float32Array(vertexCount * 3);
 
+    //[253, 128, 93] :
+
     let index = 0;
     for (let i = 0; i < data.length; i++) {
-      const color = getColor(data[i]);
+      const color = [28, 246, 255];
       const l = pathLengths[i];
       for (let j = 0; j < l; j++) {
         colors[index++] = color[0];
@@ -141,4 +140,3 @@ export default class ShipsLayer extends Layer {
 }
 
 ShipsLayer.layerName = 'ShipsLayer';
-ShipsLayer.defaultProps = defaultProps;
