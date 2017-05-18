@@ -18,7 +18,7 @@ public abstract class Port extends Agent implements Carrier {
     private int load;
     private Node node;
     private Map<Port, List<Route>> routes;
-    private Map<Port, Double> probababilities;
+    private Map<Port, Double> probabilities;
     private int cargoMoveSpeed; // how many cargo moves happen per tick with speed x1
     private int dockCapacity;
 
@@ -32,7 +32,7 @@ public abstract class Port extends Agent implements Carrier {
 
         this.node = node;
         this.routes = routes;
-        this.probababilities = probabilities;
+        this.probabilities = probabilities;
         this.name = name;
         this.capacity = capacity;
         this.load = load;
@@ -80,9 +80,13 @@ public abstract class Port extends Agent implements Carrier {
 
     public void DockShip(Ship ship){
         if(this.waitingShips.size() == 0 && this.dockLoad + ship.getCapacity() <= this.dockCapacity)
+        {
+            ship.setState(Ship.ShipState.UNLOADING_CARGO);
             this.dockedShips.add(ship);
-        else
-            this.waitingShips.add(ship);
+        }
+
+        ship.setState(Ship.ShipState.WAITING);
+        this.waitingShips.add(ship);
     }
 
     public void updateDocks(int simulationSpeed){
@@ -91,55 +95,65 @@ public abstract class Port extends Agent implements Carrier {
         this.unloadDockedShips(this.cargoMoveSpeed * simulationSpeed);
         this.loadDockedShips(this.cargoMoveSpeed * simulationSpeed);
 
-        this.assignNewOrdersForDockedShips();
         this.releaseDockedShips();
     }
 
     private void updateWaitingShips(){
-        if(this.dockLoad + this.waitingShips.peek().getCapacity() <= this.dockCapacity)
-            this.dockedShips.add(this.waitingShips.remove());
-    }
-
-    private void unloadDockedShips(int unloadSpeed){
-        // Unloads all docked ships
-
-
-    }
-
-    private void loadDockedShips(int loadSpeed){
-
-    }
-
-    private void assignNewOrdersForDockedShips(){
-        Random random = new Random();
-        for(Ship ship: this.dockedShips)
-        {
-            double probSum = 0;
-            double randomDouble = random.nextDouble();
-
-            for (Map.Entry<Port, Double> entry : this.probababilities.entrySet()) {
-                probSum += entry.getValue();
-
-                if(probSum >= randomDouble) {
-                    List<Route> routes = this.routes.get(entry.getKey());
-                    int randomIndex = random.nextInt(routes.size());
-                    //ship.setRoute(routes.get(randomIndex)); TODO add route properly
-                    ship.SetDestinationPort(entry.getKey());
-                    break;
-                }
-            }
+        while(this.dockLoad + this.waitingShips.peek().getCapacity() <= this.dockCapacity) {
+            Ship ship = this.waitingShips.remove();
+            ship.setState(Ship.ShipState.UNLOADING_CARGO);
+            this.dockedShips.add(ship);
         }
     }
 
-    private void releaseDockedShips()
-    {
-        // Iterating from the end of the list to avoid indexOutOfRange
-       for(int i = this.dockedShips.size() - 1; i > 0; i--)
-       {
-           //TODO check if ship is ready to depart
+    private void unloadDockedShips(int unloadSpeed){
+        for(Ship ship : this.dockedShips) {
+            if(ship.getState() != Ship.ShipState.UNLOADING_CARGO) continue;
 
-           Ship ship = this.dockedShips.remove(i);
-           ship.startRoute();
-       }
+            if(ship.isEmpty()) ship.setState(Ship.ShipState.LOADING_CARGO);
+        }
+    }
+
+    private void loadDockedShips(int loadSpeed) {
+        for(Ship ship : this.dockedShips) {
+            if(ship.getState() != Ship.ShipState.LOADING_CARGO) continue;
+
+        }
+
+    }
+
+    private Ship assignRandomDestination(Ship ship){
+        Random random = new Random();
+
+        double probSum = 0;
+        double randomDouble = random.nextDouble();
+
+        for (Map.Entry<Port, Double> entry : this.probabilities.entrySet()) {
+            probSum += entry.getValue();
+
+            if(probSum >= randomDouble) {
+                List<Route> routes = this.routes.get(entry.getKey());
+                int randomIndex = random.nextInt(routes.size());
+                // TODO set route properly
+                //ship.setRoute(routes.get(randomIndex));
+                ship.SetDestinationPort(entry.getKey());
+                break;
+            }
+        }
+
+        return ship;
+    }
+
+    private void releaseDockedShips(){
+        // Iterating from the end of the list to avoid indexOutOfRange
+        for(int i = this.dockedShips.size() - 1; i > 0; i--) {
+            Ship ship = this.dockedShips.get(i);
+            if(ship.getState() != Ship.ShipState.LOADING_CARGO && ship.isFull()) continue;
+
+            this.dockedShips.remove(i);
+
+            ship = this.assignRandomDestination(ship);
+            ship.startRoute();
+        }
     }
 }

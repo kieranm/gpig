@@ -25,6 +25,17 @@ public abstract class Ship extends Agent implements Carrier {
     private Port detinationPort;
     private Coordinates positionUpdateVector;
 
+    private ShipState state = ShipState.IDLE;
+
+    public enum ShipState
+    {
+        IDLE,
+        WAITING,
+        UNLOADING_CARGO,
+        LOADING_CARGO,
+        TRAVELING,
+    }
+
     public Ship(AgentType agentType, Coordinates initialLoc, int capacity, int load) {
         super(agentType, initialLoc);
         this.capacity = capacity;
@@ -33,9 +44,10 @@ public abstract class Ship extends Agent implements Carrier {
 
     public void SetDestinationPort(Port port){ this.detinationPort = port; }
     public void setRoute(List<Node> route) { this.route = route; }
-    public void setNext(Node next) {
-        this.next = next;
-    }
+    public void setNext(Node next) { this.next = next; }
+    public void setState(ShipState state){ this.state = state; }
+
+    public ShipState getState() { return this.state; }
 
     @Override
     public int getCapacity() {
@@ -60,7 +72,6 @@ public abstract class Ship extends Agent implements Carrier {
             } else {
                 nextRouteStop();
             }
-
             // calculate new vector toward next waypoint
             calculatePositionUpdateVector();
         }
@@ -99,6 +110,7 @@ public abstract class Ship extends Agent implements Carrier {
 
     public void startRoute()
     {
+        this.state = ShipState.TRAVELING;
         this.next = route.get(1);
         calculatePositionUpdateVector();
     }
