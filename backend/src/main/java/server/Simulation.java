@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-/**
- * @author Oliver Lea
- */
 public class Simulation {
 
     private static final long PERIOD = 200L;
@@ -43,7 +46,6 @@ public class Simulation {
     private Session session;
 
     private World worldFromMapbox(String mapboxDatasetId) throws IOException {
-
         // Fetch JSON data from Mapbox
         String mapboxAPIURL = String.format("https://api.mapbox.com/datasets/v1/%s/%s/features?access_token=%s",
                 MAPBOX_USERNAME, mapboxDatasetId, MAPBOX_ACCESS_TOKEN);
@@ -180,8 +182,6 @@ public class Simulation {
 
             portNames.add(offshorePorts.get(i).getJSONObject("properties").getString("name"));
         }
-
-        System.out.println(portNames);
 
         // Now process the shipping lanes
         for (Object feature : features) {

@@ -3,6 +3,7 @@ package domain.port;
 import domain.World;
 import domain.util.AgentType;
 import domain.world.Node;
+
 /**
  * @author Oliver Lea
  */
@@ -14,6 +15,8 @@ public class CoastalPort extends Port {
 
     @Override
     public void tick(World world) {
-        // TODO
+        //TODO fix
+        int simulationSpeed = 1;
+        this.updateDocks(simulationSpeed);
     }
 }

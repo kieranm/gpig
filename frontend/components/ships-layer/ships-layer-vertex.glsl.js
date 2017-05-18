@@ -22,19 +22,19 @@ export default `\
 #define SHADER_NAME ships-layer-vertex-shader
 
 attribute vec3 positions;
-attribute vec3 colors;
+attribute float utilizationRates;
 
 uniform float opacity;
 
-varying vec4 vColor;
-varying float vAlpha;
+varying float vDistance;
+varying float vUtilization;
 
 void main(void) {
   vec2 p = preproject(positions.xy);
 
   gl_Position = project(vec4(p, 1., 1.));
 
-  vColor = vec4(colors / 255.0, opacity);
-  vAlpha = positions.z;
+  vUtilization = utilizationRates;
+  vDistance = positions.z;
 }
 `;

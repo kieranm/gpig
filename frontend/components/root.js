@@ -30,14 +30,12 @@ export default class Root extends Component {
 
     freightShip(ship) {
         // Update position of freight ship agent or move it on the map
-        var new_ship;
-        var found = false;
+        var new_ship = null;
 
         for (var j = 0; j < this.state.ships.length; j++) {
             var target_ship = this.state.ships[j];
 
             if(ship.id == target_ship.id) {
-                found = true;
 
                 var positions = target_ship.positions.slice();
 
@@ -48,15 +46,18 @@ export default class Root extends Component {
 
                 new_ship = {
                     id: ship.id,
-                    positions: positions
+                    positions: positions,
+                    utilization: ship.load/ship.capacity
                 };
             }
         }
 
-        if (found == false) {
+        if (new_ship == null) {
             new_ship = {
                 id: ship.id,
-                positions: [ship.coordinates]
+                positions: [ship.coordinates],
+                utilization: ship.load/ship.capacity
+
             };
         }
 
@@ -194,7 +195,7 @@ export default class Root extends Component {
                 <ControlPanel/>
                 <MapGL
                     {...viewport}
-                    mapStyle="mapbox://styles/mapbox/dark-v9"
+                    mapStyle="mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9"
                     perspectiveEnabled={true}
                     onChangeViewport={this._onChangeViewport.bind(this)}
                     mapboxApiAccessToken={MAPBOX_TOKEN}>

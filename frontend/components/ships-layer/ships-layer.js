@@ -15,7 +15,7 @@ export default class ShipsLayer extends Layer {
     this.state.attributeManager.add({
       indices: {size: 1, update: this.calculateIndices, isIndexed: true},
       positions: {size: 3, update: this.calculatePositions},
-      colors: {size: 3, update: this.calculateColors}
+      utilizationRates: {size: 1, update: this.calculateUtilization}
     });
 
     this.context.gl.getExtension('OES_element_index_uint');
@@ -110,31 +110,26 @@ export default class ShipsLayer extends Layer {
       for (let j = 0; j < agent_positions.length; j++) {
           positions[index++] = agent_positions[j].longitude;
           positions[index++] = agent_positions[j].latitude;
-          positions[index++] = 1/(1+Math.pow(20,-1+0.5*j)); // This dictates the opacity of the vertex
+          positions[index++] = j; // This dictates the opacity of the vertex
       }
     }
 
     attribute.value = positions;
   }
 
-  calculateColors(attribute) {
+  calculateUtilization(attribute) {
     const {data} = this.props;
     const {pathLengths, vertexCount} = this.state;
-    const colors = new Float32Array(vertexCount * 3);
-
-    //[253, 128, 93] :
+    const utilization = new Float32Array(vertexCount * 1);
 
     let index = 0;
     for (let i = 0; i < data.length; i++) {
-      const color = [28, 246, 255];
       const l = pathLengths[i];
       for (let j = 0; j < l; j++) {
-        colors[index++] = color[0];
-        colors[index++] = color[1];
-        colors[index++] = color[2];
+        utilization[index++] = data[i].utilization;
       }
     }
-    attribute.value = colors;
+    attribute.value = utilization;
   }
 
 }

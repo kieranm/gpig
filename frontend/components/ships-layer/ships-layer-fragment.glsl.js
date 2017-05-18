@@ -25,10 +25,14 @@ export default `\
 precision highp float;
 #endif
 
-varying vec4 vColor;
-varying float vAlpha;
+varying float vDistance;
+varying float vUtilization;
 
 void main(void) {
-    gl_FragColor = vec4(vColor.rgb, vColor.a * vAlpha);
+    vec3 emptyColor = vec3(30.0, 176.0, 0.0);
+    vec3 fullColor = vec3(253.0, 98.0, 0.0);
+
+    vec3 finalColor = (emptyColor * (1.0 - vUtilization) + fullColor * vUtilization) / 255.0;
+    gl_FragColor = vec4(finalColor, 1.0/(1.0+pow(20.0,-1.0+0.5*vDistance)));
 }
 `;

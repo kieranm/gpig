@@ -18,7 +18,7 @@ public class Node {
         return coordinates;
     }
 
-    public Integer getNodeID() {
+    public Integer getId() {
         return nodeID;
     }
 

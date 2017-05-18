@@ -28,7 +28,8 @@ export default class DeckGLOverlay extends Component {
             new ShipsLayer({
                 id: 'ships',
                 data: ships,
-                opacity: 1
+                opacity: 1,
+
             }),
 
             new PolygonLayer({
