@@ -78,6 +78,7 @@ public class Simulation {
 
             // TODO port variants
             LandPort p = new LandPort(name, nodes.get(nodeID), capacity, load);
+
             agents.add(p);
         }
 
