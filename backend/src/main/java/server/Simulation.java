@@ -13,14 +13,10 @@ import domain.world.Node;
 import domain.world.Route;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utils.IdGenerator;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,111 +30,53 @@ public class Simulation {
     private static final long INITIAL_DELAY = 1000L;
 
     // Mapbox Credentials
-    public static final String MAPBOX_USERNAME = "kieranmch";
-    public static final String MAPBOX_ACCESS_TOKEN =
-            "pk.eyJ1Ijoia2llcmFubWNoIiwiYSI6ImNqMnRrNWoycjAwMXgyeHBkdDR5NTVoOWIifQ.CcpzELblchnu7wV_waTkCw";
-    public static final String MAPBOX_DATASET_ID_LEGACY = "cj2thnez5003q2qrzdczjgxil";
+    private static final String MAPBOX_DATASET_ID_LEGACY = "cj2thnez5003q2qrzdczjgxil";
 
     private Timer timer;
     private World world;
-    private World legacyWorld;
-    private World oceanXWorld;
     private Session session;
 
-    private World worldFromMapbox(String mapboxDatasetId) throws IOException {
-        // Fetch JSON data from Mapbox
-        String mapboxAPIURL = String.format("https://api.mapbox.com/datasets/v1/%s/%s/features?access_token=%s",
-                MAPBOX_USERNAME, mapboxDatasetId, MAPBOX_ACCESS_TOKEN);
-        InputStream response = new URL(mapboxAPIURL).openStream();
+    public Simulation(Session session) {
+        this.session = session;
 
+        try {
+            // TODO generate both worlds here (different data set ID)
+            world = generateWorld(MAPBOX_DATASET_ID_LEGACY);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        TimerTask tt = new TimerTask() {
+            @Override
+            public void run() {
+                Simulation.this.tick();
+                Simulation.this.sendToRemote();
+            }
+        };
+        this.timer = new Timer();
+        this.timer.schedule(tt, INITIAL_DELAY, PERIOD);
+    }
+
+    private World generateWorld(String mapboxDatasetId) throws IOException {
+
+        // Create a GeoJsonSpec
+        GeoJsonSpec spec = new GeoJsonSpec(mapboxDatasetId);
+
+        // Variables used to represent agents
+        ArrayList<String> portNames = new ArrayList<>();
+        List<Port> portAgents = new ArrayList<>();
         List<Agent> agents = new ArrayList<>();
 
         // Variables used to represent features
-        JSONArray features;
-        List<JSONObject> coastalPorts = new ArrayList<>();
-        List<JSONObject> offshorePorts = new ArrayList<>();
-        List<String> portNames = new ArrayList<>();
-        List<JSONObject> lanes = new ArrayList<>();
+        List<JSONObject> coastalPorts = spec.getCoastalPorts();
+        List<JSONObject> offshorePorts = spec.getOffshorePorts();
+        List<JSONObject> lanes = spec.getLanes();
 
-        // Agents for the simulation
-        List<Port> portAgents = new ArrayList<>();
+        System.out.println(coastalPorts);
+        System.out.println(offshorePorts);
+        System.out.println(lanes);
 
-        try (Scanner scanner = new Scanner(response)) {
-            String responseBody = scanner.useDelimiter("\\A").next();
-            features = new JSONObject(responseBody).getJSONArray("features");
-        }
-
-        for (Object feature : features) {
-            JSONObject jFeature = (JSONObject) feature;
-            String featureType = jFeature.getJSONObject("geometry").getString("type");
-
-            // Process all the ports to begin with
-            if (Objects.equals(featureType, "Point")) {
-
-                String portType;
-                String portName;
-                Integer capacity;
-
-                // Make sure the port name is specified
-                try {
-                    portName = jFeature.getJSONObject("properties").getString("name");
-                } catch (JSONException e) {
-                    throw new JSONException("The 'name' property was missing for Port " +
-                            jFeature.getString("id"));
-                }
-
-                if(Objects.equals(portName, "")) {
-                    throw new JSONException("The 'name' property was empty for Port " +
-                            jFeature.getString("id"));
-                }
-
-                // Check port name is not duplicated
-                if(portNames.stream().anyMatch(str -> str.trim().equals(portName))) {
-                    throw new JSONException("The port name " + portName + " is used for two or more ports.");
-                }
-                portNames.add(portName);
-
-                // Make sure the port type is specified
-                try {
-                    portType = jFeature.getJSONObject("properties").getString("type");
-                } catch (JSONException e) {
-                    throw new JSONException("The 'type' property was missing for Port -> " +
-                            portName);
-                }
-
-                // Make sure the container capacity is specified
-                try {
-                    capacity = jFeature.getJSONObject("properties").getInt("capacity");
-                } catch (JSONException e) {
-                   // throw new JSONException("The 'capacity' property was missing for Port -> " +
-                    //        portName);
-                    capacity = 0;
-                }
-
-                // Add the port to the correct list
-                if(Objects.equals(portType, "coastal_port")) {
-                    coastalPorts.add(jFeature);
-                    System.out.println("Adding Coastal Port --" +
-                            " Name: " + portName +
-                            ", Container Capacity: " + capacity
-                    );
-                } else if(Objects.equals(portType, "offshore_port")) {
-                    offshorePorts.add(jFeature);
-                    System.out.println("Adding Offshore Port --" +
-                            " Name: " + portName +
-                            ", Container Capacity: " + capacity
-                    );
-                } else {
-                    throw new JSONException("The 'type' property was invalid for Port -> " +
-                            portName);
-                }
-
-            }
-
-        }
-
-        // Reset portNames so they can be put in the correct order
-        portNames = new ArrayList<>();
         // TODO put in a function
         // Add the Coastal Ports to the simulation
         for(Integer i=0; i < coastalPorts.size(); i++) {
@@ -183,63 +121,7 @@ public class Simulation {
             portNames.add(offshorePorts.get(i).getJSONObject("properties").getString("name"));
         }
 
-        // Now process the shipping lanes
-        for (Object feature : features) {
-            JSONObject jFeature = (JSONObject) feature;
-            String featureType = jFeature.getJSONObject("geometry").getString("type");
 
-            Integer laneWeight;
-            String start;
-            String end;
-
-            // Process all the ports to begin with
-            if (Objects.equals(featureType, "LineString")) {
-
-                // Make sure the weight is specified
-                try {
-                    laneWeight = jFeature.getJSONObject("properties").getInt("weight");
-                } catch (JSONException e) {
-                    throw new JSONException("The 'weight' property was missing for Lane -> " +
-                            jFeature.getString("id"));
-                }
-
-                // Make sure the start is specified
-                try {
-                    start = jFeature.getJSONObject("properties").getString("start");
-                } catch (JSONException e) {
-                    throw new JSONException("The 'start' property was missing for Lane -> " +
-                            jFeature.getString("id"));
-                }
-
-                // Make sure the start is a valid port
-                if(portNames.stream().noneMatch(str -> str.trim().equals(start))) {
-                    throw new JSONException("The port name " + start + " does not exist.");
-                }
-
-                // Make sure the end is specified
-                try {
-                    end = jFeature.getJSONObject("properties").getString("end");
-                } catch (JSONException e) {
-                    throw new JSONException("The 'end' property was missing for Lane -> " +
-                            jFeature.getString("id"));
-                }
-
-                // Make sure the end is a valid port
-                if(portNames.stream().noneMatch(str -> str.trim().equals(end))) {
-                    throw new JSONException("The port name " + end + " does not exist.");
-                }
-
-                // Add the lane to the list
-                lanes.add(jFeature);
-                // the lane has been added to the list
-
-
-
-            }
-
-        }
-
-        System.out.println(lanes);
 
         Map<String, Port> portMap = new HashMap<>();
         for (int i = 0; i < portNames.size(); i++) {
@@ -281,28 +163,7 @@ public class Simulation {
         // initalise worlds
         World w = new World(agents);
         return w;
-    }
 
-    public Simulation(Session session) {
-        this.session = session;
-
-        try {
-            // TODO generate both worlds here (different data set ID)
-            world = worldFromMapbox(MAPBOX_DATASET_ID_LEGACY);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        TimerTask tt = new TimerTask() {
-            @Override
-            public void run() {
-                Simulation.this.tick();
-                Simulation.this.sendToRemote();
-            }
-        };
-        this.timer = new Timer();
-        this.timer.schedule(tt, INITIAL_DELAY, PERIOD);
     }
 
     public void end() {
