@@ -2,7 +2,6 @@ package domain.port;
 
 import java.util.*;
 
-import control.Dispatcher;
 import domain.Agent;
 import domain.vessel.Ship;
 import domain.util.AgentType;
@@ -24,17 +23,15 @@ public abstract class Port extends Agent implements Carrier {
     private Dock[] docks;
     private Queue<Ship> waitingShips = new LinkedList<>();
 
-    private Dispatcher dispatcher;
 
-    public Port(AgentType agentType, String name,
-                Node node, int capacity, int load, int portSize, int cargoMoveSpeed, Dispatcher dispatcher) {
+    public Port(AgentType agentType, String name, Node node, int capacity, int load, int portSize, int cargoMoveSpeed)
+    {
         super(agentType, node.getCoordinates());
         this.node = node;
         this.name = name;
         this.capacity = capacity;
         this.load = load;
         this.cargoMoveSpeed = cargoMoveSpeed;
-        this.dispatcher = dispatcher;
 
         this.docks = new Dock[portSize];
         for(int i = 0; i < portSize; i++) this.docks[i] = new Dock();
@@ -154,7 +151,6 @@ public abstract class Port extends Agent implements Carrier {
         {
             if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_NEW_ORDERS) continue;
 
-            List<Node> newRoute = this.dispatcher.generateRoute(this.node);
             // TODO assign route to ship
             dock.cargoToLoad = dock.ship.getCapacity(); // TODO decide whether always fill ships to full capacity
             dock.state = Dock.DockState.LOADING_NEW_CARGO;

@@ -1,6 +1,5 @@
 package server;
 
-import control.Dispatcher;
 import domain.Agent;
 import domain.World;
 import domain.port.LandPort;
@@ -72,11 +71,10 @@ public class Simulation {
             int portSize = jPort.has("portSize") ? jPort.getInt("portSize") : 100 ;
             int cargoMoveSpeed = jPort.has("cargoMoveSpeed") ? jPort.getInt("cargoMoveSpeed") : 100;
 
-            //TODO add routes to dispatcher
-            Dispatcher dispatcher = new Dispatcher();
+            //TODO add routes
 
             // TODO port variants
-            LandPort p = new LandPort(name, nodes.get(nodeID), capacity,load, portSize, cargoMoveSpeed, dispatcher);
+            LandPort p = new LandPort(name, nodes.get(nodeID), capacity,load, portSize, cargoMoveSpeed);
             agents.add(p);
         }
 

@@ -1,6 +1,5 @@
 package domain.port;
 
-import control.Dispatcher;
 import domain.World;
 import domain.util.AgentType;
 import domain.world.Node;
@@ -10,8 +9,8 @@ import domain.world.Node;
  */
 public class SmartPort extends Port {
 
-    public SmartPort(String name,  Node node, int capacity, int load, int portSize, int cargoMoveSpeed, Dispatcher dispacher) {
-        super(AgentType.SMART_PORT, name, node, capacity, load, portSize, cargoMoveSpeed, dispacher);
+    public SmartPort(String name,  Node node, int capacity, int load, int portSize, int cargoMoveSpeed) {
+        super(AgentType.SMART_PORT, name, node, capacity, load, portSize, cargoMoveSpeed);
     }
 
     @Override
