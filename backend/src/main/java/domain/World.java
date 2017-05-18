@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class World implements JSONable {
 
+    private int multiplier = 1;
 
     private List<Agent> agents;
 
@@ -21,7 +22,7 @@ public class World implements JSONable {
     }
 
     public void tick() {
-        agents.forEach(a -> a.tick(this));
+        agents.forEach(a -> a.tick(this, multiplier));
         agents = agents.stream().filter(Agent::isAlive).collect(toList());
     }
 
@@ -36,5 +37,13 @@ public class World implements JSONable {
 
     public List<Agent> getAgents() {
         return agents;
+    }
+
+    public void setMultiplier(int multiplier) {
+        this.multiplier = multiplier;
+    }
+
+    public int getMultiplier() {
+        return multiplier;
     }
 }

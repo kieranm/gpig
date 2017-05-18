@@ -57,7 +57,7 @@ public abstract class Ship extends Agent implements Carrier {
         return load;
     }
 
-    public void followRoute() {
+    public void followRoute(int multiplier) {
 
         // check if we have reached the next waypoint
         // TODO figure out what a sensible distance is to be considered "on" the next waypoint
@@ -75,7 +75,7 @@ public abstract class Ship extends Agent implements Carrier {
         }
 
         // move toward next
-        this.setCoordinates(this.getCoordinates().add(this.positionUpdateVector));
+        this.setCoordinates(this.getCoordinates().add(this.positionUpdateVector).mul((double) multiplier));
         if (this.getCoordinates().distance(this.next.getCoordinates()) < this.positionUpdateVector.length()) {
             this.setCoordinates(new Coordinates(this.next.getCoordinates()));
         }

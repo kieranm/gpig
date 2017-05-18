@@ -33,7 +33,7 @@ public class SmartShip extends Ship {
     }
 
     @Override
-    public void tick(World world) {
+    public void tick(World world, int multiplier) {
         if (ind >= path.size()) {
             Collections.reverse(path);
             this.ind = 0;

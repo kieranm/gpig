@@ -24,9 +24,9 @@ import java.util.TimerTask;
 
 public class Simulation {
 
-    private static final long PERIOD = 200l;
-    private static final long INITIAL_DELAY = 1000l;
-    public static final String EDGE_MAP_SEPERATOR = "CONNECTION";
+    private final long PERIOD = 200l;
+    private final long INITIAL_DELAY = 1000l;
+    public final String EDGE_MAP_SEPERATOR = "CONNECTION";
 
     private Timer timer;
     private World world;
@@ -112,6 +112,14 @@ public class Simulation {
 
     private void tick() {
         world.tick();
+    }
+
+    public void setMultiplier(int multiplier) {
+        this.world.setMultiplier(multiplier);
+    }
+
+    public int getMultiplier() {
+        return this.world.getMultiplier();
     }
 
 

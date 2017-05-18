@@ -25,7 +25,6 @@ export default class Root extends Component {
         };
 
         this.connection = new WebSocket('ws://localhost:4567/sim');
-
     }
 
     freightShip(ship) {
@@ -192,7 +191,9 @@ export default class Root extends Component {
         return (
             <div>
                 <Branding/>
-                <ControlPanel/>
+                <ControlPanel
+                    connection={this.connection}
+                />
                 <MapGL
                     {...viewport}
                     mapStyle="mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9"
