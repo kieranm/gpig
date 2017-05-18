@@ -195,7 +195,7 @@ export default class Root extends Component {
                 <ControlPanel/>
                 <MapGL
                     {...viewport}
-                    mapStyle="mapbox://styles/mapbox/dark-v9"
+                    mapStyle="mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9"
                     perspectiveEnabled={true}
                     onChangeViewport={this._onChangeViewport.bind(this)}
                     mapboxApiAccessToken={MAPBOX_TOKEN}>
