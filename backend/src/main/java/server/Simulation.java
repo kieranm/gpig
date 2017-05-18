@@ -3,11 +3,13 @@ package server;
 import domain.Agent;
 import domain.World;
 import domain.port.LandPort;
+import domain.port.Port;
 import domain.util.Coordinates;
 import domain.vessel.FreightShip;
 import domain.vessel.Ship;
 import domain.world.Edge;
 import domain.world.Node;
+import domain.world.Route;
 import domain.world.ShippingNetwork;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
@@ -18,9 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-/**
- * @author Oliver Lea
- */
 public class Simulation {
 
     private static final long PERIOD = 200l;
@@ -72,10 +71,11 @@ public class Simulation {
             int cargoMoveSpeed = jPort.has("cargoMoveSpeed") ? jPort.getInt("cargoMoveSpeed") : 100;
 
             //TODO add detinations
-            List<Node> destinations = new ArrayList<>();
+            Map<Port, List<Route>> destinations = new HashMap<>();
+            HashMap<Port, Double> probabilities = new HashMap<>();
 
             // TODO port variants
-            LandPort p = new LandPort(name, nodes.get(nodeID), destinations, sn, capacity,load, portSize, cargoMoveSpeed);
+            LandPort p = new LandPort(name, nodes.get(nodeID), destinations, probabilities, capacity, load, cargoMoveSpeed);
             agents.add(p);
         }
 

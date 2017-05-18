@@ -2,46 +2,43 @@ package domain.port;
 
 import java.util.*;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import domain.Agent;
 import domain.vessel.Ship;
 import domain.util.AgentType;
 import domain.util.Carrier;
 import domain.world.Node;
-import domain.world.ShippingNetwork;
+import domain.world.Route;
 
-/**
- * @author Oliver Lea
- */
 public abstract class Port extends Agent implements Carrier {
 
+    private static final double CAPACITY_PORT_SIZE_RATIO = 0.01;
     private String name;
 
     private int capacity;
     private int load;
     private Node node;
-    private List<Node> destinations;
-    private ShippingNetwork sn;
+    private Map<Port, List<Route>> routes;
+    private Map<Port, Double> probababilities;
     private int cargoMoveSpeed; // how many cargo moves happen per tick with speed x1
+    private int dockCapacity;
 
-    private Dock[] docks;
+    private int dockLoad = 0;
+    private List<Ship> dockedShips = new LinkedList<>();
     private Queue<Ship> waitingShips = new LinkedList<>();
 
-    public Port(AgentType agentType, String name, Node node, List<Node> destinations, ShippingNetwork sn,
-                int capacity, int load, int portSize, int cargoMoveSpeed)
-    {
+    public Port(AgentType agentType, String name, Node node, Map<Port, List<Route>> routes,
+                Map<Port, Double> probabilities, int capacity, int load, int cargoMoveSpeed){
         super(agentType, node.getCoordinates());
 
         this.node = node;
-        this.destinations = destinations;
-        this.sn = sn;
+        this.routes = routes;
+        this.probababilities = probabilities;
         this.name = name;
         this.capacity = capacity;
         this.load = load;
         this.cargoMoveSpeed = cargoMoveSpeed;
 
-        this.docks = new Dock[portSize];
-        for(int i = 0; i < portSize; i++) this.docks[i] = new Dock();
+        this.dockCapacity = (int)Math.rint(capacity * CAPACITY_PORT_SIZE_RATIO);
     }
 
     public Node getNode() { return node; }
@@ -65,8 +62,7 @@ public abstract class Port extends Agent implements Carrier {
 
     @Override
     // Returns number of containers that are over capacity
-    public int loadContainers(int count)
-    {
+    public int loadContainers(int count){
         int loadDifference = this.load + count - this.capacity;
         this.load = loadDifference > 0 ? this.capacity : this.load + count;
 
@@ -82,21 +78,14 @@ public abstract class Port extends Agent implements Carrier {
         return loadDifference < 0 ? count + loadDifference : count;
     }
 
-    public void DockShip(Ship ship)
-    {
-        if(this.waitingShips.size() == 0)
-            for(Dock dock : this.docks)
-                if(dock.isEmtpy())
-                {
-                    dock.moorShip(ship);
-                    return;
-                }
-
-        this.waitingShips.add(ship); // add to waiting queue if docks are full
+    public void DockShip(Ship ship){
+        if(this.waitingShips.size() == 0 && this.dockLoad + ship.getCapacity() <= this.dockCapacity)
+            this.dockedShips.add(ship);
+        else
+            this.waitingShips.add(ship);
     }
 
-    public void updateDocks(int simulationSpeed)
-    {
+    public void updateDocks(int simulationSpeed){
         this.updateWaitingShips();
 
         this.unloadDockedShips(this.cargoMoveSpeed * simulationSpeed);
@@ -106,84 +95,51 @@ public abstract class Port extends Agent implements Carrier {
         this.releaseDockedShips();
     }
 
-    private void updateWaitingShips()
-    {
-        // Docks waiting ships if slot is free
-        for (Dock dock : this.docks)
-            if (dock.isEmtpy())
-            {
-                if (this.waitingShips.size() == 0) return;
-                dock.moorShip(this.waitingShips.remove());
-            }
+    private void updateWaitingShips(){
+        if(this.dockLoad + this.waitingShips.peek().getCapacity() <= this.dockCapacity)
+            this.dockedShips.add(this.waitingShips.remove());
     }
 
-    private void unloadDockedShips(int unloadSpeed)
-    {
+    private void unloadDockedShips(int unloadSpeed){
         // Unloads all docked ships
-        for(Dock dock: this.docks)
-        {
-            if(dock.isEmtpy() || dock.state != Dock.DockState.UNLOADING_OLD_CARGO) continue;
 
-            int unloadedCount = dock.ship.unloadContainers(unloadSpeed);
-            int overCapacityCount = this.loadContainers(unloadedCount);
 
-            // Load them back if over capacity
-            if(overCapacityCount > 0) dock.ship.loadContainers(overCapacityCount);
-
-            if(dock.ship.isEmpty()) dock.state = Dock.DockState.READY_FOR_NEW_ORDERS;
-        }
     }
 
-    private void loadDockedShips(int loadSpeed)
-    {
-        for(Dock dock: this.docks)
-        {
-            if(dock.isEmtpy() || dock.state != Dock.DockState.LOADING_NEW_CARGO) continue;
+    private void loadDockedShips(int loadSpeed){
 
-            int containerCount = loadSpeed > dock.cargoToLoad ? loadSpeed : dock.cargoToLoad;
-
-            int unloadedContainers = this.unloadContainers(containerCount);
-            int overCapacityCount = dock.ship.loadContainers(unloadedContainers);
-            this.loadContainers(overCapacityCount);
-
-            dock.cargoToLoad -= unloadedContainers - overCapacityCount;
-
-            if(dock.cargoToLoad == 0 || dock.ship.isFull()) dock.state = Dock.DockState.READY_FOR_RELEASE;
-        }
     }
 
-    private void assignNewOrdersForDockedShips()
-    {
-        int randomInt;
+    private void assignNewOrdersForDockedShips(){
         Random random = new Random();
-
-        for(Dock dock: this.docks)
+        for(Ship ship: this.dockedShips)
         {
-            if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_NEW_ORDERS) continue;
+            double probSum = 0;
+            double randomDouble = random.nextDouble();
 
-            dock.cargoToLoad = dock.ship.getCapacity();
-            dock.state = Dock.DockState.LOADING_NEW_CARGO;
+            for (Map.Entry<Port, Double> entry : this.probababilities.entrySet()) {
+                probSum += entry.getValue();
 
-            if(this.destinations.size() == 0) continue;
-
-            while(true) // set new route
-                try
-                {
-                    randomInt = random.nextInt(this.destinations.size());
-                    sn.calculateRoute(dock.ship, node, destinations.get(randomInt));
+                if(probSum >= randomDouble) {
+                    List<Route> routes = this.routes.get(entry.getKey());
+                    int randomIndex = random.nextInt(routes.size());
+                    //ship.setRoute(routes.get(randomIndex)); TODO add route properly
+                    ship.SetDestinationPort(entry.getKey());
                     break;
                 }
-                catch (ShippingNetwork.NoRouteFoundException e){}//TODO decide what to do
+            }
         }
     }
 
     private void releaseDockedShips()
     {
-        for(Dock dock: this.docks)
-        {
-            if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_RELEASE) continue;
-            Ship releasedShip  = dock.releaseShip(); // TODO decide what to do whit that ship
-            releasedShip.startRoute();
-        }
+        // Iterating from the end of the list to avoid indexOutOfRange
+       for(int i = this.dockedShips.size() - 1; i > 0; i--)
+       {
+           //TODO check if ship is ready to depart
+
+           Ship ship = this.dockedShips.remove(i);
+           ship.startRoute();
+       }
     }
 }

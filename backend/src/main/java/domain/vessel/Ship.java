@@ -1,6 +1,7 @@
 package domain.vessel;
 
 import domain.Agent;
+import domain.port.Port;
 import domain.util.AgentType;
 import domain.util.Carrier;
 import domain.util.Coordinates;
@@ -21,6 +22,7 @@ public abstract class Ship extends Agent implements Carrier {
 
     private List<Node> route;
     private Node next;
+    private Port detinationPort;
     private Coordinates positionUpdateVector;
 
     public Ship(AgentType agentType, Coordinates initialLoc, int capacity, int load) {
@@ -29,8 +31,8 @@ public abstract class Ship extends Agent implements Carrier {
         this.load = load;
     }
 
+    public void SetDestinationPort(Port port){ this.detinationPort = port; }
     public void setRoute(List<Node> route) { this.route = route; }
-
     public void setNext(Node next) {
         this.next = next;
     }
@@ -51,11 +53,10 @@ public abstract class Ship extends Agent implements Carrier {
         // TODO figure out what a sensible distance is to be considered "on" the next waypoint
         if (hasReachedPoint()) {
 
-            // if the end of the route has been reached start a return trip
+            // if the end of the route has been reached attempt to dock
             // else set the next route point
-            // TODO always a return trip?
             if (routeEndReached()) {
-                startReturnTrip();
+               this.detinationPort.DockShip(this);
             } else {
                 nextRouteStop();
             }
@@ -94,11 +95,6 @@ public abstract class Ship extends Agent implements Carrier {
         if (current != this.route.size()-1) {
             this.next = this.route.get(current+1);
         }
-    }
-
-    public void startReturnTrip() {
-        Collections.reverse(this.route);
-        startRoute();
     }
 
     public void startRoute()
