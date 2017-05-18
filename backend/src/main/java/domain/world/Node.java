@@ -1,21 +1,15 @@
 package domain.world;
 
+import domain.port.Port;
 import domain.util.Coordinates;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by liamw on 14/05/2017.
- */
 public class Node {
 
-    private List<Node> neighbors;
     private Coordinates coordinates;
     private Integer nodeID;
+    private Port port;
 
-    public Node(Integer nodeID, Coordinates coordinates) {
-        this.neighbors = new ArrayList<Node>();
+    public Node(int nodeID, Coordinates coordinates) {
         this.coordinates = coordinates;
         this.nodeID = nodeID;
     }
@@ -24,8 +18,18 @@ public class Node {
         return coordinates;
     }
 
-    public Integer getNodeID() { return nodeID; }
-    public void addNeighbor(Node n) { neighbors.add(n); }
-    public List<Node> getNeighbors() { return neighbors; }
+    public Integer getNodeID() {
+        return nodeID;
+    }
 
+    public void setPort(Port port) {
+        this.port = port;
+    }
+
+    /**
+     * Nullable port
+     */
+    public Port getPort() {
+        return this.port;
+    }
 }
