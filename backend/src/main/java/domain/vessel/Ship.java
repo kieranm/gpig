@@ -30,9 +30,7 @@ public abstract class Ship extends Agent implements Carrier {
         this.load = load;
     }
 
-    public void setRoute(List<Node> route) {
-        this.route = route;
-    }
+    public void setRoute(List<Node> route) { this.route = route; }
 
     public void setNext(Node next) {
         this.next = next;
@@ -100,12 +98,12 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     public void startReturnTrip() {
-        Collections.reverse(route);
-        startRoute(route);
+        Collections.reverse(this.route);
+        startRoute();
     }
 
-    public void startRoute(List<Node> route) {
-        this.route = route;
+    public void startRoute()
+    {
         this.next = route.get(1);
         calculatePositionUpdateVector();
     }

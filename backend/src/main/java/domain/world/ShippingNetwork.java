@@ -27,18 +27,18 @@ public class ShippingNetwork {
         ArrayList<Node> route = astar(start, end);
         if (route == null) { throw new NoRouteFoundException(); }
 
-        ship.startRoute(route);
+        ship.setRoute(route);
     }
 
     private ArrayList<Node> astar(Node start, Node end) {
-        List<Node> closedSet = new ArrayList<Node>();
-        List<Node> openSet = new ArrayList<Node>();
+        List<Node> closedSet = new ArrayList<>();
+        List<Node> openSet = new ArrayList<>();
         openSet.add(start);
 
-        Map<Node, Node> cameFrom = new HashMap<Node, Node>();
+        Map<Node, Node> cameFrom = new HashMap<>();
 
-        Map<Node, Double> gScore = new HashMap<Node, Double>();
-        Map<Node, Double> fScore = new HashMap<Node, Double>();
+        Map<Node, Double> gScore = new HashMap<>();
+        Map<Node, Double> fScore = new HashMap<>();
 
         for (Node n : nodes.values()){
             gScore.put(n, Double.MAX_VALUE);
@@ -56,7 +56,7 @@ public class ShippingNetwork {
             }
 
             if (current.equals(end)) {
-                ArrayList<Node> route = new ArrayList<Node>();
+                ArrayList<Node> route = new ArrayList<>();
                 route.add(end);
                 while (cameFrom.keySet().contains(current)) {
                     current = cameFrom.get(current);

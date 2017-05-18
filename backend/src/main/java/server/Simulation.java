@@ -79,6 +79,7 @@ public class Simulation {
             // TODO port variants
             LandPort p = new LandPort(name, nodes.get(nodeID), capacity, load);
 
+            // TODO port variants
             agents.add(p);
         }
 
@@ -87,6 +88,7 @@ public class Simulation {
         Ship s = new FreightShip(c, 5, 5);
         try {
             sn.calculateRoute(s, nodes.get(0), nodes.get(1));
+            s.startRoute();
         } catch (ShippingNetwork.NoRouteFoundException e) {
             e.printStackTrace();
         }
