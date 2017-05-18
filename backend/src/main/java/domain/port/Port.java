@@ -9,11 +9,9 @@ import domain.world.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Oliver Lea
- */
 public abstract class Port extends Agent implements Carrier {
 
+    private static final double CAPACITY_PORT_SIZE_RATIO = 0.01;
     private String name;
 
     private int capacity;
@@ -21,7 +19,9 @@ public abstract class Port extends Agent implements Carrier {
 
     private Node node;
 
-    private List<Ship> queueingShips;
+    private int dockLoad = 0;
+    private List<Ship> dockedShips;
+    private List<Ship> waitingShips = new ArrayList<>();
 
     public Port(AgentType agentType, String name, Node node, int capacity, int load) {
         super(agentType, node.getCoordinates());
@@ -29,7 +29,8 @@ public abstract class Port extends Agent implements Carrier {
         this.name = name;
         this.capacity = capacity;
         this.load = load;
-        this.queueingShips = new ArrayList<>();
+        this.dockedShips = new ArrayList<>();
+        this.waitingShips = new ArrayList<>();
     }
 
     public Node getNode() {

@@ -8,7 +8,6 @@ import domain.vessel.FreightShip;
 import domain.vessel.Ship;
 import domain.world.Edge;
 import domain.world.Node;
-import domain.world.ShippingNetwork;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
@@ -23,9 +22,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * @author Oliver Lea
- */
 public class Simulation {
 
     private static final long PERIOD = 200l;
@@ -63,7 +59,6 @@ public class Simulation {
             nodes.get(start).addNeighbor(nodes.get(end));
             nodes.get(end).addNeighbor(nodes.get(start));
         }
-        ShippingNetwork sn = new ShippingNetwork(nodes, edges);
 
         for (Object port : object.getJSONArray("ports")) {
             JSONObject jPort = ((JSONObject) port);
@@ -78,23 +73,15 @@ public class Simulation {
 
             // TODO port variants
             LandPort p = new LandPort(name, nodes.get(nodeID), capacity, load);
-
-            // TODO port variants
             agents.add(p);
         }
 
         // TODO have the agents defined in a json file?
         Coordinates c = new Coordinates(nodes.get(0).getCoordinates().getLatitude(), nodes.get(0).getCoordinates().getLongitude());
         Ship s = new FreightShip(c, 5, 5);
-        try {
-            sn.calculateRoute(s, nodes.get(0), nodes.get(1));
-            s.startRoute();
-        } catch (ShippingNetwork.NoRouteFoundException e) {
-            e.printStackTrace();
-        }
         agents.add(s);
 
-        this.world = new World(agents, sn);
+        this.world = new World(agents);
     }
 
     public Simulation(Session session) {
