@@ -5,9 +5,6 @@ import domain.util.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by liamw on 14/05/2017.
- */
 public class Node {
 
     private List<Node> neighbors;
@@ -15,7 +12,7 @@ public class Node {
     private Integer nodeID;
 
     public Node(Integer nodeID, Coordinates coordinates) {
-        this.neighbors = new ArrayList<Node>();
+        this.neighbors = new ArrayList<>();
         this.coordinates = coordinates;
         this.nodeID = nodeID;
     }

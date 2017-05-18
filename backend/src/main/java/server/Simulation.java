@@ -71,10 +71,11 @@ public class Simulation {
             int portSize = jPort.has("portSize") ? jPort.getInt("portSize") : 100 ;
             int cargoMoveSpeed = jPort.has("cargoMoveSpeed") ? jPort.getInt("cargoMoveSpeed") : 100;
 
-            //TODO add routes
+            //TODO add detinations
+            List<Node> destinations = new ArrayList<>();
 
             // TODO port variants
-            LandPort p = new LandPort(name, nodes.get(nodeID), capacity,load, portSize, cargoMoveSpeed);
+            LandPort p = new LandPort(name, nodes.get(nodeID), destinations, sn, capacity,load, portSize, cargoMoveSpeed);
             agents.add(p);
         }
 
@@ -83,6 +84,7 @@ public class Simulation {
         Ship s = new FreightShip(c, 5, 5);
         try {
             sn.calculateRoute(s, nodes.get(0), nodes.get(1));
+            s.startRoute();
         } catch (ShippingNetwork.NoRouteFoundException e) {
             e.printStackTrace();
         }

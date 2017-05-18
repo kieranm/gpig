@@ -2,11 +2,13 @@ package domain.port;
 
 import java.util.*;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import domain.Agent;
 import domain.vessel.Ship;
 import domain.util.AgentType;
 import domain.util.Carrier;
 import domain.world.Node;
+import domain.world.ShippingNetwork;
 
 /**
  * @author Oliver Lea
@@ -18,16 +20,21 @@ public abstract class Port extends Agent implements Carrier {
     private int capacity;
     private int load;
     private Node node;
+    private List<Node> destinations;
+    private ShippingNetwork sn;
     private int cargoMoveSpeed; // how many cargo moves happen per tick with speed x1
 
     private Dock[] docks;
     private Queue<Ship> waitingShips = new LinkedList<>();
 
-
-    public Port(AgentType agentType, String name, Node node, int capacity, int load, int portSize, int cargoMoveSpeed)
+    public Port(AgentType agentType, String name, Node node, List<Node> destinations, ShippingNetwork sn,
+                int capacity, int load, int portSize, int cargoMoveSpeed)
     {
         super(agentType, node.getCoordinates());
+
         this.node = node;
+        this.destinations = destinations;
+        this.sn = sn;
         this.name = name;
         this.capacity = capacity;
         this.load = load;
@@ -147,13 +154,26 @@ public abstract class Port extends Agent implements Carrier {
 
     private void assignNewOrdersForDockedShips()
     {
+        int randomInt;
+        Random random = new Random();
+
         for(Dock dock: this.docks)
         {
             if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_NEW_ORDERS) continue;
 
-            // TODO assign route to ship
-            dock.cargoToLoad = dock.ship.getCapacity(); // TODO decide whether always fill ships to full capacity
+            dock.cargoToLoad = dock.ship.getCapacity();
             dock.state = Dock.DockState.LOADING_NEW_CARGO;
+
+            if(this.destinations.size() == 0) continue;
+
+            while(true) // set new route
+                try
+                {
+                    randomInt = random.nextInt(this.destinations.size());
+                    sn.calculateRoute(dock.ship, node, destinations.get(randomInt));
+                    break;
+                }
+                catch (ShippingNetwork.NoRouteFoundException e){}//TODO decide what to do
         }
     }
 
@@ -163,6 +183,7 @@ public abstract class Port extends Agent implements Carrier {
         {
             if(dock.isEmtpy() || dock.state != Dock.DockState.READY_FOR_RELEASE) continue;
             Ship releasedShip  = dock.releaseShip(); // TODO decide what to do whit that ship
+            releasedShip.startRoute();
         }
     }
 }
