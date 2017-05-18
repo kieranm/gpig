@@ -71,6 +71,7 @@ public class Simulation {
             int portSize = jPort.has("portSize") ? jPort.getInt("portSize") : 100 ;
             int cargoMoveSpeed = jPort.has("cargoMoveSpeed") ? jPort.getInt("cargoMoveSpeed") : 100;
 
+
             // TODO port variants
             LandPort p = new LandPort(name, nodes.get(nodeID), capacity, load);
             agents.add(p);
