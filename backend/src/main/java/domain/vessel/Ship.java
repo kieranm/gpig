@@ -78,7 +78,7 @@ public abstract class Ship extends Agent implements Carrier {
 
         // move toward next
         this.setCoordinates(this.getCoordinates().add(this.positionUpdateVector.mul((double) multiplier)));
-        if (this.getCoordinates().distance(this.next.getCoordinates()) < this.positionUpdateVector.length()) {
+        if (this.getCoordinates().distance(this.next.getCoordinates()) < this.positionUpdateVector.mul((double) multiplier).length()) {
             this.setCoordinates(new Coordinates(this.next.getCoordinates()));
         }
     }
@@ -98,7 +98,7 @@ public abstract class Ship extends Agent implements Carrier {
 
         double length = this.getCoordinates().distance(this.next.getCoordinates());
         this.positionUpdateVector = new Coordinates(xdiff/length, ydiff/length);
-        this.positionUpdateVector.mul(DISTANCE_PER_TICK_MULTIPLIER); // TODO figure out a good amount of travel per tick
+        this.positionUpdateVector = this.positionUpdateVector.mul(DISTANCE_PER_TICK_MULTIPLIER); // TODO figure out a good amount of travel per tick
     }
 
     public void nextRouteStop() {

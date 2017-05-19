@@ -36,7 +36,6 @@ public class SimulationHandler {
     public void onMessage(Session sess, String message) throws Exception {
         JSONObject json = new JSONObject(message);
         if(json.getString("message_type").equals("settings")) {
-
             sessions.get(sess).setMultiplier(json.getJSONObject("message_data").getInt("speed_multiplier"));
         }
     }

@@ -49,9 +49,7 @@ public class Coordinates implements JSONable {
         return this.add(c.getLatitude(), c.getLongitude());
     }
     public Coordinates add(double latitude, double longitude) {
-        this.latitude += latitude;
-        this.longitude += longitude;
-        return this;
+        return new Coordinates(this.latitude + latitude, this.longitude + longitude);
     }
 
     /**
@@ -62,13 +60,12 @@ public class Coordinates implements JSONable {
     public Coordinates mul(Coordinates c) {
         return this.mul(c.getLatitude(), c.getLongitude());
     }
+
     public Coordinates mul(double scalar) {
         return this.mul(scalar, scalar);
     }
     public Coordinates mul(double latitude, double longitude) {
-        this.latitude *= latitude;
-        this.longitude *= longitude;
-        return this;
+        return new Coordinates(this.latitude * latitude, this.longitude * longitude);
     }
 
     public double length() {
