@@ -1,7 +1,11 @@
 package domain.world;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Route {
+
     private List<Node> nodes;
     private Integer weight;
     private boolean isActive = true;
@@ -25,5 +29,12 @@ public class Route {
 
     public void disable() {
         this.isActive = false;
+    }
+
+    public Route reverse() {
+        List<Node> reversedNodes = new ArrayList<>(this.nodes);
+        Collections.reverse(reversedNodes);
+        return new Route(reversedNodes, this.weight);
+
     }
 }

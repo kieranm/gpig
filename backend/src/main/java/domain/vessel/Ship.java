@@ -7,6 +7,7 @@ import domain.util.Coordinates;
 import domain.world.Node;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -67,6 +68,7 @@ public abstract class Ship extends Agent implements Carrier {
             // else set the next route point
             if (routeEndReached()) {
                // TODO -- add docking
+                startReturnTrip();
             } else {
                 nextRouteStop();
             }
@@ -106,9 +108,14 @@ public abstract class Ship extends Agent implements Carrier {
         }
     }
 
-    public void startRoute()
-    {
+    public void startReturnTrip() {
+        Collections.reverse(route);
+        startRoute(route);
+    }
+
+    public void startRoute(List<Node> route) {
         this.state = ShipState.TRAVELING;
+        this.route = route;
         this.next = route.get(1);
         calculatePositionUpdateVector();
     }
