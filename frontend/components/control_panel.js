@@ -4,15 +4,21 @@ import {Segment, Header, Divider, Button} from 'semantic-ui-react';
 export default class ControlPanel extends Component {
     constructor(props) {
         super(props);
+        // Using underscore naming scheme here to keep interface convention with the backend
         this.state = {
             speed_multiplier: 1,
+            map_style: this.props.activeMapStyle
         };
     }
 
-    updateSpeed(e, ratio) {
+    changeSpeed(ratio) {
         this.setState({
             speed_multiplier: ratio
         }, this.sendState);
+    }
+
+    changeMapStyle(newStyle) {
+        this.props.mapStyleChangeCallback(newStyle);
     }
 
     sendState() {
@@ -23,7 +29,7 @@ export default class ControlPanel extends Component {
     }
 
     render() {
-        const speed_multiplier = this.state.speed_multiplier;
+        const {speed_multiplier, map_style} = this.state;
 
         return(
             <Segment color="teal" className="control panel">
@@ -32,9 +38,9 @@ export default class ControlPanel extends Component {
                 </Header>
                 <Divider horizontal>Simulation Speed</Divider>
                 <Button.Group fluid>
-                    <Button onClick={(e) => this.updateSpeed(e, 1)} color="teal" active={speed_multiplier == 1}>1x</Button>
-                    <Button onClick={(e) => this.updateSpeed(e, 10)} color="teal" active={speed_multiplier == 10}>10x</Button>
-                    <Button onClick={(e) => this.updateSpeed(e, 20)} color="teal" active={speed_multiplier == 20}>20x</Button>
+                    <Button onClick={(e) => this.changeSpeed(1)} color="teal" active={speed_multiplier == 1}>1x</Button>
+                    <Button onClick={(e) => this.changeSpeed(10)} color="teal" active={speed_multiplier == 10}>10x</Button>
+                    <Button onClick={(e) => this.changeSpeed(20)} color="teal" active={speed_multiplier == 20}>20x</Button>
                 </Button.Group>
 
                 <Divider horizontal>Mode</Divider>
@@ -44,17 +50,17 @@ export default class ControlPanel extends Component {
                 </Button.Group>
 
                 <Divider horizontal>Presets</Divider>
-                <Button fluid color={"teal"}>Coastal Port</Button>
-                <Button fluid color={"teal"}>Offshore Smart Port</Button>
-                <Button fluid color={"teal"}>Weather Avoidance</Button>
-                <Button fluid color={"teal"}>Road Traffic</Button>
-                <Button fluid color={"teal"}>Global Movements</Button>
+                <Button fluid color="teal">Coastal Port</Button>
+                <Button fluid color="teal">Offshore Smart Port</Button>
+                <Button fluid color="teal">Weather Avoidance</Button>
+                <Button fluid color="teal">Road Traffic</Button>
+                <Button fluid color="teal">Global Movements</Button>
 
                 <Divider horizontal>Map Style</Divider>
                 <Button.Group fluid>
-                    <Button color={"teal"}>Sat</Button>
-                    <Button color={"teal"}>Light</Button>
-                    <Button color={"teal"}>Dark</Button>
+                    <Button onClick={(e) => this.changeMapStyle("satellite")} color="teal" active={map_style == "satellite"}>Sat</Button>
+                    <Button onClick={(e) => this.changeMapStyle("light")} color="teal" active={map_style == "light"}>Light</Button>
+                    <Button onClick={(e) => this.changeMapStyle("dark")} color="teal" active={map_style == "dark"}>Dark</Button>
                 </Button.Group>
 
             </Segment>
