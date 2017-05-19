@@ -12,9 +12,7 @@ export default class ControlPanel extends Component {
     updateSpeed(e, ratio) {
         this.setState({
             speed_multiplier: ratio
-        });
-
-        this.sendState();
+        }, this.sendState);
     }
 
     sendState() {
