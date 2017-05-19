@@ -4,9 +4,12 @@ import domain.World;
 import domain.util.AgentType;
 import domain.world.Node;
 
-public class SmartPort extends Port {
+/**
+ * @author Oliver Lea
+ */
+public class CoastalPort extends Port {
 
-    public SmartPort(String name, Node node, int capacity, int load) {
+    public CoastalPort(String name, Node node, int capacity, int load) {
         super(AgentType.LAND_PORT, name, node, capacity, load);
     }
 

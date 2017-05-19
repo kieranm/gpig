@@ -2,94 +2,35 @@ package server;
 
 import domain.Agent;
 import domain.World;
-import domain.port.LandPort;
+import domain.port.Port;
 import domain.util.Coordinates;
 import domain.vessel.FreightShip;
 import domain.vessel.Ship;
-import domain.world.Edge;
 import domain.world.Node;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Simulation {
 
     private final long PERIOD = 200l;
     private final long INITIAL_DELAY = 1000l;
-    public final String EDGE_MAP_SEPERATOR = "CONNECTION";
+
+    // Mapbox Credentials
+    private static final String MAPBOX_DATASET_ID_LEGACY = "cj2thnez5003q2qrzdczjgxil";
 
     private Timer timer;
     private World world;
     private Session session;
 
-    private void initialiseWorld(Path worldFilePath) throws IOException {
-        List<Agent> agents = new ArrayList<>();
-        Map<Integer, Node> nodes = new HashMap<>();
-        Map<String, Edge> edges = new HashMap<>();
-
-        String jsonReader = new String(Files.readAllBytes(worldFilePath));
-        JSONObject object = new JSONObject(jsonReader);
-
-        for (Object node : object.getJSONArray("nodes")) {
-            JSONObject jNode = ((JSONObject) node);
-            Integer id = jNode.getInt("id");
-            double latitude = jNode.getDouble("latitude");
-            double longitude = jNode.getDouble("longitude");
-
-            nodes.put(id, new Node(id, new Coordinates(latitude,longitude)));
-        }
-        for (Object edge : object.getJSONArray("edges")) {
-            JSONObject jEdge = ((JSONObject) edge);
-            Integer start = jEdge.getInt("start");
-            Integer end = jEdge.getInt("end");
-
-            Edge newEdge = new Edge(nodes.get(start), nodes.get(end));
-            edges.put(Integer.toString(start)+EDGE_MAP_SEPERATOR+Integer.toString(end), newEdge);
-            edges.put(Integer.toString(end)+EDGE_MAP_SEPERATOR+Integer.toString(start), newEdge);
-            nodes.get(start).addNeighbor(nodes.get(end));
-            nodes.get(end).addNeighbor(nodes.get(start));
-        }
-
-        for (Object port : object.getJSONArray("ports")) {
-            JSONObject jPort = ((JSONObject) port);
-            String name = jPort.getString("name");
-            int nodeID = jPort.getInt("node_id");
-            int capacity = jPort.getInt("capacity");
-            int load = jPort.getInt("load");
-
-            //TODO double check whether default values are needed or attributes are guaranteed to be in JSON object
-            int portSize = jPort.has("portSize") ? jPort.getInt("portSize") : 100 ;
-            int cargoMoveSpeed = jPort.has("cargoMoveSpeed") ? jPort.getInt("cargoMoveSpeed") : 100;
-
-
-            // TODO port variants
-            LandPort p = new LandPort(name, nodes.get(nodeID), capacity, load);
-            agents.add(p);
-        }
-
-        // TODO have the agents defined in a json file?
-        Coordinates c = new Coordinates(nodes.get(0).getCoordinates().getLatitude(), nodes.get(0).getCoordinates().getLongitude());
-        Ship s = new FreightShip(c, 5, 5);
-        agents.add(s);
-
-        this.world = new World(agents);
-    }
-
     public Simulation(Session session) {
         this.session = session;
 
         try {
-            initialiseWorld(Paths.get("./src/main/resources/ShippingNetwork.json"));
+            // TODO generate both worlds here (different data set ID)
+            world = generateWorld(MAPBOX_DATASET_ID_LEGACY);
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -104,6 +45,38 @@ public class Simulation {
         };
         this.timer = new Timer();
         this.timer.schedule(tt, INITIAL_DELAY, PERIOD);
+    }
+
+    private World generateWorld(String mapboxDatasetId) throws IOException {
+
+        // Create a WorldLoader
+        WorldLoader loader = new WorldLoader(mapboxDatasetId);
+
+        // Pull the port agents from the WorldLoader
+        Map<String, Port> ports = loader.getPorts();
+        System.out.println(ports);
+
+        // Create agents
+        List<Ship> ships = new ArrayList<>();
+
+        // TODO how do we generate the ships
+        Coordinates c = new Coordinates(
+                ports.get("Liverpool").getCoordinates().getLatitude(),
+                ports.get("Liverpool").getCoordinates().getLongitude()
+        );
+        Ship s = new FreightShip(c, 5, 5);
+        List<Node> r = ports.get("Liverpool").generateRoute().getNodes();
+        System.out.println(r);
+        s.startRoute(r);
+        ships.add(s);
+
+        // Merge port and ship agents
+        List<Agent> agents = new ArrayList<>(ships);
+        agents.addAll(ports.values());
+
+        World w = new World(agents);
+        return w;
+
     }
 
     public void end() {
@@ -129,8 +102,8 @@ public class Simulation {
      */
     private JSONObject formatMessage(JSONObject jsonBody, String messageType) {
         JSONObject obj = new JSONObject()
-        .put("message_type", messageType)
-        .put("message_body", jsonBody);
+                .put("message_type", messageType)
+                .put("message_body", jsonBody);
 
         return obj;
     }
