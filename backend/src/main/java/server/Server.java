@@ -14,7 +14,6 @@ import static spark.Spark.webSocket;
  */
 public class Server {
 
-    private static Map<Session, Simulation> sessions = new ConcurrentHashMap<>();
 
     public Server(int port) {
         staticFiles.location("public");
@@ -24,9 +23,5 @@ public class Server {
 
     public void run() {
         init();
-    }
-
-    public static Map<Session, Simulation> getSessions() {
-        return sessions;
     }
 }

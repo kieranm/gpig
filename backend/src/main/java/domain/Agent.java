@@ -23,7 +23,7 @@ public abstract class Agent implements JSONable {
         this.alive = true;
     }
 
-    public abstract void tick(World world);
+    public abstract void tick(World world, int multiplier);
 
     @Override
     public JSONObject toJSON() {

@@ -19,13 +19,13 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
+            mapStyle: "dark",
             ships: [],
             coastal_ports: [],
             time: 0
         };
 
         this.connection = new WebSocket('ws://localhost:4567/sim');
-
     }
 
     freightShip(ship) {
@@ -186,16 +186,32 @@ export default class Root extends Component {
         });
     }
 
+    _changeMapStyle(style) {
+        this.setState({mapStyle: style});
+    }
+
     render() {
         const {viewport, ships, coastal_ports, time} = this.state;
+        var {mapStyle} = this.state;
+        var actualMapStyleUrl = "";
+
+        if (mapStyle == "dark") {
+            actualMapStyleUrl = "mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9";
+        } else {
+            actualMapStyleUrl = "mapbox://styles/mapbox/"+ mapStyle +"-v9";
+        }
 
         return (
             <div>
                 <Branding/>
-                <ControlPanel/>
+                <ControlPanel
+                    connection={this.connection}
+                    mapStyleChangeCallback={this._changeMapStyle.bind(this)}
+                    activeMapStyle={mapStyle}
+                />
                 <MapGL
                     {...viewport}
-                    mapStyle="mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9"
+                    mapStyle={actualMapStyleUrl}
                     perspectiveEnabled={true}
                     onChangeViewport={this._onChangeViewport.bind(this)}
                     mapboxApiAccessToken={MAPBOX_TOKEN}>

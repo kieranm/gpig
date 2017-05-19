@@ -15,8 +15,8 @@ import java.util.*;
 
 public class Simulation {
 
-    private static final long PERIOD = 200L;
-    private static final long INITIAL_DELAY = 1000L;
+    private final long PERIOD = 200l;
+    private final long INITIAL_DELAY = 1000l;
 
     // Mapbox Credentials
     private static final String MAPBOX_DATASET_ID_LEGACY = "cj2thnez5003q2qrzdczjgxil";
@@ -85,6 +85,14 @@ public class Simulation {
 
     private void tick() {
         world.tick();
+    }
+
+    public void setMultiplier(int multiplier) {
+        this.world.setMultiplier(multiplier);
+    }
+
+    public int getMultiplier() {
+        return this.world.getMultiplier();
     }
 
 

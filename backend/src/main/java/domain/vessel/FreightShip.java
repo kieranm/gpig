@@ -14,9 +14,9 @@ public class FreightShip extends Ship {
     }
 
     @Override
-    public void tick(World world) {
+    public void tick(World world, int multiplier) {
         // TODO
-        this.followRoute();
+        this.followRoute(multiplier);
     }
 
 }

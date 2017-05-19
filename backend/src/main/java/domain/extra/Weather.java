@@ -15,7 +15,7 @@ public class Weather extends Agent {
     }
 
     @Override
-    public void tick(World world) {
+    public void tick(World world, int multiplier) {
         // TODO
     }
 }
