@@ -15,6 +15,6 @@ public class OffshorePort extends Port {
 
     @Override
     public void tick(World world) {
-        updatePort();
+        this.updatePort(multiplier);
     }
 }
