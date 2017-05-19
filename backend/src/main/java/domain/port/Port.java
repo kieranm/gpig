@@ -3,14 +3,12 @@ package domain.port;
 import domain.Agent;
 import domain.util.AgentType;
 import domain.util.Carrier;
+import domain.util.PortDistanceComparator;
 import domain.vessel.Ship;
 import domain.world.Node;
 import domain.world.Route;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Port extends Agent implements Carrier {
 
@@ -22,7 +20,7 @@ public abstract class Port extends Agent implements Carrier {
     private String name;
 
     private Node node;
-    private Map<Port, List<Route>> routes = new HashMap<>();
+    private Map<Port, List<Route>> routes;
     private Map<Port, Double> probabilities = new HashMap<>();
 
     private int cargoCapacity;
@@ -31,8 +29,8 @@ public abstract class Port extends Agent implements Carrier {
     private int dockCapacity;
     private int dockLoad = 0;
 
-    private List<Ship> managedShips;
-    private List<Ship> removedShips;
+    private List<Ship> managedShips = new ArrayList<>();;
+    private List<Ship> removedShips = new ArrayList<>();
 
     public Port(AgentType agentType, String name, Node node, int capacity, int load) {
         super(agentType, node.getCoordinates());
@@ -45,6 +43,8 @@ public abstract class Port extends Agent implements Carrier {
         this.dockCapacity = (int)Math.rint(capacity * CAPACITY_PORT_SIZE_RATIO);
 
         this.managedShips = new ArrayList<>();
+
+        routes = new TreeMap<>(new PortDistanceComparator(this));
     }
 
     //TODO is this needed?
@@ -92,6 +92,7 @@ public abstract class Port extends Agent implements Carrier {
         removedShips = new ArrayList<>();
 
         for (Ship s : managedShips) {
+
             switch(s.getState()) {
                 // Import
                 case WAITING_UNLOADING:
@@ -100,30 +101,33 @@ public abstract class Port extends Agent implements Carrier {
                     break;
                 case UNLOADING_CARGO:
                     // do one tick of moving cargo from docked ships
+                    System.out.println(String.format("Before Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     this.unloadDockedShip(s);
+                    System.out.println(String.format("After Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     break;
 
                 // Export
                 case ARRIVED:
-                    s.setState(Ship.ShipState.WAITING_LOADING);
+                    System.out.println(String.format("Ship has arrived at %s", this.name));
+                    if (s.getLoad() > 0) {
+                        s.setState(Ship.ShipState.WAITING_UNLOADING);
+                    } else {
+                        s.setState(Ship.ShipState.WAITING_LOADING);
+                    }
                     break;
                 case WAITING_LOADING:
                     this.updateWaitingShip(s);
                     break;
                 case LOADING_CARGO:
                     // do one tick of moving cargo onto docked ships
+                    System.out.println(String.format("Before loading %s has %d cargo", this.name, this.cargoLoad));
                     this.loadDockedShip(s);
+                    System.out.println(String.format("after loading %s has %d cargo", this.name, this.cargoLoad));
                     break;
 
-                // General management
-                case IDLE:
-                    // ship no longer in use by the port
-                    removedShips.add(s);
-                    break;
                 default:
-                    // if TRAVELLING nothing for port to do
+                    // if TRAVELLING or IDLE nothing for port to do
                     break;
-
             }
         }
 
@@ -144,19 +148,20 @@ public abstract class Port extends Agent implements Carrier {
         if (ship.isEmpty()) {
             ship.setState(Ship.ShipState.IDLE);
         }
+
         // notify the amount of cargo that has been consumed to the "Cargo producer"
     }
 
     private void loadDockedShip(Ship ship) {
         int requestedLoad = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
         int amountOverCapacity = ship.loadCargo(requestedLoad);
+
         this.cargoLoad -= requestedLoad;
         this.cargoLoad += amountOverCapacity; // add back cargo the ship couldn't fit
         if (this.isEmpty() || ship.isFull()) {
 
             // Start ship on journey
             generateRoute(ship);
-            this.removedShips.add(ship);
         }
     }
 
@@ -175,8 +180,68 @@ public abstract class Port extends Agent implements Carrier {
 
     private void bidForShips() {
 
+        // count the amount of cargo currently ready to be exported from the port
+        int maximumMovableCargo = 0;
+        for (Ship s : this.managedShips) {
+            if (s.getState() == Ship.ShipState.WAITING_LOADING ||
+                    s.getState() == Ship.ShipState.LOADING_CARGO ||
+                    s.getState() == Ship.ShipState.TRAVELING) {
+                maximumMovableCargo += s.getCapacity();
+            }
+        }
+
+        // if more ships are required to send existing cargo, request more ships
+        int cargoLeftToBeMoved = this.cargoLoad - maximumMovableCargo;
+        if (cargoLeftToBeMoved > 0) {
+
+            // check if any ships currently at this port can be used
+            if (!this.findBidder(this, cargoLeftToBeMoved)) {
+
+                //  otherwise check the other ports in this network, starting at the closest port
+                for (Port port : this.routes.keySet()) {
+                    if (findBidder(port, cargoLeftToBeMoved)) {
+                        return;
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     *
+     * @param p
+     * @return whether the search for a bidder was successful
+     */
+    private boolean findBidder(Port p, int cargoToBeMoved) {
+        // Check for any idle ships in this port
+        List<Integer> bids = new ArrayList<>();
+        for (Ship s : p.getManagedShips()) {
+            bids.add(s.getBid(cargoToBeMoved));
+        }
+        int bestBidIndex = 0;
+        int bestBid = 0;
+        for (int i = 0; i < bids.size(); i++) {
+            if (bids.get(i) > bestBid) {
+                bestBid = bids.get(i);
+                bestBidIndex = i;
+            }
+        }
+        if (bestBid > 0) {
+
+            for (Route route : p.getRoutes().get(this)) {
+                if (route.isActive()) {
+                    // transfer control of ship and assign route
+                    Ship newShip = p.getManagedShips().remove(bestBidIndex);
+                    this.managedShips.add(newShip);
+                    newShip.assignRoute(route.getNodes());
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     /**
      *
      * @return a randomly selected route from this port to one of its destinations
@@ -194,6 +259,7 @@ public abstract class Port extends Agent implements Carrier {
 
                         destination.addShip(s);
                         s.assignRoute(route.getNodes());
+                        this.removedShips.add(s);
 
                     }
                 }
@@ -233,5 +299,9 @@ public abstract class Port extends Agent implements Carrier {
             double newprob = ((double) this.routes.get(destination).get(0).getWeight()) / total;
             this.probabilities.put(destination, newprob);
         }
+    }
+
+    public List<Ship> getManagedShips() {
+        return managedShips;
     }
 }

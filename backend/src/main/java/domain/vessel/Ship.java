@@ -62,6 +62,13 @@ public abstract class Ship extends Agent implements Carrier {
         return load;
     }
 
+    public int getBid(int cargoLeftToBeMoved) {
+        if (this.capacity >= cargoLeftToBeMoved) {
+            return cargoLeftToBeMoved - (this.capacity - cargoLeftToBeMoved);
+        }
+        return this.capacity;
+    }
+
     public void followRoute() {
 
         // check if we have reached the next waypoint
