@@ -16,7 +16,9 @@ public class FreightShip extends Ship {
     @Override
     public void tick(World world) {
         // TODO
-        this.followRoute();
+        if (this.getState() == ShipState.TRAVELING) {
+            this.followRoute();
+        }
     }
 
 }

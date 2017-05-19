@@ -15,9 +15,6 @@ public class OffshorePort extends Port {
 
     @Override
     public void tick(World world) {
-        int simulationSpeed = 1; // TODO decide how we process this value
-
-        this.updateDocks(simulationSpeed);
-        // TODO, extend potentially
+        updatePort();
     }
 }

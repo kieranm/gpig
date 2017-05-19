@@ -6,7 +6,6 @@ import domain.port.Port;
 import domain.util.Coordinates;
 import domain.vessel.FreightShip;
 import domain.vessel.Ship;
-import domain.world.Node;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
@@ -65,9 +64,8 @@ public class Simulation {
                 ports.get("Liverpool").getCoordinates().getLongitude()
         );
         Ship s = new FreightShip(c, 5, 5);
-        List<Node> r = ports.get("Liverpool").generateRoute().getNodes();
-        System.out.println(r);
-        s.startRoute(r);
+        ports.get("Liverpool").addShip(s);
+        ports.get("Liverpool").generateRoute(s);
         ships.add(s);
 
         // Merge port and ship agents

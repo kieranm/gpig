@@ -31,6 +31,8 @@ public class Route {
         this.isActive = false;
     }
 
+    public boolean isActive() { return isActive; }
+
     public Route reverse() {
         List<Node> reversedNodes = new ArrayList<>(this.nodes);
         Collections.reverse(reversedNodes);

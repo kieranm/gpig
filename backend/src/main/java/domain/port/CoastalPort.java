@@ -15,8 +15,6 @@ public class CoastalPort extends Port {
 
     @Override
     public void tick(World world) {
-        //TODO fix
-        int simulationSpeed = 1;
-        this.updateDocks(simulationSpeed);
+        updatePort();
     }
 }
