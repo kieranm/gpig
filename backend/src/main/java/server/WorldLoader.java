@@ -1,18 +1,21 @@
 package server;
 
+import domain.port.CoastalPort;
+import domain.port.Port;
+import domain.util.Coordinates;
+import domain.world.Node;
+import domain.world.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import utils.IdGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
-public class GeoJsonSpec {
+class WorldLoader {
 
     // Mapbox Credentials
     private static final String MAPBOX_USERNAME = "kieranmch";
@@ -25,8 +28,9 @@ public class GeoJsonSpec {
     private List<JSONObject> coastalPorts = new ArrayList<>();
     private List<JSONObject> offshorePorts = new ArrayList<>();
     private List<JSONObject> lanes = new ArrayList<>();
+    private Map<String, Port> portAgents = new HashMap<>();
 
-    public GeoJsonSpec(String datasetID) throws IOException {
+    WorldLoader(String datasetID) throws IOException {
 
         // Dataset ID determines which Mapbox Dataset to pull GeoJSON from
         this.datasetID = datasetID;
@@ -41,6 +45,13 @@ public class GeoJsonSpec {
         // Fetch ports and lanes
         this.fetchPorts();
         this.fetchLanes();
+
+        // Generate ports based on the JSON data
+        this.generatePorts(this.coastalPorts);
+        this.generatePorts(this.offshorePorts);
+
+        // Add the lanes to the ports
+        this.addLanesToPorts();
     }
 
     private void fetchFeatures() throws IOException {
@@ -118,6 +129,8 @@ public class GeoJsonSpec {
             throw new JSONException("The port name " + portName + " is used for two or more ports.");
         }
 
+        //TODO: verify type is valid
+
     }
 
     private void verifyLane(JSONObject lane) {
@@ -139,6 +152,8 @@ public class GeoJsonSpec {
                 jsonObject -> jsonObject.getJSONObject("properties").getString("name").trim().equals(endName)))) {
             throw new JSONException("Verify that both " + startName + " and " + endName + " ports exist.");
         }
+
+        //TODO: verify type is valid
     }
 
     private void verifyAttribute(JSONObject jFeature, String name) {
@@ -148,15 +163,78 @@ public class GeoJsonSpec {
         }
     }
 
-    public List<JSONObject> getCoastalPorts() {
-        return coastalPorts;
+    private Node createNode(double latitude, double longitude) {
+        Node node = new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
+        return node;
     }
 
-    public List<JSONObject> getOffshorePorts() {
-        return offshorePorts;
+    private void generatePorts(List<JSONObject> jPorts) {
+        double latitude;
+        double longitude;
+        String name;
+        Node portNode;
+        Port port;
+
+        for(JSONObject jPort: jPorts) {
+            name = jPort.getJSONObject("properties").getString("name");
+            latitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(1);
+            longitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(0);
+            portNode = this.createNode(latitude, longitude);
+            port = new CoastalPort(
+                    name,
+                    portNode,
+                    jPort.getJSONObject("properties").getInt("capacity"),
+                    0
+            );
+
+            portAgents.put(name, port);
+            portNode.setPort(port);
+        }
     }
 
-    public List<JSONObject> getLanes() {
-        return lanes;
+    private void addLanesToPorts() {
+        List<Node> nodes;
+        String startName;
+        String endName;
+        Port startPort;
+        Port endPort;
+        Route route;
+        int weight;
+
+        for(JSONObject jLane : this.lanes) {
+            nodes = new ArrayList<>();
+
+            startName = jLane.getJSONObject("properties").getString("start");
+            endName = jLane.getJSONObject("properties").getString("end");
+            startPort = this.portAgents.get(startName);
+            endPort = this.portAgents.get(endName);
+
+            // Add the start node
+            nodes.add(startPort.getNode());
+
+            // Iterate through the list of points on the lane and add nodes
+            for (Object jPoint : jLane.getJSONObject("geometry").getJSONArray("coordinates")) {
+                nodes.add(
+                        this.createNode(((JSONArray)jPoint).getDouble(1), ((JSONArray)jPoint).getDouble(0))
+                );
+            }
+
+            // Add the end node
+            nodes.add(endPort.getNode());
+
+            // Extract weight associated with the route
+            weight = jLane.getJSONObject("properties").getInt("weight");
+
+            // Create a route and assign it to ports
+            route = new Route(nodes, weight);
+            startPort.addRoute(endPort, route);
+            endPort.addRoute(startPort, route.reverse());
+        }
+
     }
+
+    Map<String, Port> getPorts() {
+        return this.portAgents;
+    }
+
 }
