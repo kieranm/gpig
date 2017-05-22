@@ -12,9 +12,17 @@ import java.util.*;
 
 public abstract class Port extends Agent implements Carrier {
 
+    // used to derive the dock capacity (space for ships) from the export cargo capacity
     private static final double CAPACITY_PORT_SIZE_RATIO = 0.01;
+    // used to determine how much cargo is produced per tick (based on capacity)
+    private static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.001;
+    // determines how many times cargo will be produced at the ports on initialisation
+    private static final double CARGO_INITIALISATION_MULTIPLIER = 3;
 
+
+    // Multiplier applied to loading/unloading, a sort of global crane speed
     private static final int BASE_LOAD_UNLOAD_SPEED = 1;
+    // For every SHIP_SIZE_LOADING_OFFSET points of capacity an extra crane can be employed on a ship
     private static final int SHIP_SIZE_LOADING_OFFSET = 50;
 
     private String name;
@@ -32,13 +40,16 @@ public abstract class Port extends Agent implements Carrier {
     private List<Ship> managedShips = new ArrayList<>();;
     private List<Ship> removedShips = new ArrayList<>();
 
-    public Port(AgentType agentType, String name, Node node, int capacity, int load) {
+    public Port(AgentType agentType, String name, Node node, int capacity) {
         super(agentType, node.getCoordinates());
 
         this.node = node;
         this.name = name;
         this.cargoCapacity = capacity;
-        this.cargoLoad = load;
+        this.cargoLoad = 0;
+        for (int i = 0; i < CARGO_INITIALISATION_MULTIPLIER; i++) {
+            produceCargo();
+        }
 
         this.dockCapacity = (int)Math.rint(capacity * CAPACITY_PORT_SIZE_RATIO);
 
@@ -85,7 +96,7 @@ public abstract class Port extends Agent implements Carrier {
         this.cargoLoad = load;
     }
 
-    public void updatePort(){
+    public void updatePort(int multiplier){
 
         // ships will be added to this list if they are no longer managed by this port
         // after this update
@@ -102,7 +113,7 @@ public abstract class Port extends Agent implements Carrier {
                 case UNLOADING_CARGO:
                     // do one tick of moving cargo from docked ships
                     System.out.println(String.format("Before Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
-                    this.unloadDockedShip(s);
+                    this.unloadDockedShip(s, multiplier);
                     System.out.println(String.format("After Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     break;
 
@@ -121,7 +132,7 @@ public abstract class Port extends Agent implements Carrier {
                 case LOADING_CARGO:
                     // do one tick of moving cargo onto docked ships
                     System.out.println(String.format("Before loading %s has %d cargo", this.name, this.cargoLoad));
-                    this.loadDockedShip(s);
+                    this.loadDockedShip(s, multiplier);
                     System.out.println(String.format("after loading %s has %d cargo", this.name, this.cargoLoad));
                     break;
 
@@ -140,20 +151,32 @@ public abstract class Port extends Agent implements Carrier {
         // currently at port. Bid for additional ships to travel to the dock
         this.bidForShips();
 
+        produceCargo();
     }
 
-    private void unloadDockedShip(Ship ship){
+    private void produceCargo() {
+        int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
+        if (this.cargoCapacity < this.cargoLoad + newCargo) {
+            // If would generate more than the capacity of the port, limit the amount generated
+            newCargo = this.cargoLoad + newCargo - this.cargoCapacity;
+        }
+        this.cargoLoad += newCargo;
+    }
+
+    private void unloadDockedShip(Ship ship, int multiplier){
         int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
+        requestedUnload *= multiplier;
         int amountUnloaded = ship.unloadCargo(requestedUnload);
         if (ship.isEmpty()) {
             ship.setState(Ship.ShipState.IDLE);
         }
 
-        // notify the amount of cargo that has been consumed to the "Cargo producer"
+        // TODO notify the amount of cargo that has been consumed to the "Cargo producer"
     }
 
-    private void loadDockedShip(Ship ship) {
+    private void loadDockedShip(Ship ship, int multiplier) {
         int requestedLoad = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
+        requestedLoad *= multiplier;
         int amountOverCapacity = ship.loadCargo(requestedLoad);
 
         this.cargoLoad -= requestedLoad;
@@ -228,6 +251,12 @@ public abstract class Port extends Agent implements Carrier {
         }
         if (bestBid > 0) {
 
+            if (this.equals(p)) { // if searching from existing port set the ship state to arrived begin
+                this.managedShips.get(bestBidIndex).setState(Ship.ShipState.ARRIVED);
+                return true;
+            }
+
+            // search the routes from the remote port for a valid path back to here
             for (Route route : p.getRoutes().get(this)) {
                 if (route.isActive()) {
                     // transfer control of ship and assign route

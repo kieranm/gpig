@@ -66,7 +66,6 @@ public class Simulation {
         Ship s = new FreightShip(c, 5, 0);
         s.setState(Ship.ShipState.IDLE);
         ports.get("Liverpool").addShip(s);
-        ports.get("Dublin").setLoad(5);
         ships.add(s);
 
         // Merge port and ship agents
