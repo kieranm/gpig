@@ -9,12 +9,12 @@ import domain.world.Node;
  */
 public class OffshorePort extends Port {
 
-    public OffshorePort(String name, Node node, int capacity, int load) {
-        super(AgentType.SMART_PORT, name, node, capacity, load);
+    public OffshorePort(String name, Node node, int capacity) {
+        super(AgentType.SMART_PORT, name, node, capacity);
     }
 
     @Override
-    public void tick(World world) {
+    public void tick(World world, int multiplier) {
         this.updatePort(multiplier);
     }
 }

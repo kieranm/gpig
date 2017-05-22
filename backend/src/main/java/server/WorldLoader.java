@@ -180,11 +180,11 @@ class WorldLoader {
             latitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(1);
             longitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(0);
             portNode = this.createNode(latitude, longitude);
+            // TODO check the type of port to create
             port = new CoastalPort(
                     name,
                     portNode,
-                    jPort.getJSONObject("properties").getInt("capacity"),
-                    0
+                    jPort.getJSONObject("properties").getInt("capacity")
             );
 
             portAgents.put(name, port);

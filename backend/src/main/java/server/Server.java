@@ -1,13 +1,6 @@
 package server;
 
-import org.eclipse.jetty.websocket.api.Session;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static spark.Spark.init;
-import static spark.Spark.staticFiles;
-import static spark.Spark.webSocket;
+import static spark.Spark.*;
 
 /**
  * @author Oliver Lea
