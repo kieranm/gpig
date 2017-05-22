@@ -8,6 +8,10 @@ import ControlPanel from './control_panel'
 // Set your mapbox token here
 const MAPBOX_TOKEN =
     "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
+const bar_width = 0.0008;
+const bar_height = 0.0005;
+const padding_width = bar_width/3;
+const padding_height = bar_height/3;
 
 export default class Root extends Component {
 
@@ -21,7 +25,11 @@ export default class Root extends Component {
             },
             mapStyle: "dark",
             ships: [],
-            coastal_ports: [],
+            portBases: [],
+            northEastPortBars: [],
+            southEastPortBars: [],
+            southWestPortBars: [],
+            northWestPortBars: [],
             time: 0
         };
 
@@ -64,66 +72,94 @@ export default class Root extends Component {
         return new_ship;
     }
 
-    coastalPort(port) {
-        // Add coastal port or change its load
-        var new_port;
-        var found = false;
+    portBase(port) {
+        var latitude = port.coordinates.latitude;
+        var longitude = port.coordinates.longitude;
 
-        const bar_width = 0.001;
-        const bar_height = 0.001;
-        const initial_port_height = 500;
+        for (var j = 0; j < this.state.portBases.length; j++) {
+            var target_port = this.state.portBases[j];
+            if (port.id == target_port.id) {
+                return target_port;
+            }
+        }
+
+        return {
+            id: port.id,
+            height: 20,
+            polygon: [
+                [longitude - (4*bar_width), latitude + (4*bar_height)],
+                [longitude + (4*bar_width), latitude + (4*bar_height)],
+                [longitude + (4*bar_width), latitude - (4*bar_height)],
+                [longitude - (4*bar_width), latitude - (4*bar_height)],
+                [longitude - (4*bar_width), latitude + (4*bar_height)],
+            ]
+        };
+
+    }
+
+    portBar(direction, port) {
+
+        var polygon;
+        var height;
 
         var latitude = port.coordinates.latitude;
         var longitude = port.coordinates.longitude;
 
-        for (var j = 0; j < this.state.coastal_ports.length; j++) {
-            var target_port = this.state.coastal_ports[j];
-            if (port.id == target_port.id) {
-                found = true;
-
-                var height;
-                if(target_port.height < 1000) {
-                    height = target_port.height + 10;
-                } else {
-                    height = 0;
-                }
-
-                new_port = {
-                    id: port.id,
-                    height: height,
-                    polygon: [
-                        [longitude - bar_width, latitude + bar_height],
-                        [longitude + bar_width, latitude + bar_height],
-                        [longitude + bar_width, latitude - bar_height],
-                        [longitude - bar_width, latitude - bar_height],
-                        [longitude - bar_width, latitude + bar_height],
-                    ]
-                };
-            }
+        if (direction === "NE") {
+            polygon = [
+                [longitude + padding_width, latitude + padding_height],
+                [longitude + padding_width, latitude + (2*bar_height) + padding_height],
+                [longitude + (2*bar_width) + padding_width, latitude + (2*bar_height) + padding_height],
+                [longitude + (2*bar_width) + padding_width, latitude + padding_height],
+                [longitude + padding_width, latitude + padding_height],
+            ];
+            height = 1700;
+        } else if (direction == "SE") {
+            polygon = [
+                [longitude + padding_width, latitude - padding_height],
+                [longitude + (2*bar_width) + padding_width, latitude - padding_height],
+                [longitude + (2*bar_width) + padding_width, latitude - (2*bar_height) - padding_height],
+                [longitude + padding_width, latitude - (2*bar_height) - padding_height],
+                [longitude + padding_width, latitude - padding_height],
+            ];
+            height = 1300
+        } else if (direction == "SW") {
+            polygon = [
+                [longitude - padding_width, latitude - padding_height],
+                [longitude - padding_width, latitude - (2*bar_height) - padding_height],
+                [longitude - (2*bar_width) - padding_width, latitude - (2*bar_height) - padding_height],
+                [longitude - (2*bar_width) - padding_width, latitude - padding_height],
+                [longitude - padding_width, latitude - padding_height],
+            ];
+            height = 1000;
+        } else {
+            polygon = [
+                [longitude - padding_width, latitude + padding_height],
+                [longitude - (2*bar_width) - padding_width, latitude + padding_height],
+                [longitude - (2*bar_width) - padding_width, latitude + (2*bar_height) + padding_height],
+                [longitude - padding_width, latitude + (2*bar_height) + padding_height],
+                [longitude - padding_width, latitude + padding_height],
+            ];
+            height = 1500;
         }
 
-        if(!found) {
-            new_port = {
-                id: port.id,
-                height: initial_port_height,
-                polygon: [
-                    [longitude - bar_width, latitude + bar_height],
-                    [longitude + bar_width, latitude + bar_height],
-                    [longitude + bar_width, latitude - bar_height],
-                    [longitude - bar_width, latitude - bar_height],
-                    [longitude - bar_width, latitude + bar_height],
-                ]
-            };
-        }
-
-        return new_port;
+        return {
+            id: port.id,
+            height: height,
+            polygon: polygon
+        };
     }
+
 
     processAgents(d) {
         // Parse the update from the backend
 
         var ships = [];
-        var coastal_ports = [];
+        var portBases = [];
+        var northEastPortBars = [];
+        var southEastPortBars = [];
+        var southWestPortBars = [];
+        var northWestPortBars = [];
 
         for (var i = 0; i < d.agents.length; i++) {
             var agent = d.agents[i];
@@ -131,13 +167,21 @@ export default class Root extends Component {
             if (agent.type === "FREIGHT_SHIP") {
                 ships.push(this.freightShip(agent));
             } else if (agent.type === "LAND_PORT") {
-                coastal_ports.push(this.coastalPort(agent));
+                portBases.push(this.portBase(agent));
+                northEastPortBars.push(this.portBar("NE", agent));
+                southEastPortBars.push(this.portBar("SE", agent));
+                southWestPortBars.push(this.portBar("SW", agent));
+                northWestPortBars.push(this.portBar("NW", agent));
             }
         }
 
         this.setState({
             ships: ships,
-            coastal_ports: coastal_ports
+            portBases: portBases,
+            northEastPortBars: northEastPortBars,
+            southEastPortBars: southEastPortBars,
+            southWestPortBars: southWestPortBars,
+            northWestPortBars: northWestPortBars
         });
 
     }
@@ -191,7 +235,17 @@ export default class Root extends Component {
     }
 
     render() {
-        const {viewport, ships, coastal_ports, time} = this.state;
+        const {
+            viewport,
+            ships,
+            portBases,
+            northEastPortBars,
+            southEastPortBars,
+            southWestPortBars,
+            northWestPortBars,
+            time
+        } = this.state;
+
         var {mapStyle} = this.state;
         var actualMapStyleUrl = "";
 
@@ -217,7 +271,11 @@ export default class Root extends Component {
                     mapboxApiAccessToken={MAPBOX_TOKEN}>
                     <DeckGLOverlay viewport={viewport}
                                    ships={ships}
-                                   coastal_ports={coastal_ports}
+                                   portBases={portBases}
+                                   northEastPortBars={northEastPortBars}
+                                   southEastPortBars={southEastPortBars}
+                                   southWestPortBars={southWestPortBars}
+                                   northWestPortBars={northWestPortBars}
                                    time={time}
                     />
                 </MapGL>
