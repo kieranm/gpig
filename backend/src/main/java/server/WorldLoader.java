@@ -1,8 +1,13 @@
 package server;
 
 import domain.port.CoastalPort;
+import domain.port.OffshorePort;
 import domain.port.Port;
+import domain.util.AgentType;
 import domain.util.Coordinates;
+import domain.vessel.FreightShip;
+import domain.vessel.Ship;
+import domain.vessel.SmartShip;
 import domain.world.Node;
 import domain.world.Route;
 import org.json.JSONArray;
@@ -29,6 +34,10 @@ class WorldLoader {
     private List<JSONObject> offshorePorts = new ArrayList<>();
     private List<JSONObject> lanes = new ArrayList<>();
     private Map<String, Port> portAgents = new HashMap<>();
+
+    Map<String, Port> getPorts() {
+        return this.portAgents;
+    }
 
     WorldLoader(String datasetID) throws IOException {
 
@@ -233,8 +242,100 @@ class WorldLoader {
 
     }
 
-    Map<String, Port> getPorts() {
-        return this.portAgents;
+    /**
+     *  relies on the existence of the fully intialised ports, so ships may be generated at their location
+     *
+     * @return
+     */
+    public List<Ship> generateShips(int numberOfShips) {
+        // initialise probabilities based on capacity of the ports
+        Map<Port, Double> probabilities = new HashMap<>();
+
+        // calculate total capacity of all ports
+        double total = 0;
+        for (Port p : this.portAgents.values()) { total += p.getCapacity(); }
+
+        // create map of ports to probabilities
+        for (Port p : this.portAgents.values()) {
+            probabilities.put(p, ((double) p.getCapacity()) / total);
+        }
+
+        List<Ship> ships = new ArrayList<>();
+        for (int i = 0; i < numberOfShips; i++) {
+
+            // weighted random selection of port
+            double randomVal = Math.random();
+            for (Port p : this.portAgents.values()) {
+                randomVal -= probabilities.get(p);
+                if (randomVal < 0) {
+                    try {
+                        ships.add(spawnShip(p));
+                    } catch (NoShipSpawnedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
+        return ships;
     }
 
+    public class NoShipSpawnedException extends Exception {}
+
+    private Ship spawnShip(Port atPort) throws NoShipSpawnedException {
+        Coordinates c = new Coordinates(
+                atPort.getCoordinates().getLatitude(),
+                atPort.getCoordinates().getLongitude()
+        );
+
+        // check if the port is a coastal port only serviced by offshore, if so produce a smartship™
+        AgentType shiptype = AgentType.FREIGHT_SHIP;
+        if (atPort instanceof CoastalPort) {
+            boolean isServicedByOffshore = true;
+            for (Port p : atPort.getRoutes().keySet()) {
+                if (!(p instanceof OffshorePort)) {
+                    isServicedByOffshore = false;
+                }
+            }
+            if (isServicedByOffshore) {
+                shiptype = AgentType.SMART_SHIP;
+            }
+        }
+
+        // Randomly select a ship capacity to be spawned
+        // currently each ship will be classed as small, medium, or large
+        double randomVal = Math.random();
+        double numTypes = 3; // TODO nicer way to randomise the ship size
+        int type = 0;
+        for (; type < numTypes; type++) {
+            randomVal -= (1.0 / numTypes);
+            if (randomVal < 0) {
+                break;
+            }
+        }
+
+        // create ship based on port type and selected ship size
+        Ship s = createShip(shiptype, c, type);
+        s.setState(Ship.ShipState.IDLE);
+        atPort.addShip(s);
+
+        return s;
+    }
+
+    private Ship createShip(AgentType shipType, Coordinates c, int sizeClass) throws NoShipSpawnedException {
+        if (shipType == AgentType.FREIGHT_SHIP) {
+            switch (sizeClass) {
+                case 0: return new FreightShip(c, FreightShip.SMALL_CAPACITY);
+                case 1: return new FreightShip(c, FreightShip.MEDIUM_CAPACITY);
+                case 2: return new FreightShip(c, FreightShip.LARGE_CAPACITY);
+            }
+        } else if (shipType == AgentType.SMART_SHIP) {
+            switch (sizeClass) {
+                case 0: return new SmartShip(c, SmartShip.SMALL_CAPACITY);
+                case 1: return new SmartShip(c, SmartShip.MEDIUM_CAPACITY);
+                case 2: return new SmartShip(c, SmartShip.LARGE_CAPACITY);
+            }
+        }
+        throw new NoShipSpawnedException();
+    }
 }

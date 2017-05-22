@@ -75,7 +75,7 @@ public abstract class Port extends Agent implements Carrier {
     public boolean isFull() { return this.cargoLoad == this.cargoCapacity; }
 
     private boolean isSpaceToDock(Ship s) {
-        return this.dockLoad + s.getLoad() <= this.dockCapacity;
+        return this.dockLoad + s.getCapacity() <= this.dockCapacity;
     }
 
     public void addShip(Ship s) {
@@ -127,6 +127,7 @@ public abstract class Port extends Agent implements Carrier {
                     }
                     break;
                 case WAITING_LOADING:
+                    //TODO should be FIFO currently first fit
                     this.updateWaitingShip(s);
                     break;
                 case LOADING_CARGO:
@@ -168,6 +169,7 @@ public abstract class Port extends Agent implements Carrier {
         requestedUnload *= multiplier;
         int amountUnloaded = ship.unloadCargo(requestedUnload);
         if (ship.isEmpty()) {
+            this.dockLoad -= ship.getCapacity();
             ship.setState(Ship.ShipState.IDLE);
         }
 
@@ -183,6 +185,7 @@ public abstract class Port extends Agent implements Carrier {
         this.cargoLoad += amountOverCapacity; // add back cargo the ship couldn't fit
         if (this.isEmpty() || ship.isFull()) {
 
+            this.dockLoad -= ship.getCapacity();
             // Start ship on journey
             generateRoute(ship);
         }
@@ -289,9 +292,11 @@ public abstract class Port extends Agent implements Carrier {
                         destination.addShip(s);
                         s.assignRoute(route.getNodes());
                         this.removedShips.add(s);
+                        return;
 
                     }
                 }
+
             }
         }
     }
