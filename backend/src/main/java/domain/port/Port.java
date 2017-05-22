@@ -102,13 +102,20 @@ public abstract class Port extends Agent implements Carrier {
         // after this update
         removedShips = new ArrayList<>();
 
+        boolean isFrontOfQueue = true; // flag is unset after the first waiting ship is addressed (FIFO)
+        // TODO cheap "collaboration" if we drop the fifo queue for first fit in OceanX approach
+
         for (Ship s : managedShips) {
 
             switch(s.getState()) {
                 // Import
                 case WAITING_UNLOADING:
                     // move any waiting ships into spaces made available this tick
-                    this.updateWaitingShip(s);
+                    if (isFrontOfQueue) {
+                        // if ship is serviced, allow the next ship to be considered (function returns true)
+                        // if ship still waiting function returns false.
+                        isFrontOfQueue = this.updateWaitingShip(s);
+                    }
                     break;
                 case UNLOADING_CARGO:
                     // do one tick of moving cargo from docked ships
@@ -127,8 +134,11 @@ public abstract class Port extends Agent implements Carrier {
                     }
                     break;
                 case WAITING_LOADING:
-                    //TODO should be FIFO currently first fit
-                    this.updateWaitingShip(s);
+                    if (isFrontOfQueue) {
+                        // if ship is serviced, allow the next ship to be considered (function returns true)
+                        // if ship still waiting function returns false.
+                        isFrontOfQueue = this.updateWaitingShip(s);
+                    }
                     break;
                 case LOADING_CARGO:
                     // do one tick of moving cargo onto docked ships
@@ -191,7 +201,7 @@ public abstract class Port extends Agent implements Carrier {
         }
     }
 
-    private void updateWaitingShip(Ship ship){
+    private boolean updateWaitingShip(Ship ship){
 
         if (isSpaceToDock(ship)) {
             this.dockLoad += ship.getCapacity();
@@ -201,7 +211,10 @@ public abstract class Port extends Agent implements Carrier {
             } else { // Ship state == WAITING_UNLOADING
                 ship.setState(Ship.ShipState.UNLOADING_CARGO);
             }
+
+            return true;
         }
+        return false;
     }
 
     private void bidForShips() {
