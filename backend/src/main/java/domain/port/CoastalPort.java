@@ -15,7 +15,6 @@ public class CoastalPort extends Port {
 
     @Override
     public void tick(World world, int multiplier) {
-        this.updateDocks(multiplier);
-        // TODO, extend potentially
+        this.updatePort(multiplier);
     }
 }

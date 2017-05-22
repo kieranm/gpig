@@ -7,7 +7,6 @@ import domain.util.Coordinates;
 import domain.world.Node;
 import org.json.JSONObject;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,10 +27,12 @@ public abstract class Ship extends Agent implements Carrier {
 
     public enum ShipState{
         IDLE,
-        WAITING,
+        WAITING_UNLOADING,
         UNLOADING_CARGO,
+        WAITING_LOADING,
         LOADING_CARGO,
         TRAVELING,
+        ARRIVED,
     }
 
     public Ship(AgentType agentType, Coordinates initialLoc, int capacity, int load) {
@@ -48,6 +49,9 @@ public abstract class Ship extends Agent implements Carrier {
 
     public ShipState getState() { return this.state; }
 
+    public boolean isEmpty() { return this.load == 0; }
+    public boolean isFull() { return this.load == this.capacity; }
+
     @Override
     public int getCapacity() {
         return capacity;
@@ -56,6 +60,13 @@ public abstract class Ship extends Agent implements Carrier {
     @Override
     public int getLoad() {
         return load;
+    }
+
+    public int getBid(int cargoLeftToBeMoved) {
+        if (this.capacity >= cargoLeftToBeMoved) {
+            return cargoLeftToBeMoved - (this.capacity - cargoLeftToBeMoved);
+        }
+        return this.capacity;
     }
 
     public void followRoute(int multiplier) {
@@ -67,8 +78,9 @@ public abstract class Ship extends Agent implements Carrier {
             // if the end of the route has been reached attempt to dock
             // else set the next route point
             if (routeEndReached()) {
-               // TODO -- add docking
-                startReturnTrip();
+                // Ship moves to the arrived state waiting to be added to the destinations port queue
+                this.setState(ShipState.ARRIVED);
+                return;
             } else {
                 nextRouteStop();
             }
@@ -108,16 +120,23 @@ public abstract class Ship extends Agent implements Carrier {
         }
     }
 
-    public void startReturnTrip() {
-        Collections.reverse(route);
-        startRoute(route);
-    }
-
-    public void startRoute(List<Node> route) {
+    public void assignRoute(List<Node> route) {
         this.state = ShipState.TRAVELING;
         this.route = route;
         this.next = route.get(1);
         calculatePositionUpdateVector();
+    }
+
+    public int unloadCargo(int requestedAmount) {
+        int amountRemoved = Math.min(requestedAmount, this.getLoad());
+        this.load -= amountRemoved;
+        return amountRemoved;
+    }
+
+    public int loadCargo(int requestedAmount) {
+        int amountLoaded = Math.min(requestedAmount, this.capacity - this.load);
+        this.load += amountLoaded;
+        return requestedAmount - amountLoaded;
     }
 
     @Override

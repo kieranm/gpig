@@ -14,8 +14,7 @@ public class OffshorePort extends Port {
     }
 
     @Override
-    public void tick(World world, int multiplier) {
-        this.updateDocks(multiplier);
-        // TODO, extend potentially
+    public void tick(World world) {
+        this.updatePort(multiplier);
     }
 }
