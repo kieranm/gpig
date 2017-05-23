@@ -339,24 +339,24 @@ public abstract class Port extends Agent implements Carrier {
         return managedShips;
     }
 
-    private long getContainerLoad() {
+    private long calculateContainerLoad() {
         double containerLoad = (double) cargoLoad / (double) cargoCapacity;
-        return Math.round(containerLoad * 10.0);
+        return Math.round(containerLoad * 1000.0);
     }
 
-    private long getDockLoad() {
+    private long calculateDockLoad() {
         double dl = (double) dockLoad / (double) dockCapacity;
-        return Math.round(dl * 10.0);
+        return Math.round(dl * 1000.0);
     }
 
-    private long getQueueLoad() {
+    private long calculateQueueLoad() {
         int total = managedShips.size();
         if (total == 0) return 0;
         long queueing = managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_UNLOADING)
                 .count();
         double prop = (double) queueing / (double) total;
-        return Math.round(prop * 10.0);
+        return Math.round(prop * 1000.0);
     }
 
     private long getThroughput() {
@@ -366,9 +366,9 @@ public abstract class Port extends Agent implements Carrier {
     @Override
     public JSONObject toJSON() {
         Map<String, Long> m = new HashMap<>(4);
-        m.put("NW", getContainerLoad());
-        m.put("NE", getDockLoad());
-        m.put("SW", getQueueLoad());
+        m.put("NW", calculateContainerLoad());
+        m.put("NE", calculateDockLoad());
+        m.put("SW", calculateQueueLoad());
         m.put("SE", getThroughput());
         return super.toJSON().put("statistics", m);
     }
