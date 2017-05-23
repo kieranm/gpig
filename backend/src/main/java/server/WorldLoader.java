@@ -291,10 +291,10 @@ class WorldLoader {
         // check if the port is a coastal port only serviced by offshore, if so produce a smartship™
         AgentType shiptype = AgentType.FREIGHT_SHIP;
         if (atPort instanceof CoastalPort) {
-            boolean isServicedByOffshore = true;
+            boolean isServicedByOffshore = false;
             for (Port p : atPort.getRoutes().keySet()) {
-                if (!(p instanceof OffshorePort)) {
-                    isServicedByOffshore = false;
+                if (p instanceof OffshorePort) {
+                    isServicedByOffshore = true;
                 }
             }
             if (isServicedByOffshore) {
@@ -304,15 +304,8 @@ class WorldLoader {
 
         // Randomly select a ship capacity to be spawned
         // currently each ship will be classed as small, medium, or large
-        double randomVal = Math.random();
-        double numTypes = 3; // TODO nicer way to randomise the ship size
-        int type = 0;
-        for (; type < numTypes; type++) {
-            randomVal -= (1.0 / numTypes);
-            if (randomVal < 0) {
-                break;
-            }
-        }
+        double numTypes = 3; // so 3 types of ship
+        int type = ((int) (Math.random() * numTypes));
 
         // create ship based on port type and selected ship size
         Ship s = createShip(shiptype, c, type);
