@@ -35,10 +35,10 @@ public abstract class Ship extends Agent implements Carrier {
         ARRIVED,
     }
 
-    public Ship(AgentType agentType, Coordinates initialLoc, int capacity, int load) {
+    public Ship(AgentType agentType, Coordinates initialLoc, int capacity) {
         super(agentType, initialLoc);
         this.capacity = capacity;
-        this.load = load;
+        this.load = 0;
     }
 
     public void setNext(Node next) {
@@ -69,6 +69,8 @@ public abstract class Ship extends Agent implements Carrier {
             }
             return this.capacity;
         }
+        //TODO add logic to stop freight ships bidding on "internal" smart ship routes
+
         return 0;
     }
 
@@ -139,7 +141,7 @@ public abstract class Ship extends Agent implements Carrier {
     public int loadCargo(int requestedAmount) {
         int amountLoaded = Math.min(requestedAmount, this.capacity - this.load);
         this.load += amountLoaded;
-        return requestedAmount - amountLoaded;
+        return amountLoaded;
     }
 
     @Override

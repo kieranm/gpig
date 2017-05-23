@@ -14,8 +14,8 @@ public class FreightShip extends Ship {
     public static final int MEDIUM_CAPACITY = 500;
     public static final int LARGE_CAPACITY = 1000;
 
-    public FreightShip(Coordinates initialCoord, int capacity, int load) {
-        super(AgentType.FREIGHT_SHIP, initialCoord, capacity, load);
+    public FreightShip(Coordinates initialCoord, int capacity) {
+        super(AgentType.FREIGHT_SHIP, initialCoord, capacity);
     }
 
     @Override
