@@ -3,6 +3,7 @@ package domain;
 import domain.util.AgentType;
 import domain.util.Coordinates;
 import org.json.JSONObject;
+import server.Statistics;
 import utils.IdGenerator;
 import utils.JSONable;
 
@@ -15,6 +16,8 @@ public abstract class Agent implements JSONable {
     private boolean alive;
     private Coordinates coordinates;
     private AgentType agentType;
+
+    protected Statistics stats;
 
     public Agent(AgentType agentType, Coordinates initialCoordinates) {
         this.id = IdGenerator.getId();
@@ -51,5 +54,9 @@ public abstract class Agent implements JSONable {
 
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public void setStats(Statistics stats) {
+        this.stats = stats;
     }
 }

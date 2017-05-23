@@ -20,8 +20,13 @@ public class FreightShip extends Ship {
 
     @Override
     public void tick(World world, int multiplier) {
-        if (this.getState() == ShipState.TRAVELING) {
-            this.followRoute(multiplier);
+        switch(this.getState()) {
+            case WAITING_UNLOADING:
+                this.addWaitingTime(multiplier);
+                break;
+            case TRAVELING:
+                this.followRoute(multiplier);
+                break;
         }
     }
 

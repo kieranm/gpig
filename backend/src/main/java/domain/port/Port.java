@@ -7,6 +7,7 @@ import domain.util.PortDistanceComparator;
 import domain.vessel.Ship;
 import domain.world.Node;
 import domain.world.Route;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -37,7 +38,7 @@ public abstract class Port extends Agent implements Carrier {
     private int dockCapacity;
     private int dockLoad = 0;
 
-    private List<Ship> managedShips = new ArrayList<>();;
+    private List<Ship> managedShips = new ArrayList<>();
     private List<Ship> removedShips = new ArrayList<>();
 
     public Port(AgentType agentType, String name, Node node, int capacity) {
@@ -71,8 +72,13 @@ public abstract class Port extends Agent implements Carrier {
         return name;
     }
 
-    public boolean isEmpty() { return this.cargoLoad == 0; }
-    public boolean isFull() { return this.cargoLoad == this.cargoCapacity; }
+    public boolean isEmpty() {
+        return this.cargoLoad == 0;
+    }
+
+    public boolean isFull() {
+        return this.cargoLoad == this.cargoCapacity;
+    }
 
     private boolean isSpaceToDock(Ship s) {
         return this.dockLoad + s.getCapacity() <= this.dockCapacity;
@@ -173,6 +179,7 @@ public abstract class Port extends Agent implements Carrier {
         int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
         requestedUnload *= multiplier;
         int amountUnloaded = ship.unloadCargo(requestedUnload);
+        this.stats.addDeliveredCargo(amountUnloaded);
         if (ship.isEmpty()) {
             this.dockLoad -= ship.getCapacity();
             ship.setState(Ship.ShipState.IDLE);
@@ -302,12 +309,10 @@ public abstract class Port extends Agent implements Carrier {
 
                 for (Route route : this.routes.get(destination)) {
                     if (route.isActive()) {
-
                         destination.addShip(s);
                         s.assignRoute(route.getNodes());
                         this.removedShips.add(s);
                         return;
-
                     }
                 }
 
@@ -352,4 +357,43 @@ public abstract class Port extends Agent implements Carrier {
     public List<Ship> getManagedShips() {
         return managedShips;
     }
+
+    private long calculateContainerLoad() {
+        double containerLoad = (double) cargoLoad / (double) cargoCapacity;
+        return Math.round(containerLoad * 1000.0);
+    }
+
+    private long calculateDockLoad() {
+        double dl = (double) dockLoad / (double) dockCapacity;
+        return Math.round(dl * 1000.0);
+    }
+
+    private long calculateQueueLoad() {
+        int total = managedShips.size();
+        if (total == 0) return 0;
+        long queueing = managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.WAITING_UNLOADING)
+                .count();
+        double prop = (double) queueing / (double) total;
+        return Math.round(prop * 1000.0);
+    }
+
+    private long calculateThroughput() {
+        return 0l;
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        Map<String, JSONObject> m = new HashMap<>(4);
+        m.put("NW", new JSONObject().put("name", "Container Load").put("value", calculateContainerLoad()));
+        m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoad()));
+        m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoad()));
+        m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughput()));
+        JSONObject debugging = new JSONObject();
+        return super.toJSON()
+                .put("name", this.name)
+                .put("statistics", m)
+                .put("debug", debugging);
+    }
+
 }
