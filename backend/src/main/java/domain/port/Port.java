@@ -173,6 +173,7 @@ public abstract class Port extends Agent implements Carrier {
         int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
         requestedUnload *= multiplier;
         int amountUnloaded = ship.unloadCargo(requestedUnload);
+        this.stats.addDeliveredCargo(amountUnloaded);
         if (ship.isEmpty()) {
             ship.setState(Ship.ShipState.IDLE);
         }
@@ -187,7 +188,6 @@ public abstract class Port extends Agent implements Carrier {
 
         this.cargoLoad -= requestedLoad;
         this.cargoLoad += amountOverCapacity; // add back cargo the ship couldn't fit
-        this.stats.addDeliveredCargo(requestedLoad - amountOverCapacity);
         if (this.isEmpty() || ship.isFull()) {
 
             // Start ship on journey
@@ -341,13 +341,37 @@ public abstract class Port extends Agent implements Carrier {
         return managedShips;
     }
 
+    private long getContainerLoad() {
+        double containerLoad = (double) cargoLoad / (double) cargoCapacity;
+        return Math.round(containerLoad * 10.0);
+    }
+
+    private long getDockLoad() {
+        double dl = (double) dockLoad / (double) dockCapacity;
+        return Math.round(dl * 10.0);
+    }
+
+    private long getQueueLoad() {
+        int total = managedShips.size();
+        if (total == 0) return 0;
+        long queueing = managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.WAITING_UNLOADING)
+                .count();
+        double prop = (double) queueing / (double) total;
+        return Math.round(prop * 10.0);
+    }
+
+    private long getThroughput() {
+        return 0l;
+    }
+
     @Override
     public JSONObject toJSON() {
-        Map<String, Integer> m = new HashMap<>(4);
-        m.put("NW", 10);
-        m.put("NE", 50);
-        m.put("SW", 100);
-        m.put("SE", 500);
+        Map<String, Long> m = new HashMap<>(4);
+        m.put("NW", getContainerLoad());
+        m.put("NE", getDockLoad());
+        m.put("SW", getQueueLoad());
+        m.put("SE", getThroughput());
         return super.toJSON().put("statistics", m);
     }
 
