@@ -59,6 +59,8 @@ export default class DeckGLOverlay extends Component {
                 filled: true,
                 getElevation: d => d.height,
                 lightSettings: LIGHT_SETTINGS,
+                pickable: Boolean(this.props.onHover),
+                onHover: this.props.onHover
             }),
 
             // North East Port Bars
@@ -69,7 +71,9 @@ export default class DeckGLOverlay extends Component {
                 extruded: true,
                 filled: true,
                 getElevation: d => d.height,
-                lightSettings: LIGHT_SETTINGS
+                lightSettings: LIGHT_SETTINGS,
+                pickable: Boolean(this.props.onHover),
+                onHover: this.props.onHover
             }),
 
             // South East Port Bars
@@ -80,7 +84,9 @@ export default class DeckGLOverlay extends Component {
                 extruded: true,
                 filled: true,
                 getElevation: d => d.height,
-                lightSettings: LIGHT_SETTINGS
+                lightSettings: LIGHT_SETTINGS,
+                pickable: Boolean(this.props.onHover),
+                onHover: this.props.onHover
             }),
 
             // South West Port Bars
@@ -91,7 +97,9 @@ export default class DeckGLOverlay extends Component {
                 extruded: true,
                 filled: true,
                 getElevation: d => d.height,
-                lightSettings: LIGHT_SETTINGS
+                lightSettings: LIGHT_SETTINGS,
+                pickable: Boolean(this.props.onHover),
+                onHover: this.props.onHover
             }),
 
             // North West Port Bars
@@ -102,7 +110,9 @@ export default class DeckGLOverlay extends Component {
                 extruded: true,
                 filled: true,
                 getElevation: d => d.height,
-                lightSettings: LIGHT_SETTINGS
+                lightSettings: LIGHT_SETTINGS,
+                pickable: Boolean(this.props.onHover),
+                onHover: this.props.onHover
             }),
 
         ];

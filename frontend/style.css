@@ -51,3 +51,11 @@ nav span {
 .control.panel button.fluid.button {
     margin-bottom: 2px;
 }
+
+.tooltip {
+    z-index: 2000;
+    background-color: rgba(0,0,0, 0.9);
+    color: white;
+    padding: 20px;
+    position: absolute;
+}

@@ -30,6 +30,7 @@ export default class Root extends Component {
             southEastPortBars: [],
             southWestPortBars: [],
             northWestPortBars: [],
+            hoveredFeature: null,
             time: 0
         };
 
@@ -234,6 +235,21 @@ export default class Root extends Component {
         this.setState({mapStyle: style});
     }
 
+    _onHover({x, y, object}) {
+        console.log(object);
+        this.setState({hoveredFeature: object, x, y});
+    }
+
+    _renderTooltip() {
+        const {x, y, hoveredFeature} = this.state;
+        return hoveredFeature && (
+                <div className="tooltip" style={{top: y, left: x}}>
+                    <div><b>${hoveredFeature.properties.name}</b></div>
+
+                </div>
+            );
+    }
+
     render() {
         const {
             viewport,
@@ -277,7 +293,9 @@ export default class Root extends Component {
                                    southWestPortBars={southWestPortBars}
                                    northWestPortBars={northWestPortBars}
                                    time={time}
+                                   onHover={this._onHover.bind(this)}
                     />
+                    {this._renderTooltip()}
                 </MapGL>
             </div>
         );
