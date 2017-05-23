@@ -35,6 +35,7 @@ export default class Root extends Component {
             southEastPortBars: [],
             southWestPortBars: [],
             northWestPortBars: [],
+            hoveredFeature: null,
             time: 0
         };
 
@@ -81,15 +82,17 @@ export default class Root extends Component {
         var latitude = port.coordinates.latitude;
         var longitude = port.coordinates.longitude;
 
-        for (var j = 0; j < this.state.portBases.length; j++) {
-            var target_port = this.state.portBases[j];
-            if (port.id == target_port.id) {
-                return target_port;
-            }
+        var decription = "";
+        var debug = Object.entries(port.debug);
+
+        for(var i=0; i< debug.length; i++) {
+            decription += debug[i][0] + ": " + debug[i][1] + '<br/>';
         }
 
         return {
             id: port.id,
+            title: port.name,
+            description: decription,
             height: 20,
             polygon: [
                 [longitude - (4*bar_width), latitude + (4*bar_height)],
@@ -110,6 +113,10 @@ export default class Root extends Component {
         var latitude = port.coordinates.latitude;
         var longitude = port.coordinates.longitude;
 
+        var title = port.statistics[direction].name;
+        var description = port.statistics[direction].value;
+        var height = port.statistics[direction].value;
+
         if (direction === "NE") {
             polygon = [
                 [longitude + padding_width, latitude + padding_height],
@@ -118,7 +125,7 @@ export default class Root extends Component {
                 [longitude + (2*bar_width) + padding_width, latitude + padding_height],
                 [longitude + padding_width, latitude + padding_height],
             ];
-            height = 1700;
+
         } else if (direction == "SE") {
             polygon = [
                 [longitude + padding_width, latitude - padding_height],
@@ -127,7 +134,7 @@ export default class Root extends Component {
                 [longitude + padding_width, latitude - (2*bar_height) - padding_height],
                 [longitude + padding_width, latitude - padding_height],
             ];
-            height = 1300
+
         } else if (direction == "SW") {
             polygon = [
                 [longitude - padding_width, latitude - padding_height],
@@ -136,7 +143,7 @@ export default class Root extends Component {
                 [longitude - (2*bar_width) - padding_width, latitude - padding_height],
                 [longitude - padding_width, latitude - padding_height],
             ];
-            height = 1000;
+
         } else {
             polygon = [
                 [longitude - padding_width, latitude + padding_height],
@@ -145,11 +152,12 @@ export default class Root extends Component {
                 [longitude - padding_width, latitude + (2*bar_height) + padding_height],
                 [longitude - padding_width, latitude + padding_height],
             ];
-            height = 1500;
         }
 
         return {
             id: port.id,
+            title: title,
+            description: description,
             height: height,
             polygon: polygon
         };
@@ -158,7 +166,6 @@ export default class Root extends Component {
 
     processAgents(d) {
         // Parse the update from the backend
-
         var ships = [];
         var portBases = [];
         var northEastPortBars = [];
@@ -299,6 +306,20 @@ export default class Root extends Component {
         }));
     }
 
+    _onHover({x, y, object}) {
+        this.setState({hoveredFeature: object, x, y});
+    }
+
+    _renderTooltip() {
+        const {x, y, hoveredFeature} = this.state;
+        return hoveredFeature && (
+                <div className="tooltip" style={{top: y, left: x}}>
+                    <div><b>{hoveredFeature.title}</b></div>
+                    <div dangerouslySetInnerHTML={{__html: hoveredFeature.description}}/>
+                </div>
+            );
+    }
+
     render() {
         const {
             viewport,
@@ -347,7 +368,9 @@ export default class Root extends Component {
                                    southWestPortBars={southWestPortBars}
                                    northWestPortBars={northWestPortBars}
                                    time={time}
+                                   onHover={this._onHover.bind(this)}
                     />
+                    {this._renderTooltip()}
                 </MapGL>
             </div>
         );
