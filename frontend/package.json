@@ -21,7 +21,6 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-map-gl": "^2.0.0",
-    "react-motion": "^0.5.0",
     "semantic-ui-react": "^0.68.3",
     "socket.io-client": "2.0.0",
     "webpack": "^2.5.1"

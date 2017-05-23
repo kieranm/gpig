@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import MapGL from 'react-map-gl';
 import DeckGLOverlay from './deckgl-overlay';
-import {Motion, spring} from 'react-motion';
 import Branding from './branding'
 import ControlPanel from './control_panel'
 
@@ -19,10 +18,16 @@ export default class Root extends Component {
         super(props);
         this.state = {
             viewport: {
-                ...DeckGLOverlay.defaultViewport,
+                longitude:  -3.87085,
+                latitude: 53.0049,
+                zoom: 6,
+                maxZoom: 16,
+                pitch: 45,
+                bearing: 0,
                 width: 500,
                 height: 500
             },
+            speed: 1,
             mapStyle: "dark",
             ships: [],
             portBases: [],
@@ -234,6 +239,66 @@ export default class Root extends Component {
         this.setState({mapStyle: style});
     }
 
+    _showScenario (scenario) {
+        if(scenario == "coastal port") {
+            this.setState({
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: 53.459204,
+                    longitude: -3.031712,
+                    zoom: 14,
+                    pitch: 45
+                }
+            });
+        }
+
+        if(scenario == "offshore port") {
+            this.setState({
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: 46.732331,
+                    longitude: -7.558594,
+                    zoom: 14,
+                    pitch: 45
+                }
+            });
+        }
+
+        if(scenario == "weather avoidance") {
+
+        }
+
+        if(scenario == "road traffic") {
+
+        }
+
+        if(scenario == "global movements") {
+            this.setState({
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: 20.210656,
+                    longitude: -34.277344,
+                    zoom: 2.5,
+                    pitch: 0
+                }
+            });
+        }
+    }
+
+    _changeMode(mode) {
+        this.connection.send(JSON.stringify({
+            message_type: "change_mode",
+            message_data: mode
+        }));
+    }
+
+    _changeSpeed(ratio) {
+        this.connection.send(JSON.stringify({
+            message_type: "change_speed",
+            message_data: ratio
+        }));
+    }
+
     render() {
         const {
             viewport,
@@ -243,10 +308,10 @@ export default class Root extends Component {
             southEastPortBars,
             southWestPortBars,
             northWestPortBars,
-            time
+            time,
+            mapStyle
         } = this.state;
 
-        var {mapStyle} = this.state;
         var actualMapStyleUrl = "";
 
         if (mapStyle == "dark") {
@@ -259,16 +324,16 @@ export default class Root extends Component {
             <div>
                 <Branding/>
                 <ControlPanel
-                    connection={this.connection}
                     mapStyleChangeCallback={this._changeMapStyle.bind(this)}
-                    activeMapStyle={mapStyle}
+                    showScenarioCallback={this._showScenario.bind(this)}
+                    changeModeCallback={this._changeMode.bind(this)}
+                    changeSpeedCallback={this._changeSpeed.bind(this)}
+                    startingSpeed={1}
+                    startingMode="legacy"
+                    startingScenario="coastal ports"
+                    startingMapStyle={mapStyle}
                 />
-                <Motion style={{
-                    latitude: spring(viewport.latitude, { stiffness: 170, damping: 26, precision: 0.000001 }),
-                    longitude: spring(viewport.longitude, { stiffness: 170, damping: 26, precision: 0.000001 })
-                }}>
-                    {({ latitude, longitude }) =>
-                        <MapGL
+                <MapGL
                     {...viewport}
                     mapStyle={actualMapStyleUrl}
                     perspectiveEnabled={true}
@@ -283,8 +348,7 @@ export default class Root extends Component {
                                    northWestPortBars={northWestPortBars}
                                    time={time}
                     />
-                </MapGL>}
-                </Motion>
+                </MapGL>
             </div>
         );
     }
