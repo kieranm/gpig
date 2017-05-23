@@ -378,18 +378,20 @@ public abstract class Port extends Agent implements Carrier {
         return Math.round(prop * 1000.0);
     }
 
-    private long getThroughput() {
+    private long calculateThroughput() {
         return 0l;
     }
 
     @Override
     public JSONObject toJSON() {
-        Map<String, Long> m = new HashMap<>(4);
-        m.put("container_load", calculateContainerLoad());
-        m.put("dock_load", calculateDockLoad());
-        m.put("queue_load", calculateQueueLoad());
-        m.put("throughput", getThroughput());
-        return super.toJSON().put("statistics", m);
+        Map<String, JSONObject> m = new HashMap<>(4);
+        m.put("NW", new JSONObject().put("name", "Container Load").put("value", calculateContainerLoad()));
+        m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoad()));
+        m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoad()));
+        m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughput()));
+        return super.toJSON()
+                .put("name", this.name)
+                .put("statistics", m);
     }
 
 }
