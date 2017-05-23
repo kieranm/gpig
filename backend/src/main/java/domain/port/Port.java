@@ -385,10 +385,10 @@ public abstract class Port extends Agent implements Carrier {
     @Override
     public JSONObject toJSON() {
         Map<String, Long> m = new HashMap<>(4);
-        m.put("NW", calculateContainerLoad());
-        m.put("NE", calculateDockLoad());
-        m.put("SW", calculateQueueLoad());
-        m.put("SE", getThroughput());
+        m.put("container_load", calculateContainerLoad());
+        m.put("dock_load", calculateDockLoad());
+        m.put("queue_load", calculateQueueLoad());
+        m.put("throughput", getThroughput());
         return super.toJSON().put("statistics", m);
     }
 
