@@ -141,7 +141,7 @@ public abstract class Ship extends Agent implements Carrier {
     public int loadCargo(int requestedAmount) {
         int amountLoaded = Math.min(requestedAmount, this.capacity - this.load);
         this.load += amountLoaded;
-        return requestedAmount - amountLoaded;
+        return amountLoaded;
     }
 
     @Override

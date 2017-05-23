@@ -119,9 +119,7 @@ public abstract class Port extends Agent implements Carrier {
                     break;
                 case UNLOADING_CARGO:
                     // do one tick of moving cargo from docked ships
-                    System.out.println(String.format("Before Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     this.unloadDockedShip(s, multiplier);
-                    System.out.println(String.format("After Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     break;
 
                 // Export
@@ -167,10 +165,7 @@ public abstract class Port extends Agent implements Carrier {
 
     private void produceCargo() {
         int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
-        if (this.cargoCapacity < this.cargoLoad + newCargo) {
-            // If would generate more than the capacity of the port, limit the amount generated
-            newCargo = this.cargoLoad + newCargo - this.cargoCapacity;
-        }
+        newCargo = Math.min(newCargo, this.cargoCapacity - this.cargoLoad);
         this.cargoLoad += newCargo;
     }
 
@@ -189,10 +184,10 @@ public abstract class Port extends Agent implements Carrier {
     private void loadDockedShip(Ship ship, int multiplier) {
         int requestedLoad = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
         requestedLoad *= multiplier;
-        int amountOverCapacity = ship.loadCargo(requestedLoad);
+        requestedLoad = Math.min(requestedLoad, this.cargoLoad);
+        int amountLoaded = ship.loadCargo(requestedLoad);
 
-        this.cargoLoad -= requestedLoad;
-        this.cargoLoad += amountOverCapacity; // add back cargo the ship couldn't fit
+        this.cargoLoad -= amountLoaded;
         if (this.isEmpty() || ship.isFull()) {
 
             this.dockLoad -= ship.getCapacity();
@@ -201,6 +196,12 @@ public abstract class Port extends Agent implements Carrier {
         }
     }
 
+    /**
+     *  if ship is serviced, the next ship will be at the front of the queue (function returns true)
+     *  if ship still waiting function returns false to stop subsequent ships being considered for docking.
+     * @param ship
+     * @return
+     */
     private boolean updateWaitingShip(Ship ship){
 
         if (isSpaceToDock(ship)) {

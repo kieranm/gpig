@@ -12,7 +12,7 @@ import java.util.*;
 
 public class Simulation {
 
-    private final long PERIOD = 200l;
+    private final long PERIOD = 20l;
     private final long INITIAL_DELAY = 1000l;
 
     // Mapbox Credentials
