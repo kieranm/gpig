@@ -168,7 +168,7 @@ public abstract class Ship extends Agent implements Carrier {
         return waitingTime;
     }
 
-    public void incWaitingTime() {
-        this.waitingTime++;
+    public void addWaitingTime(int multiplier) {
+        this.waitingTime += multiplier;
     }
 }

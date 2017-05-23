@@ -205,8 +205,6 @@ public abstract class Port extends Agent implements Carrier {
             } else { // Ship state == WAITING_UNLOADING
                 ship.setState(Ship.ShipState.UNLOADING_CARGO);
             }
-        } else {
-            ship.incWaitingTime();
         }
     }
 

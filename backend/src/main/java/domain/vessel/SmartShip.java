@@ -34,6 +34,9 @@ public class SmartShip extends Ship {
 
     @Override
     public void tick(World world, int multiplier) {
+        if (this.getState() == ShipState.WAITING_UNLOADING) {
+            this.addWaitingTime(multiplier);
+        }
         if (ind >= path.size()) {
             Collections.reverse(path);
             this.ind = 0;

@@ -13,7 +13,6 @@ public class Statistics implements JSONable {
 
     private int totalCargoDelivered;
     private int throughput;
-    private double averageWaitingTime;
 
     private Collection<Ship> ships;
 
@@ -22,7 +21,6 @@ public class Statistics implements JSONable {
     }
 
     public void nextTick() {
-        this.averageWaitingTime = 0;
         this.throughput = 0;
     }
 
