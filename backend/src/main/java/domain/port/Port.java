@@ -81,7 +81,7 @@ public abstract class Port extends Agent implements Carrier {
     }
 
     private boolean isSpaceToDock(Ship s) {
-        return this.dockLoad + s.getLoad() <= this.dockCapacity;
+        return this.dockLoad + s.getCapacity() <= this.dockCapacity;
     }
 
     public void addShip(Ship s) {
@@ -108,19 +108,24 @@ public abstract class Port extends Agent implements Carrier {
         // after this update
         removedShips = new ArrayList<>();
 
+        boolean isFrontOfQueue = true; // flag is unset after the first waiting ship is addressed (FIFO)
+        // TODO cheap "collaboration" if we drop the fifo queue for first fit in OceanX approach
+
         for (Ship s : managedShips) {
 
             switch(s.getState()) {
                 // Import
                 case WAITING_UNLOADING:
                     // move any waiting ships into spaces made available this tick
-                    this.updateWaitingShip(s);
+                    if (isFrontOfQueue) {
+                        // if ship is serviced, allow the next ship to be considered (function returns true)
+                        // if ship still waiting function returns false.
+                        isFrontOfQueue = this.updateWaitingShip(s);
+                    }
                     break;
                 case UNLOADING_CARGO:
                     // do one tick of moving cargo from docked ships
-                    System.out.println(String.format("Before Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     this.unloadDockedShip(s, multiplier);
-                    System.out.println(String.format("After Unloading Ship has %d cargo at %s", s.getLoad(), this.name));
                     break;
 
                 // Export
@@ -133,7 +138,11 @@ public abstract class Port extends Agent implements Carrier {
                     }
                     break;
                 case WAITING_LOADING:
-                    this.updateWaitingShip(s);
+                    if (isFrontOfQueue) {
+                        // if ship is serviced, allow the next ship to be considered (function returns true)
+                        // if ship still waiting function returns false.
+                        isFrontOfQueue = this.updateWaitingShip(s);
+                    }
                     break;
                 case LOADING_CARGO:
                     // do one tick of moving cargo onto docked ships
@@ -162,10 +171,7 @@ public abstract class Port extends Agent implements Carrier {
 
     private void produceCargo() {
         int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
-        if (this.cargoCapacity < this.cargoLoad + newCargo) {
-            // If would generate more than the capacity of the port, limit the amount generated
-            newCargo = this.cargoLoad + newCargo - this.cargoCapacity;
-        }
+        newCargo = Math.min(newCargo, this.cargoCapacity - this.cargoLoad);
         this.cargoLoad += newCargo;
     }
 
@@ -175,6 +181,7 @@ public abstract class Port extends Agent implements Carrier {
         int amountUnloaded = ship.unloadCargo(requestedUnload);
         this.stats.addDeliveredCargo(amountUnloaded);
         if (ship.isEmpty()) {
+            this.dockLoad -= ship.getCapacity();
             ship.setState(Ship.ShipState.IDLE);
         }
 
@@ -184,18 +191,25 @@ public abstract class Port extends Agent implements Carrier {
     private void loadDockedShip(Ship ship, int multiplier) {
         int requestedLoad = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
         requestedLoad *= multiplier;
-        int amountOverCapacity = ship.loadCargo(requestedLoad);
+        requestedLoad = Math.min(requestedLoad, this.cargoLoad);
+        int amountLoaded = ship.loadCargo(requestedLoad);
 
-        this.cargoLoad -= requestedLoad;
-        this.cargoLoad += amountOverCapacity; // add back cargo the ship couldn't fit
+        this.cargoLoad -= amountLoaded;
         if (this.isEmpty() || ship.isFull()) {
 
+            this.dockLoad -= ship.getCapacity();
             // Start ship on journey
             generateRoute(ship);
         }
     }
 
-    private void updateWaitingShip(Ship ship){
+    /**
+     *  if ship is serviced, the next ship will be at the front of the queue (function returns true)
+     *  if ship still waiting function returns false to stop subsequent ships being considered for docking.
+     * @param ship
+     * @return
+     */
+    private boolean updateWaitingShip(Ship ship){
 
         if (isSpaceToDock(ship)) {
             this.dockLoad += ship.getCapacity();
@@ -205,7 +219,10 @@ public abstract class Port extends Agent implements Carrier {
             } else { // Ship state == WAITING_UNLOADING
                 ship.setState(Ship.ShipState.UNLOADING_CARGO);
             }
+
+            return true;
         }
+        return false;
     }
 
     private void bidForShips() {
@@ -295,8 +312,10 @@ public abstract class Port extends Agent implements Carrier {
                         destination.addShip(s);
                         s.assignRoute(route.getNodes());
                         this.removedShips.add(s);
+                        return;
                     }
                 }
+
             }
         }
     }

@@ -3,8 +3,6 @@ package server;
 import domain.Agent;
 import domain.World;
 import domain.port.Port;
-import domain.util.Coordinates;
-import domain.vessel.FreightShip;
 import domain.vessel.Ship;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
@@ -14,7 +12,7 @@ import java.util.*;
 
 public class Simulation {
 
-    private final long PERIOD = 200l;
+    private final long PERIOD = 20l;
     private final long INITIAL_DELAY = 1000l;
 
     // Mapbox Credentials
@@ -56,23 +54,14 @@ public class Simulation {
         System.out.println(ports);
 
         // Create agents
-        List<Ship> ships = new ArrayList<>();
-
-        // TODO how do we generate the ships
-        Coordinates c = new Coordinates(
-                ports.get("Liverpool").getCoordinates().getLatitude(),
-                ports.get("Liverpool").getCoordinates().getLongitude()
-        );
-        Ship s = new FreightShip(c, 5, 0);
-        s.setState(Ship.ShipState.IDLE);
-        ports.get("Liverpool").addShip(s);
-        ships.add(s);
+        List<Ship> ships = loader.generateShips(100);
 
         // Merge port and ship agents
         List<Agent> agents = new ArrayList<>(ships);
         agents.addAll(ports.values());
 
         return new World(agents);
+
     }
 
     public void end() {
