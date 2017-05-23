@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MapGL from 'react-map-gl';
 import DeckGLOverlay from './deckgl-overlay';
-
+import {Motion, spring} from 'react-motion';
 import Branding from './branding'
 import ControlPanel from './control_panel'
 
@@ -263,7 +263,12 @@ export default class Root extends Component {
                     mapStyleChangeCallback={this._changeMapStyle.bind(this)}
                     activeMapStyle={mapStyle}
                 />
-                <MapGL
+                <Motion style={{
+                    latitude: spring(viewport.latitude, { stiffness: 170, damping: 26, precision: 0.000001 }),
+                    longitude: spring(viewport.longitude, { stiffness: 170, damping: 26, precision: 0.000001 })
+                }}>
+                    {({ latitude, longitude }) =>
+                        <MapGL
                     {...viewport}
                     mapStyle={actualMapStyleUrl}
                     perspectiveEnabled={true}
@@ -278,7 +283,8 @@ export default class Root extends Component {
                                    northWestPortBars={northWestPortBars}
                                    time={time}
                     />
-                </MapGL>
+                </MapGL>}
+                </Motion>
             </div>
         );
     }
