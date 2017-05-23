@@ -72,9 +72,7 @@ public class Simulation {
         List<Agent> agents = new ArrayList<>(ships);
         agents.addAll(ports.values());
 
-        World w = new World(agents);
-        return w;
-
+        return new World(agents);
     }
 
     public void end() {

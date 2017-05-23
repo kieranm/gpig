@@ -25,7 +25,9 @@ public abstract class Ship extends Agent implements Carrier {
 
     private ShipState state = ShipState.IDLE;
 
-    public enum ShipState{
+    private Integer waitingTime;
+
+    public enum ShipState {
         IDLE,
         WAITING_UNLOADING,
         UNLOADING_CARGO,
@@ -45,7 +47,15 @@ public abstract class Ship extends Agent implements Carrier {
         this.next = next;
     }
 
-    public void setState(ShipState state){ this.state = state; }
+    public void setState(ShipState state) {
+        if (this.state == ShipState.WAITING_UNLOADING && state != ShipState.WAITING_UNLOADING) {
+            this.waitingTime = null;
+        }
+        this.state = state;
+        if (this.state == ShipState.WAITING_UNLOADING) {
+            this.waitingTime = 1;
+        }
+    }
 
     public ShipState getState() { return this.state; }
 
@@ -152,5 +162,13 @@ public abstract class Ship extends Agent implements Carrier {
     @Override
     public void setLoad(int load) {
         this.load = load;
+    }
+
+    public Integer getWaitingTime() {
+        return waitingTime;
+    }
+
+    public void incWaitingTime() {
+        this.waitingTime++;
     }
 }

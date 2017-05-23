@@ -7,6 +7,7 @@ import domain.util.PortDistanceComparator;
 import domain.vessel.Ship;
 import domain.world.Node;
 import domain.world.Route;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -37,7 +38,7 @@ public abstract class Port extends Agent implements Carrier {
     private int dockCapacity;
     private int dockLoad = 0;
 
-    private List<Ship> managedShips = new ArrayList<>();;
+    private List<Ship> managedShips = new ArrayList<>();
     private List<Ship> removedShips = new ArrayList<>();
 
     public Port(AgentType agentType, String name, Node node, int capacity) {
@@ -71,8 +72,13 @@ public abstract class Port extends Agent implements Carrier {
         return name;
     }
 
-    public boolean isEmpty() { return this.cargoLoad == 0; }
-    public boolean isFull() { return this.cargoLoad == this.cargoCapacity; }
+    public boolean isEmpty() {
+        return this.cargoLoad == 0;
+    }
+
+    public boolean isFull() {
+        return this.cargoLoad == this.cargoCapacity;
+    }
 
     private boolean isSpaceToDock(Ship s) {
         return this.dockLoad + s.getLoad() <= this.dockCapacity;
@@ -181,6 +187,7 @@ public abstract class Port extends Agent implements Carrier {
 
         this.cargoLoad -= requestedLoad;
         this.cargoLoad += amountOverCapacity; // add back cargo the ship couldn't fit
+        this.stats.addDeliveredCargo(requestedLoad - amountOverCapacity);
         if (this.isEmpty() || ship.isFull()) {
 
             // Start ship on journey
@@ -198,6 +205,8 @@ public abstract class Port extends Agent implements Carrier {
             } else { // Ship state == WAITING_UNLOADING
                 ship.setState(Ship.ShipState.UNLOADING_CARGO);
             }
+        } else {
+            ship.incWaitingTime();
         }
     }
 
@@ -285,11 +294,9 @@ public abstract class Port extends Agent implements Carrier {
 
                 for (Route route : this.routes.get(destination)) {
                     if (route.isActive()) {
-
                         destination.addShip(s);
                         s.assignRoute(route.getNodes());
                         this.removedShips.add(s);
-
                     }
                 }
             }
@@ -333,4 +340,15 @@ public abstract class Port extends Agent implements Carrier {
     public List<Ship> getManagedShips() {
         return managedShips;
     }
+
+    @Override
+    public JSONObject toJSON() {
+        Map<String, Integer> m = new HashMap<>(4);
+        m.put("NW", 10);
+        m.put("NE", 50);
+        m.put("SW", 100);
+        m.put("SE", 500);
+        return super.toJSON().put("statistics", m);
+    }
+
 }
