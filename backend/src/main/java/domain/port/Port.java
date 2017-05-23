@@ -389,9 +389,11 @@ public abstract class Port extends Agent implements Carrier {
         m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoad()));
         m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoad()));
         m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughput()));
+        JSONObject debugging = new JSONObject();
         return super.toJSON()
                 .put("name", this.name)
-                .put("statistics", m);
+                .put("statistics", m)
+                .put("debug", debugging);
     }
 
 }
