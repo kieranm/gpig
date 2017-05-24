@@ -35,8 +35,11 @@ public class SimulationHandler {
     @OnWebSocketMessage
     public void onMessage(Session sess, String message) throws Exception {
         JSONObject json = new JSONObject(message);
-        if(json.getString("message_type").equals("settings")) {
-            sessions.get(sess).setMultiplier(json.getJSONObject("message_data").getInt("speed_multiplier"));
+        if(json.getString("message_type").equals("change_speed")) {
+            sessions.get(sess).setMultiplier(json.getInt("message_data"));
+        }
+        if(json.getString("message_type").equals("change_mode")) {
+            //json.getString("message_data")    ;
         }
     }
 }
