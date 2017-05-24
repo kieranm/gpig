@@ -145,9 +145,15 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     public void assignRoute(List<Node> route) {
-        this.state = ShipState.TRAVELING;
-        this.route = route;
-        this.next = route.get(1);
+        if(this.state == ShipState.TRAVELING) {
+            // TODO find next closes node
+        }
+        else{
+            this.state = ShipState.TRAVELING;
+            this.route = route;
+            this.next = route.get(1);
+        }
+
         calculatePositionUpdateVector();
     }
 
@@ -178,6 +184,8 @@ public abstract class Ship extends Agent implements Carrier {
     public Integer getWaitingTime() {
         return waitingTime;
     }
+
+    public List<Node> getCurrentRoute() { return this.route; }
 
     public void addWaitingTime(int multiplier) {
         // only add time if in a waiting stage (should already be caught by state machine in tick function)

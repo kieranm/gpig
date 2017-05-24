@@ -30,6 +30,7 @@ public class Weather extends Agent {
             if(!world.getShowWeather()){
                 this.kill();
                 this.setNewPathsForAffectedPorts(this.altRoutes, this.orgRoutes); // reset paths
+                this.setNewPathsForAffectedBoats(this.altRoutes, this.orgRoutes); // reset paths
                 return;
             }
 
@@ -58,9 +59,23 @@ public class Weather extends Agent {
                 if(s.getAgentType() != AgentType.SMART_SHIP && s.getState() == Ship.ShipState.TRAVELING &&
                     s.getCoordinates().distance(this.getCoordinates()) <= range) continue;
 
+                // weather has been detected
                 this.setNewPathsForAffectedPorts(this.orgRoutes, this.altRoutes);
+                this.setNewPathsForAffectedBoats(this.orgRoutes, this.altRoutes);
                 return;
             }
+    }
+
+    private void setNewPathsForAffectedBoats(List<Route> orgRoutes, List<Route> altRoutes){
+        for(Port port : this.affectedPorts) {
+            for(Ship s : port.getManagedShips()) {
+                if(s.getState() != Ship.ShipState.TRAVELING) continue;
+
+                for(int i = 0; i < orgRoutes.size(); i++)
+                    if(s.getCurrentRoute().equals(orgRoutes.get(i).getNodes()))
+                        s.assignRoute(altRoutes.get(i).getNodes());
+            }
+        }
     }
 
     private void setNewPathsForAffectedPorts(List<Route> orgRoutes, List<Route> altRoutes){
@@ -76,7 +91,7 @@ public class Weather extends Agent {
                         if(value.get(i).equals(orgRoutes.get(j)))
                             value.set(i, altRoutes.get(j));
 
-                port.setNewRoute(key, value);
+                map.put(key, value); // overwrite old route
             }
         }
     }

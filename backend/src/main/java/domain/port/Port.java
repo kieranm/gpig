@@ -62,7 +62,6 @@ public abstract class Port extends Agent implements Carrier {
     public Map<Port, List<Route>> getRoutes() {
         return routes;
     }
-    public void setNewRoute(Port key, List<Route> routes) { this.routes.put(key, routes); } // used only by weather
 
     public Node getNode() {
         return node;
