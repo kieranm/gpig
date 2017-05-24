@@ -11,6 +11,8 @@ const bar_width = 0.0008;
 const bar_height = 0.0005;
 const padding_width = bar_width/3;
 const padding_height = bar_height/3;
+const startingSpeed = 1;
+const startingMode = "legacy";
 
 export default class Root extends Component {
 
@@ -27,7 +29,6 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
-            speed: 1,
             mapStyle: "dark",
             ships: [],
             portBases: [],
@@ -200,6 +201,7 @@ export default class Root extends Component {
 
     componentDidMount() {
         this.connection.onmessage = this._onMessage.bind(this);
+        this.connection.onopen = this._onOpen.bind(this);
 
         window.addEventListener('resize', this._resize.bind(this));
         this._resize();
@@ -211,6 +213,16 @@ export default class Root extends Component {
         if (this._animation) {
             window.cancelAnimationFrame(this._animationFrame);
         }
+    }
+
+    _onOpen (e) {
+        this.connection.send(JSON.stringify({
+            message_type: "start",
+            message_data: {
+                speed_multiplier: startingSpeed,
+                mode: startingMode
+            }
+        }));
     }
 
     _onMessage(e) {
@@ -349,8 +361,8 @@ export default class Root extends Component {
                     showScenarioCallback={this._showScenario.bind(this)}
                     changeModeCallback={this._changeMode.bind(this)}
                     changeSpeedCallback={this._changeSpeed.bind(this)}
-                    startingSpeed={1}
-                    startingMode="legacy"
+                    startingSpeed={startingSpeed}
+                    startingMode={startingMode}
                     startingScenario="coastal ports"
                     startingMapStyle={mapStyle}
                 />
