@@ -122,8 +122,8 @@ public abstract class Ship extends Agent implements Carrier {
         // calculate distance include direction in vector
         double xdiff = this.next.getCoordinates().getLatitude() - this.getCoordinates().getLatitude();
         double ydiff = this.next.getCoordinates().getLongitude() - this.getCoordinates().getLongitude();
-
         double length = this.getCoordinates().distance(this.next.getCoordinates());
+
         this.positionUpdateVector = new Coordinates(xdiff/length, ydiff/length);
         this.positionUpdateVector = this.positionUpdateVector.mul(DISTANCE_PER_TICK_MULTIPLIER); // TODO figure out a good amount of travel per tick
     }
@@ -132,6 +132,15 @@ public abstract class Ship extends Agent implements Carrier {
         int current = this.route.indexOf(this.next);
         if (current != this.route.size()-1) {
             this.next = this.route.get(current+1);
+
+            // if the next is on the other side of the globe, jump to the next point, this will skip the distance
+            // between the waypoints but simplifies the wrap around edge case
+            if (this.getCoordinates().getLongitude() > 175.0 && this.next.getCoordinates().getLongitude() < -175.0
+                    || this.getCoordinates().getLongitude() < -175.0 && this.next.getCoordinates().getLongitude() > 175.0) {
+                Coordinates c = new Coordinates(this.next.getCoordinates().getLatitude(), this.next.getCoordinates().getLongitude());
+                this.setCoordinates(c);
+                nextRouteStop();
+            }
         }
     }
 
