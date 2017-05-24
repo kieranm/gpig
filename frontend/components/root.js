@@ -303,7 +303,10 @@ export default class Root extends Component {
         }
 
         if(scenario == "weather avoidance") {
-
+            this.connection.send(JSON.stringify({
+                message_type: "change_weather",
+                message_data: ""
+            }));
         }
 
         if(scenario == "road traffic") {

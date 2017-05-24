@@ -22,6 +22,7 @@ public class World implements JSONable {
     private static final int STAT_UPDATE_PERIOD = 1;
 
     private int multiplier = 1;
+    private boolean showWeather = false;
 
     private Statistics stats;
     private int sinceLastStatSend;
@@ -50,7 +51,8 @@ public class World implements JSONable {
     public JSONObject toJSON() {
         Map<String, Object> m = new HashMap<>(2);
         m.put("agents", new JSONArray(
-                this.agents.stream().map(Agent::toJSON).collect(toList())
+                this.agents.stream().filter(Agent::isAlive)
+                        .map(Agent::toJSON).collect(toList())
         ));
         if (sinceLastStatSend == STAT_UPDATE_PERIOD) {
             m.put("statistics", stats.toJSON());
@@ -71,6 +73,14 @@ public class World implements JSONable {
 
     public int getMultiplier() {
         return multiplier;
+    }
+
+    public void setShowWeather(boolean value) {
+        this.showWeather = value;
+    }
+
+    public boolean getShowWeather(){
+        return this.showWeather;
     }
 
     public Statistics getStats() {

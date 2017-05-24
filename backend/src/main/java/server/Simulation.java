@@ -104,6 +104,10 @@ public class Simulation {
         return this.world.getMultiplier();
     }
 
+    public void invertShowWeather(){
+        this.world.setShowWeather(!this.world.getShowWeather());
+    }
+
 
     /**
      * Method to embed message object in an object with details considering the message context (messageType).

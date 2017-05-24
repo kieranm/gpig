@@ -7,19 +7,16 @@ import domain.util.AgentType;
 import domain.util.Coordinates;
 import domain.vessel.Ship;
 import domain.world.Route;
+import org.json.JSONObject;
 
 import java.util.*;
 
 public class Weather extends Agent {
-
-    private final int TIMEOUT = 10000; // In ticks
-
     private double range;
 
     private List<Port> affectedPorts = new ArrayList<>();
     private List<Route> orgRoutes = new ArrayList<>();
     private List<Route> altRoutes = new ArrayList<>();
-    private int tickCount = 0;
 
     public Weather(Coordinates initialCoordinates, double range) {
         super(AgentType.WEATHER, initialCoordinates);
@@ -29,20 +26,21 @@ public class Weather extends Agent {
 
     @Override
     public void tick(World world, int multiplier) {
-        // SPAWN WEATTHE
-        this.rewive();
-
         if(this.isAlive()) {
-            this.tickCount += 1 * multiplier;
-            if(this.tickCount > TIMEOUT) {
-
+            if(!world.getShowWeather()){
                 this.kill();
                 this.setNewPathsForAffectedPorts(this.altRoutes, this.orgRoutes); // reset paths
                 return;
             }
 
             checkForShipsInRange();
-        }
+
+        }else if(world.getShowWeather()) this.rewive();
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        return super.toJSON().put("range", this.range);
     }
 
     private void addAffectedPort(Port port) { this.affectedPorts.add(port); }
@@ -54,7 +52,7 @@ public class Weather extends Agent {
         this.altRoutes.add(altRoute.reverse());
     }
 
-    private void checkForShipsInRange() {
+    private void checkForShipsInRange() { // updates paths when at least one ship is detected
         for(Port port : this.affectedPorts)
             for(Ship s : port.getManagedShips()){
                 if(s.getAgentType() != AgentType.SMART_SHIP && s.getState() == Ship.ShipState.TRAVELING &&
@@ -64,7 +62,6 @@ public class Weather extends Agent {
                 return;
             }
     }
-
 
     private void setNewPathsForAffectedPorts(List<Route> orgRoutes, List<Route> altRoutes){
         for(Port port : this.affectedPorts){
