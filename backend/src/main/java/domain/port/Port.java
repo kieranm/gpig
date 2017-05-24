@@ -130,7 +130,7 @@ public abstract class Port extends Agent implements Carrier {
 
                 // Export
                 case ARRIVED:
-                    System.out.println(String.format("Ship has arrived at %s", this.name));
+//                    System.out.println(String.format("Ship has arrived at %s", this.name));
                     if (s.getLoad() > 0) {
                         s.setState(Ship.ShipState.WAITING_UNLOADING);
                     } else {
@@ -146,9 +146,9 @@ public abstract class Port extends Agent implements Carrier {
                     break;
                 case LOADING_CARGO:
                     // do one tick of moving cargo onto docked ships
-                    System.out.println(String.format("Before loading %s has %d cargo", this.name, this.cargoLoad));
+//                    System.out.println(String.format("Before loading %s has %d cargo", this.name, this.cargoLoad));
                     this.loadDockedShip(s, multiplier);
-                    System.out.println(String.format("after loading %s has %d cargo", this.name, this.cargoLoad));
+//                    System.out.println(String.format("after loading %s has %d cargo", this.name, this.cargoLoad));
                     break;
 
                 default:

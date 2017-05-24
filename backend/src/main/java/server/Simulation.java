@@ -32,7 +32,9 @@ public class Simulation {
             e.printStackTrace();
             System.exit(1);
         }
+    }
 
+    public void start() {
         TimerTask tt = new TimerTask() {
             @Override
             public void run() {
