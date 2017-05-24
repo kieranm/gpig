@@ -133,7 +133,8 @@ public abstract class Ship extends Agent implements Carrier {
         if (current != this.route.size()-1) {
             this.next = this.route.get(current+1);
 
-            // if the next is on the other side of the globe, jump to the next point
+            // if the next is on the other side of the globe, jump to the next point, this will skip the distance
+            // between the waypoints but simplifies the wrap around edge case
             if (this.getCoordinates().getLongitude() > 175.0 && this.next.getCoordinates().getLongitude() < -175.0
                     || this.getCoordinates().getLongitude() < -175.0 && this.next.getCoordinates().getLongitude() > 175.0) {
                 Coordinates c = new Coordinates(this.next.getCoordinates().getLatitude(), this.next.getCoordinates().getLongitude());
