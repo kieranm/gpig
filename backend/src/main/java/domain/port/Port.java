@@ -20,7 +20,6 @@ public abstract class Port extends Agent implements Carrier {
     // determines how many times cargo will be produced at the ports on initialisation
     private static final double CARGO_INITIALISATION_MULTIPLIER = 3;
 
-
     // Multiplier applied to loading/unloading, a sort of global crane speed
     private static final int BASE_LOAD_UNLOAD_SPEED = 1;
     // For every SHIP_SIZE_LOADING_OFFSET points of capacity an extra crane can be employed on a ship
@@ -358,37 +357,49 @@ public abstract class Port extends Agent implements Carrier {
         return managedShips;
     }
 
-    private long calculateContainerLoad() {
+    private long calculateContainerLoadStatistics() {
         double containerLoad = (double) cargoLoad / (double) cargoCapacity;
         return Math.round(containerLoad * 1000.0);
     }
 
-    private long calculateDockLoad() {
+    private long calculateDockLoadStatistics() {
         double dl = (double) dockLoad / (double) dockCapacity;
         return Math.round(dl * 1000.0);
     }
 
-    private long calculateQueueLoad() {
+    private long calculateQueueLoadStatistics() {
         int total = managedShips.size();
         if (total == 0) return 0;
+
+        // remove "idle" from total, more of a quirk of our system than a realistic state to be in
+        // or implement some "smart" planning to avoid stats looking bad for OceanX case
+        total -= managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.IDLE)
+                .count();
+
+        // calculate how many ships are currently in one of the waiting states
         long queueing = managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_UNLOADING)
                 .count();
+        queueing += managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.WAITING_LOADING)
+                .count();
+
         double prop = (double) queueing / (double) total;
         return Math.round(prop * 1000.0);
     }
 
-    private long calculateThroughput() {
+    private long calculateThroughputStatistics() {
         return 0l;
     }
 
     @Override
     public JSONObject toJSON() {
         Map<String, JSONObject> m = new HashMap<>(4);
-        m.put("NW", new JSONObject().put("name", "Container Load").put("value", calculateContainerLoad()));
-        m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoad()));
-        m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoad()));
-        m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughput()));
+        m.put("NW", new JSONObject().put("name", "Container Load").put("value", calculateContainerLoadStatistics()));
+        m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoadStatistics()));
+        m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoadStatistics()));
+        m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughputStatistics()));
         JSONObject debugging = new JSONObject();
         return super.toJSON()
                 .put("name", this.name)
