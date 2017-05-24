@@ -14,17 +14,6 @@ const LIGHT_SETTINGS = {
 
 export default class DeckGLOverlay extends Component {
 
-    static get defaultViewport() {
-        return {
-            longitude:  -3.87085,
-            latitude: 53.0049,
-            zoom: 6,
-            maxZoom: 16,
-            pitch: 45,
-            bearing: 0
-        };
-    }
-
     _initialize(gl) {
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
