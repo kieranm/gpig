@@ -53,10 +53,15 @@ export default class Root extends Component {
             if(ship.id == target_ship.id) {
 
                 var positions = target_ship.positions.slice();
+                const difference = positions[positions.length-1].longitude - ship.coordinates.longitude;
 
-                positions.unshift(ship.coordinates);
-                if (positions.length > 30) {
-                    positions.pop();
+                if ((ship.coordinates.longitude < 0 && difference > 300) || (ship.coordinates.longitude > 0 && difference < -300)) {
+                    positions = [ship.coordinates];
+                } else {
+                    positions.unshift(ship.coordinates);
+                    if (positions.length > 30) {
+                        positions.pop();
+                    }
                 }
 
                 new_ship = {
