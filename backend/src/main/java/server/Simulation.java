@@ -40,6 +40,7 @@ public class Simulation {
             public void run() {
                 Simulation.this.tick();
                 Simulation.this.sendToRemote();
+                Simulation.this.world.getStats().nextTick();
             }
         };
         this.timer = new Timer();
