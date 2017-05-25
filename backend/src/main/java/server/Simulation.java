@@ -2,6 +2,7 @@ package server;
 
 import domain.Agent;
 import domain.World;
+import domain.extra.Weather;
 import domain.port.Port;
 import domain.vessel.Ship;
 import org.eclipse.jetty.websocket.api.Session;
@@ -72,6 +73,12 @@ public class Simulation {
         // Merge port and ship agents
         List<Agent> agents = new ArrayList<>(ships);
         agents.addAll(ports.values());
+
+        //Add weather agents
+        List<Weather> weathers = new ArrayList<>();
+        weathers.add(new Weather(ports.get("Amsterdam").getCoordinates(), 4));
+
+        agents.addAll(weathers);
 
         return new World(agents);
     }

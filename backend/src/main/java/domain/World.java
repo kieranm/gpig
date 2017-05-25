@@ -44,7 +44,7 @@ public class World implements JSONable {
 
     public void tick() {
         agents.forEach(a -> a.tick(this, multiplier));
-        agents = agents.stream().filter(Agent::isAlive).collect(toList());
+        agents = agents.stream().collect(toList());
     }
 
     @Override

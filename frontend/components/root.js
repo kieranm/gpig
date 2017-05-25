@@ -40,6 +40,7 @@ export default class Root extends Component {
             southEastPortBars: [],
             southWestPortBars: [],
             northWestPortBars: [],
+            weather: [],
             hoveredFeature: null,
             time: 0,
             totalCargo: 0,
@@ -175,7 +176,28 @@ export default class Root extends Component {
     }
 
 
-    _processAgents(d) {
+    weather(weather) {
+
+        var polygon = [];
+        var r = weather.range;
+        var latitude = weather.coordinates.latitude;
+        var longitude = weather.coordinates.longitude;
+
+        var n = 360;  // TODO lower this val if polygon recalculations is expensive
+        for (var i = 0; i < n; i++) {
+            polygon.push([longitude + r * Math.sin(2 * Math.PI * i / n),
+                          latitude + r * Math.cos(2 * Math.PI * i / n)]);
+        }
+        polygon.push([longitude, latitude + r]);
+
+        return {
+            id: weather.id,
+            height : 20,
+            polygon: polygon
+        };
+    }
+
+    processAgents(d) {
         // Parse the update from the backend
         var freightShips = {};
         var autonomousShips = {};
@@ -184,6 +206,7 @@ export default class Root extends Component {
         var southEastPortBars = [];
         var southWestPortBars = [];
         var northWestPortBars = [];
+        var weather = [];
 
         for (var i = 0; i < d.agents.length; i++) {
             var agent = d.agents[i];
@@ -198,6 +221,8 @@ export default class Root extends Component {
                 southEastPortBars.push(this.portBar("SE", agent));
                 southWestPortBars.push(this.portBar("SW", agent));
                 northWestPortBars.push(this.portBar("NW", agent));
+            } else if (agent.type === "WEATHER"){
+                weather.push(this.weather(agent))
             }
         }
 
@@ -208,7 +233,8 @@ export default class Root extends Component {
             northEastPortBars,
             southEastPortBars,
             southWestPortBars,
-            northWestPortBars
+            northWestPortBars,
+            weather: weather
         });
 
     }
@@ -375,6 +401,7 @@ export default class Root extends Component {
             southEastPortBars,
             southWestPortBars,
             northWestPortBars,
+            weather,
             time,
             mapStyle,
             totalCargo,
@@ -421,6 +448,7 @@ export default class Root extends Component {
                                    southEastPortBars={southEastPortBars}
                                    southWestPortBars={southWestPortBars}
                                    northWestPortBars={northWestPortBars}
+                                   weather={weather}
                                    time={time}
                                    onHover={this._onHover.bind(this)}
                     />

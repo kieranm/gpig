@@ -18,7 +18,7 @@ public class Weather extends Agent {
     private List<Route> orgRoutes = new ArrayList<>();
     private List<Route> altRoutes = new ArrayList<>();
 
-    public Weather(Coordinates initialCoordinates, double range) {
+    public Weather(Coordinates initialCoordinates, int range) {
         super(AgentType.WEATHER, initialCoordinates);
         super.kill();
         this.range = range;
