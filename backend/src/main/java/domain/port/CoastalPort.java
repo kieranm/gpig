@@ -9,8 +9,8 @@ import domain.world.Node;
  */
 public class CoastalPort extends Port {
 
-    public CoastalPort(String name, Node node, int capacity) {
-        super(AgentType.LAND_PORT, name, node, capacity);
+    public CoastalPort(String name, Node node, int capacity, int dock_capacity) {
+        super(AgentType.LAND_PORT, name, node, capacity, dock_capacity);
     }
 
     @Override

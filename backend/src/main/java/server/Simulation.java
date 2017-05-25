@@ -16,7 +16,7 @@ public class Simulation {
     private final long INITIAL_DELAY = 1000l;
 
     // Mapbox Credentials
-    private static final String MAPBOX_DATASET_ID_LEGACY = "cj334nz4m000z2wp7y4pm1km4";
+    private static final String MAPBOX_DATASET_ID_LEGACY = "cj34dnbw300242qp7m97oh4n5";
 
     private Timer timer;
     private World world;
@@ -57,7 +57,7 @@ public class Simulation {
         System.out.println(ports);
 
         // Create agents
-        List<Ship> ships = loader.generateShips(1000);
+        List<Ship> ships = loader.generateShips(4000);
 
         // Merge port and ship agents
         List<Agent> agents = new ArrayList<>(ships);
