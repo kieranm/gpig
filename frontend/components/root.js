@@ -234,7 +234,6 @@ export default class Root extends Component {
         if(d.message_type == "update") {
             this._processAgents(d.message_body);
             if(d.message_body.statistics) {
-                console.log(d.message_body);
                 this._updateGlobalStats(d.message_body.statistics);
             }
         }
@@ -345,7 +344,6 @@ export default class Root extends Component {
             totalThroughput: total_throughput,
             averageWaitTime: average_waiting_time
         };
-        console.log(state);
         this.setState(state);
     }
 
