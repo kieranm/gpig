@@ -265,7 +265,7 @@ export default class Root extends Component {
                     ...this.state.viewport,
                     latitude: 53.459204,
                     longitude: -3.031712,
-                    zoom: 14,
+                    zoom: 13.5,
                     pitch: 45
                 }
             });
@@ -296,8 +296,8 @@ export default class Root extends Component {
                 viewport: {
                     ...this.state.viewport,
                     latitude: 20.210656,
-                    longitude: -34.277344,
-                    zoom: 2.5,
+                    longitude: 0,
+                    zoom: 1.5,
                     pitch: 0
                 }
             });
