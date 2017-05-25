@@ -39,7 +39,7 @@ public class SimulationHandler {
             sessions.get(sess).setMultiplier(json.getInt("message_data"));
         }
         if (json.getString("message_type").equals("change_mode")) {
-            //json.getString("message_data"); legacy or oceanx
+            sessions.get(sess).switchWorld(json.getString("message_data"));
         }
         if (json.getString("message_type").equals("start")) {
             Simulation simulation = sessions.get(sess);

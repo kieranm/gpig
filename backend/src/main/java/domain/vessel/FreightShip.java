@@ -9,10 +9,9 @@ import domain.util.Coordinates;
  */
 public class FreightShip extends Ship {
 
-    // TODO use different sizes?
-    public static final int SMALL_CAPACITY = 100;
-    public static final int MEDIUM_CAPACITY = 500;
-    public static final int LARGE_CAPACITY = 1000;
+    public static final int SMALL_CAPACITY = 1000;
+    public static final int MEDIUM_CAPACITY = 2500;
+    public static final int LARGE_CAPACITY = 5000;
 
     public FreightShip(Coordinates initialCoord, int capacity) {
         super(AgentType.FREIGHT_SHIP, initialCoord, capacity);
@@ -22,6 +21,9 @@ public class FreightShip extends Ship {
     public void tick(World world, int multiplier) {
         switch(this.getState()) {
             case WAITING_UNLOADING:
+                this.addWaitingTime(multiplier);
+                break;
+            case WAITING_LOADING:
                 this.addWaitingTime(multiplier);
                 break;
             case TRAVELING:

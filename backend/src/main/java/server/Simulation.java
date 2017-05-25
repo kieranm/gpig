@@ -15,19 +15,29 @@ public class Simulation {
     private final long PERIOD = 100l;
     private final long INITIAL_DELAY = 1000l;
 
+    private final int NUMBER_OF_SHIPS = 4000;
+
+    private final String LEGACY_WORLD_KEY = "legacy";
+    private final String OCEAN_WORLD_KEY = "oceanx";
+
     // Mapbox Credentials
     private static final String MAPBOX_DATASET_ID_LEGACY = "cj34dnbw300242qp7m97oh4n5";
+    private static final String MAPBOX_DATASET_ID_OCEANX = "cj34wj9xi002r33o9abhk90iq";
 
     private Timer timer;
     private World world;
     private Session session;
 
+    private World legacyWorld;
+    private World oceanXWorld;
+
     public Simulation(Session session) {
         this.session = session;
 
         try {
-            // TODO generate both worlds here (different data set ID)
-            world = generateWorld(MAPBOX_DATASET_ID_LEGACY);
+            legacyWorld = generateWorld(MAPBOX_DATASET_ID_LEGACY);
+            oceanXWorld = generateWorld(MAPBOX_DATASET_ID_OCEANX);
+            world = legacyWorld;
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -57,7 +67,7 @@ public class Simulation {
         System.out.println(ports);
 
         // Create agents
-        List<Ship> ships = loader.generateShips(4000);
+        List<Ship> ships = loader.generateShips(NUMBER_OF_SHIPS);
 
         // Merge port and ship agents
         List<Agent> agents = new ArrayList<>(ships);
@@ -77,6 +87,17 @@ public class Simulation {
 
     public void setMultiplier(int multiplier) {
         this.world.setMultiplier(multiplier);
+    }
+
+    public void switchWorld(String worldKey) {
+        switch (worldKey) {
+            case LEGACY_WORLD_KEY:
+                world = legacyWorld;
+                break;
+            case OCEAN_WORLD_KEY:
+                world = oceanXWorld;
+                break;
+        }
     }
 
     public int getMultiplier() {
