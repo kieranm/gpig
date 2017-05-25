@@ -127,6 +127,7 @@ class WorldLoader {
         verifyAttribute(port, "name");
         verifyAttribute(port, "type");
         verifyAttribute(port, "capacity");
+        verifyAttribute(port, "dock_capacity");
 
         String portName = port.getJSONObject("properties").getString("name");
 
@@ -190,11 +191,22 @@ class WorldLoader {
             longitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(0);
             portNode = this.createNode(latitude, longitude);
             // TODO check the type of port to create
-            port = new CoastalPort(
-                    name,
-                    portNode,
-                    jPort.getJSONObject("properties").getInt("capacity")
-            );
+            if (jPort.getJSONObject("properties").getString("type").equals("coastal_port")) {
+                port = new CoastalPort(
+                        name,
+                        portNode,
+                        jPort.getJSONObject("properties").getInt("capacity"),
+                        jPort.getJSONObject("properties").getInt("dock_capacity")
+                );
+            } else {
+                port = new OffshorePort(
+                        name,
+                        portNode,
+                        jPort.getJSONObject("properties").getInt("capacity"),
+                        jPort.getJSONObject("properties").getInt("dock_capacity")
+                );
+            }
+
 
             portAgents.put(name, port);
             portNode.setPort(port);

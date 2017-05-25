@@ -9,8 +9,8 @@ import domain.world.Node;
  */
 public class OffshorePort extends Port {
 
-    public OffshorePort(String name, Node node, int capacity) {
-        super(AgentType.SMART_PORT, name, node, capacity);
+    public OffshorePort(String name, Node node, int capacity, int dock_capacity) {
+        super(AgentType.SMART_PORT, name, node, capacity, dock_capacity);
     }
 
     @Override

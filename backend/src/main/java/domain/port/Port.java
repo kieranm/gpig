@@ -40,7 +40,7 @@ public abstract class Port extends Agent implements Carrier {
     private List<Ship> managedShips = new ArrayList<>();
     private List<Ship> removedShips = new ArrayList<>();
 
-    public Port(AgentType agentType, String name, Node node, int capacity) {
+    public Port(AgentType agentType, String name, Node node, int capacity, int dock_capacity) {
         super(agentType, node.getCoordinates());
 
         this.node = node;
@@ -51,7 +51,7 @@ public abstract class Port extends Agent implements Carrier {
             produceCargo();
         }
 
-        this.dockCapacity = (int)Math.rint(capacity * CAPACITY_PORT_SIZE_RATIO);
+        this.dockCapacity = dock_capacity;
 
         this.managedShips = new ArrayList<>();
 
@@ -267,7 +267,7 @@ public abstract class Port extends Agent implements Carrier {
         int bestBidIndex = 0;
         int bestBid = 0;
         for (int i = 0; i < bids.size(); i++) {
-            if (bids.get(i) > bestBid) {
+            if (bids.get(i) > bestBid && p.getManagedShips().get(i).getCapacity() <= this.dockCapacity) {
                 bestBid = bids.get(i);
                 bestBidIndex = i;
             }
@@ -299,11 +299,20 @@ public abstract class Port extends Agent implements Carrier {
      * @return a randomly selected route from this port to one of its destinations
      */
     public void generateRoute(Ship s) {
-        double randomVal = Math.random();
-        // reduce the random value by the probability weight until 0 is reached
-        for (Port destination : this.routes.keySet()) {
 
-            randomVal -= this.probabilities.get(destination);
+        Map<Port, Double> validProbabilities = new HashMap<>();
+        double total = 0.0;
+        for (Port p : this.routes.keySet()) {
+            if (s.getCapacity() <= p.getCapacity()) {
+                validProbabilities.put(p, this.probabilities.get(p));
+                total += this.probabilities.get(p);
+            }
+        }
+        double randomVal = Math.random() * total;
+        // reduce the random value by the probability weight until 0 is reached
+        for (Port destination : validProbabilities.keySet()) {
+
+            randomVal -= validProbabilities.get(destination);
             if (randomVal <= 0) {
 
                 for (Route route : this.routes.get(destination)) {
