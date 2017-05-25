@@ -53,10 +53,15 @@ export default class Root extends Component {
             if(ship.id == target_ship.id) {
 
                 var positions = target_ship.positions.slice();
+                const difference = positions[positions.length-1].longitude - ship.coordinates.longitude;
 
-                positions.unshift(ship.coordinates);
-                if (positions.length > 30) {
-                    positions.pop();
+                if ((ship.coordinates.longitude < 0 && difference > 300) || (ship.coordinates.longitude > 0 && difference < -300)) {
+                    positions = [ship.coordinates];
+                } else {
+                    positions.unshift(ship.coordinates);
+                    if (positions.length > 30) {
+                        positions.pop();
+                    }
                 }
 
                 new_ship = {
@@ -265,7 +270,7 @@ export default class Root extends Component {
                     ...this.state.viewport,
                     latitude: 53.459204,
                     longitude: -3.031712,
-                    zoom: 14,
+                    zoom: 13.5,
                     pitch: 45
                 }
             });
@@ -296,8 +301,8 @@ export default class Root extends Component {
                 viewport: {
                     ...this.state.viewport,
                     latitude: 20.210656,
-                    longitude: -34.277344,
-                    zoom: 2.5,
+                    longitude: 0,
+                    zoom: 1.5,
                     pitch: 0
                 }
             });
