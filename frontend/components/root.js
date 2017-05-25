@@ -37,7 +37,10 @@ export default class Root extends Component {
             southWestPortBars: [],
             northWestPortBars: [],
             hoveredFeature: null,
-            time: 0
+            time: 0,
+            totalCargo: 0,
+            totalThroughput: 0,
+            averageWaitTime: 0
         };
 
         this.connection = new WebSocket('ws://localhost:4567/sim');
@@ -165,7 +168,7 @@ export default class Root extends Component {
     }
 
 
-    processAgents(d) {
+    _processAgents(d) {
         // Parse the update from the backend
         var ships = [];
         var portBases = [];
@@ -229,7 +232,11 @@ export default class Root extends Component {
         var d = JSON.parse(e.data);
 
         if(d.message_type == "update") {
-            this.processAgents(d.message_body);
+            this._processAgents(d.message_body);
+            if(d.message_body.statistics) {
+                console.log(d.message_body);
+                this._updateGlobalStats(d.message_body.statistics);
+            }
         }
     }
 
@@ -332,6 +339,16 @@ export default class Root extends Component {
             );
     }
 
+    _updateGlobalStats({total_cargo_delivered, total_throughput, average_waiting_time}) {
+        var state = {
+            totalCargo: total_cargo_delivered,
+            totalThroughput: total_throughput,
+            averageWaitTime: average_waiting_time
+        };
+        console.log(state);
+        this.setState(state);
+    }
+
     render() {
         const {
             viewport,
@@ -342,7 +359,10 @@ export default class Root extends Component {
             southWestPortBars,
             northWestPortBars,
             time,
-            mapStyle
+            mapStyle,
+            totalCargo,
+            totalThroughput,
+            averageWaitTime
         } = this.state;
 
         var actualMapStyleUrl = "";
@@ -355,7 +375,10 @@ export default class Root extends Component {
 
         return (
             <div>
-                <Branding/>
+                <Branding
+                    totalCargo={totalCargo}
+                    totalThroughput={totalThroughput}
+                    averageWaitTime={averageWaitTime} />
                 <ControlPanel
                     mapStyleChangeCallback={this._changeMapStyle.bind(this)}
                     showScenarioCallback={this._showScenario.bind(this)}
