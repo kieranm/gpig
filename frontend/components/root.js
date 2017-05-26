@@ -7,12 +7,14 @@ import ControlPanel from './control_panel'
 // Set your mapbox token here
 const MAPBOX_TOKEN =
     "pk.eyJ1IjoibWF0emlwYW4iLCJhIjoiY2oya2VjZmIxMDAxZTJxcGhuajczMTdhMiJ9.G_uHqGV9YXlCtrTP4BQeVA"; // eslint-disable-line
-const bar_width = 0.0008;
-const bar_height = 0.0005;
+const bar_width = 0.008;
+const bar_height = 0.005;
 const padding_width = bar_width/3;
 const padding_height = bar_height/3;
 const startingSpeed = 1;
 const startingMode = "legacy";
+
+const BAR_HEIGHT_FACTOR = 10;
 
 export default class Root extends Component {
 
@@ -102,7 +104,7 @@ export default class Root extends Component {
             id: port.id,
             title: port.name,
             description: decription,
-            height: 20,
+            height: 20 * 10,
             polygon: [
                 [longitude - (4*bar_width), latitude + (4*bar_height)],
                 [longitude + (4*bar_width), latitude + (4*bar_height)],
@@ -167,7 +169,7 @@ export default class Root extends Component {
             id: port.id,
             title: title,
             description: description,
-            height: height,
+            height: height * BAR_HEIGHT_FACTOR,
             polygon: polygon
         };
     }

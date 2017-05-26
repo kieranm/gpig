@@ -195,15 +195,19 @@ class WorldLoader {
                 port = new CoastalPort(
                         name,
                         portNode,
-                        jPort.getJSONObject("properties").getInt("capacity"),
-                        jPort.getJSONObject("properties").getInt("dock_capacity")
+                        //jPort.getJSONObject("properties").getInt("capacity"),
+                        10000,
+                        //jPort.getJSONObject("properties").getInt("dock_capacity"),
+                        5000
                 );
             } else {
                 port = new OffshorePort(
                         name,
                         portNode,
-                        jPort.getJSONObject("properties").getInt("capacity"),
-                        jPort.getJSONObject("properties").getInt("dock_capacity")
+                        10000,
+                        5000
+                        //jPort.getJSONObject("properties").getInt("capacity"),
+                        //jPort.getJSONObject("properties").getInt("dock_capacity")
                 );
             }
 
@@ -245,6 +249,9 @@ class WorldLoader {
 
             // Extract weight associated with the route
             weight = jLane.getJSONObject("properties").getInt("weight");
+
+            // TODO REMOVE
+            weight = 1;
 
             // Create a route and assign it to ports
             route = new Route(nodes, weight);

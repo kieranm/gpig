@@ -10,18 +10,18 @@ import domain.world.Route;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Port extends Agent implements Carrier {
 
-    // used to derive the dock capacity (space for ships) from the export cargo capacity
-    private static final double CAPACITY_PORT_SIZE_RATIO = 0.01;
     // used to determine how much cargo is produced per tick (based on capacity)
     private static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.001;
     // determines how many times cargo will be produced at the ports on initialisation
     private static final double CARGO_INITIALISATION_MULTIPLIER = 3;
 
     // Multiplier applied to loading/unloading, a sort of global crane speed
-    private static final int BASE_LOAD_UNLOAD_SPEED = 1;
+    private static final int BASE_LOAD_UNLOAD_SPEED = 20;
+
     // For every SHIP_SIZE_LOADING_OFFSET points of capacity an extra crane can be employed on a ship
     private static final int SHIP_SIZE_LOADING_OFFSET = 50;
 
@@ -37,8 +37,8 @@ public abstract class Port extends Agent implements Carrier {
     private int dockCapacity;
     private int dockLoad = 0;
 
-    private List<Ship> managedShips = new ArrayList<>();
-    private List<Ship> removedShips = new ArrayList<>();
+    private Set<Ship> managedShips;
+    private Set<Ship> removedShips;
 
     public Port(AgentType agentType, String name, Node node, int capacity, int dock_capacity) {
         super(agentType, node.getCoordinates());
@@ -53,7 +53,8 @@ public abstract class Port extends Agent implements Carrier {
 
         this.dockCapacity = dock_capacity;
 
-        this.managedShips = new ArrayList<>();
+        this.managedShips = new HashSet<>();
+        this.removedShips = new HashSet<>();
 
         routes = new TreeMap<>(new PortDistanceComparator(this));
     }
@@ -105,7 +106,7 @@ public abstract class Port extends Agent implements Carrier {
 
         // ships will be added to this list if they are no longer managed by this port
         // after this update
-        removedShips = new ArrayList<>();
+        removedShips = new HashSet<>();
 
         boolean isFrontOfQueue = true; // flag is unset after the first waiting ship is addressed (FIFO)
         // TODO cheap "collaboration" if we drop the fifo queue for first fit in OceanX approach
@@ -233,6 +234,8 @@ public abstract class Port extends Agent implements Carrier {
                     s.getState() == Ship.ShipState.LOADING_CARGO ||
                     s.getState() == Ship.ShipState.TRAVELING) {
                 maximumMovableCargo += s.getCapacity();
+
+                // TODO subtract the current load from ships loading cargo
             }
         }
 
@@ -259,23 +262,35 @@ public abstract class Port extends Agent implements Carrier {
      * @return whether the search for a bidder was successful
      */
     private boolean findBidder(Port p, int cargoToBeMoved) {
-        // Check for any idle ships in this port
-        List<Integer> bids = new ArrayList<>();
-        for (Ship s : p.getManagedShips()) {
-            bids.add(s.getBid(cargoToBeMoved));
+
+        boolean requestSmartShip = false;
+        if (this.getAgentType() == AgentType.LAND_PORT) {
+            // we are a land port in a network serviced by smart ships, only request smart ships for cargo
+            requestSmartShip = this.routes.keySet().stream().anyMatch(otherPort ->
+                    otherPort.getAgentType() == AgentType.SMART_PORT);
+        } else { // this.getAgentType() == AgentType.SMART_PORT
+            requestSmartShip = p.getAgentType() == AgentType.LAND_PORT;
         }
-        int bestBidIndex = 0;
-        int bestBid = 0;
-        for (int i = 0; i < bids.size(); i++) {
-            if (bids.get(i) > bestBid && p.getManagedShips().get(i).getCapacity() <= this.dockCapacity) {
-                bestBid = bids.get(i);
-                bestBidIndex = i;
+
+        Map<Ship, Integer> bids = new HashMap<>(p.getManagedShips().size());
+        for (Ship s : p.getManagedShips()) {
+            if (s.getCapacity() > this.dockCapacity) {
+                bids.put(s, null);
+            }
+            bids.put(s, s.getBid(cargoToBeMoved, requestSmartShip));
+        }
+        Map.Entry<Ship, Integer> best = null;
+        for (Map.Entry<Ship, Integer> si : bids.entrySet()) {
+            if (best == null || (si.getValue() != null && best.getValue() != null && si.getValue() > best.getValue())) {
+                best = si;
             }
         }
-        if (bestBid > 0) {
+        Integer bestBid = best.getValue();
+        Ship bestShip = best.getKey();
+        if (bestBid != null && bestBid > 0) {
 
             if (this.equals(p)) { // if searching from existing port set the ship state to arrived begin
-                this.managedShips.get(bestBidIndex).setState(Ship.ShipState.ARRIVED);
+                bestShip.setState(Ship.ShipState.ARRIVED);
                 return true;
             }
 
@@ -283,9 +298,9 @@ public abstract class Port extends Agent implements Carrier {
             for (Route route : p.getRoutes().get(this)) {
                 if (route.isActive()) {
                     // transfer control of ship and assign route
-                    Ship newShip = p.getManagedShips().remove(bestBidIndex);
-                    this.managedShips.add(newShip);
-                    newShip.assignRoute(route.getNodes());
+                    p.getManagedShips().remove(bestShip);
+                    this.managedShips.add(bestShip);
+                    bestShip.assignRoute(route.getNodes());
 
                     return true;
                 }
@@ -362,7 +377,7 @@ public abstract class Port extends Agent implements Carrier {
         }
     }
 
-    public List<Ship> getManagedShips() {
+    public Set<Ship> getManagedShips() {
         return managedShips;
     }
 
@@ -410,6 +425,13 @@ public abstract class Port extends Agent implements Carrier {
         m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoadStatistics()));
         m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughputStatistics()));
         JSONObject debugging = new JSONObject();
+        debugging.put("Travelling", this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.TRAVELING)
+                .count());
+        debugging.put("Queueing", this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.WAITING_LOADING ||
+                            s.getState() == Ship.ShipState.WAITING_UNLOADING)
+                .count());
         return super.toJSON()
                 .put("name", this.name)
                 .put("statistics", m)
