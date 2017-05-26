@@ -15,7 +15,7 @@ public class Simulation {
     private final long PERIOD = 100;
     private final long INITIAL_DELAY = 1000l;
 
-    private final int NUMBER_OF_SHIPS = 4000;
+    private final int NUMBER_OF_SHIPS = 1000;
 
     private final String LEGACY_WORLD_KEY = "legacy";
     private final String OCEAN_WORLD_KEY = "oceanx";

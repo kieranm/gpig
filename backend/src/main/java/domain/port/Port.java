@@ -10,20 +10,19 @@ import domain.world.Route;
 import org.json.JSONObject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class Port extends Agent implements Carrier {
 
     // used to determine how much cargo is produced per tick (based on capacity)
-    private static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.001;
+    static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.001;
     // determines how many times cargo will be produced at the ports on initialisation
-    private static final double CARGO_INITIALISATION_MULTIPLIER = 3;
+    private static final double CARGO_INITIALISATION_MULTIPLIER = 10;
 
     // Multiplier applied to loading/unloading, a sort of global crane speed
-    private static final int BASE_LOAD_UNLOAD_SPEED = 20;
+    static final int BASE_LOAD_UNLOAD_SPEED = 10;
 
     // For every SHIP_SIZE_LOADING_OFFSET points of capacity an extra crane can be employed on a ship
-    private static final int SHIP_SIZE_LOADING_OFFSET = 50;
+    static final int SHIP_SIZE_LOADING_OFFSET = 50;
 
     private String name;
 
@@ -31,11 +30,11 @@ public abstract class Port extends Agent implements Carrier {
     private Map<Port, List<Route>> routes;
     private Map<Port, Double> probabilities = new HashMap<>();
 
-    private int cargoCapacity;
-    private int cargoLoad;
+    int cargoCapacity;
+    int cargoLoad;
 
     private int dockCapacity;
-    private int dockLoad = 0;
+    int dockLoad = 0;
 
     private Set<Ship> managedShips;
     private Set<Ship> removedShips;
@@ -169,24 +168,9 @@ public abstract class Port extends Agent implements Carrier {
         produceCargo();
     }
 
-    private void produceCargo() {
-        int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
-        newCargo = Math.min(newCargo, this.cargoCapacity - this.cargoLoad);
-        this.cargoLoad += newCargo;
-    }
+    abstract void produceCargo();
 
-    private void unloadDockedShip(Ship ship, int multiplier){
-        int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
-        requestedUnload *= multiplier;
-        int amountUnloaded = ship.unloadCargo(requestedUnload);
-        this.stats.addDeliveredCargo(amountUnloaded);
-        if (ship.isEmpty()) {
-            this.dockLoad -= ship.getCapacity();
-            ship.setState(Ship.ShipState.IDLE);
-        }
-
-        // TODO notify the amount of cargo that has been consumed to the "Cargo producer"
-    }
+    abstract void unloadDockedShip(Ship ship, int multiplier);
 
     private void loadDockedShip(Ship ship, int multiplier) {
         int requestedLoad = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
@@ -276,14 +260,18 @@ public abstract class Port extends Agent implements Carrier {
         for (Ship s : p.getManagedShips()) {
             if (s.getCapacity() > this.dockCapacity) {
                 bids.put(s, null);
+            } else {
+                bids.put(s, s.getBid(cargoToBeMoved, requestSmartShip));
             }
-            bids.put(s, s.getBid(cargoToBeMoved, requestSmartShip));
         }
         Map.Entry<Ship, Integer> best = null;
         for (Map.Entry<Ship, Integer> si : bids.entrySet()) {
             if (best == null || (si.getValue() != null && best.getValue() != null && si.getValue() > best.getValue())) {
                 best = si;
             }
+        }
+        if (best == null) {
+            return false;
         }
         Integer bestBid = best.getValue();
         Ship bestShip = best.getKey();
@@ -413,8 +401,15 @@ public abstract class Port extends Agent implements Carrier {
         return Math.round(prop * 1000.0);
     }
 
-    private long calculateThroughputStatistics() {
-        return 0l;
+    private long calculateIdleShips() {
+        int total = managedShips.size();
+        if (total == 0) return 0;
+
+        long idle = this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.IDLE)
+                .count();
+
+        return idle;
     }
 
     @Override
@@ -423,7 +418,7 @@ public abstract class Port extends Agent implements Carrier {
         m.put("NW", new JSONObject().put("name", "Container Load").put("value", calculateContainerLoadStatistics()));
         m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoadStatistics()));
         m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoadStatistics()));
-        m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughputStatistics()));
+        m.put("SE", new JSONObject().put("name", "Idle Ships").put("value", calculateIdleShips()));
         JSONObject debugging = new JSONObject();
         debugging.put("Travelling", this.managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.TRAVELING)
@@ -431,6 +426,13 @@ public abstract class Port extends Agent implements Carrier {
         debugging.put("Queueing", this.managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_LOADING ||
                             s.getState() == Ship.ShipState.WAITING_UNLOADING)
+                .count());
+        debugging.put("Idle", this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.IDLE)
+                .count());
+        debugging.put("Utilising Port", this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.LOADING_CARGO ||
+                        s.getState() == Ship.ShipState.UNLOADING_CARGO)
                 .count());
         return super.toJSON()
                 .put("name", this.name)
