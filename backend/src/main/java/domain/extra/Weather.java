@@ -38,7 +38,7 @@ public class Weather extends Agent {
 
             if(!this.detected) checkForShipsInRange();
 
-        }else if(world.getShowWeather()) this.rewive();
+        }else if(world.getShowWeather()) this.revive();
     }
 
     @Override

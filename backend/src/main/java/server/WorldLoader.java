@@ -379,12 +379,11 @@ class WorldLoader {
         throw new NoShipSpawnedException();
     }
 
-    //TODO change this to be less hard coded if neccessary
     public List<Weather> generateWeather(Map<String, Port> ports) {
         List<Weather> weatherList = new LinkedList<>();
 
         Weather weather1 = new Weather(new Coordinates(-18.9, 55.7), 10);
-        Port p1 = ports.get("Hong Kong");
+        Port p1 = ports.get("China Offshore");
         Port p2 = ports.get("Cape Town");
 
         weather1.addAffectedPort(p1);
@@ -395,7 +394,7 @@ class WorldLoader {
         altNodes.addAll(orgRoute.getNodes());
 
         // add A node that goes through a different side of madagascar
-        altNodes.set(7, new Node(IdGenerator.getId(), new Coordinates(-11.1, 43.54)));
+        altNodes.set(6, new Node(IdGenerator.getId(), new Coordinates(-11.1, 43.54)));
 
         weather1.addAltRoute(orgRoute, new Route(altNodes, orgRoute.getWeight()));
         weatherList.add(weather1);

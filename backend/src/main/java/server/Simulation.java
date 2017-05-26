@@ -73,7 +73,8 @@ public class Simulation {
         List<Agent> agents = new ArrayList<>(ships);
         agents.addAll(ports.values());
 
-        agents.addAll(loader.generateWeather(ports));
+        if(mapboxDatasetId.equals(MAPBOX_DATASET_ID_OCEANX))
+            agents.addAll(loader.generateWeather(ports));
 
         return new World(agents);
     }

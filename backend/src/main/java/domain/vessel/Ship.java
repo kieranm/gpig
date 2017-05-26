@@ -149,8 +149,10 @@ public abstract class Ship extends Agent implements Carrier {
         // if there is a common node adjust the route. Otherwise keep original route to avoid strange behaviour
         if(this.route == null || this.route.size() == 0) return;
 
-        if(newRoute.contains(this.next))
-        calculatePositionUpdateVector();
+        if(newRoute.contains(this.next)) {
+            this.route = newRoute;
+            calculatePositionUpdateVector();
+        }
     }
 
     public void assignRoute(List<Node> route) {
