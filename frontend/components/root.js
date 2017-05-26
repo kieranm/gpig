@@ -54,7 +54,11 @@ export default class Root extends Component {
             var target_ship = this.state.ships[ship.id];
 
             var positions = target_ship.positions.slice();
-            const difference = positions[positions.length-1].longitude - ship.coordinates.longitude;
+            const difference = positions[0].longitude - ship.coordinates.longitude;
+
+            if (Math.abs(difference) > 100 && ! ((ship.coordinates.longitude < 0 && difference > 300) || (ship.coordinates.longitude > 0 && difference < -300))) {
+                debugger;
+            }
 
             if ((ship.coordinates.longitude < 0 && difference > 300) || (ship.coordinates.longitude > 0 && difference < -300)) {
                 positions = [ship.coordinates];
