@@ -8,8 +8,6 @@ import shipsFragmentShader from './ships-layer-fragment.glsl';
 export default class ShipsLayer extends Layer {
 
   initializeState() {
-    const {gl} = this.context;
-
     const model = this.getModel(this.context.gl);
 
     this.state.attributeManager.add({
@@ -62,11 +60,15 @@ export default class ShipsLayer extends Layer {
     }
 
     let vertexCount = 0;
-    const pathLengths = data.reduce((acc, d) => {
-      const l = d.positions.length;
-      vertexCount += l;
-      return [...acc, l];
-    }, []);
+    const pathLengths = {};
+    const keys = Object.keys(data);
+
+    keys.forEach((key) => {
+        const l = data[key].positions.length;
+        vertexCount += l;
+
+        pathLengths[key] = l;
+    });
 
     this.setState({pathLengths, vertexCount});
   }
@@ -78,13 +80,17 @@ export default class ShipsLayer extends Layer {
   calculateIndices(attribute) {
     const {pathLengths, vertexCount} = this.state;
 
-    const indicesCount = (vertexCount - pathLengths.length) * 2;
+    const indicesCount = (vertexCount - Object.keys(pathLengths).length) * 2;
     const indices = new Uint32Array(indicesCount);
 
     let offset = 0;
     let index = 0;
-    for (let i = 0; i < pathLengths.length; i++) {
-      const l = pathLengths[i];
+    const keys = Object.keys(pathLengths);
+
+    keys.forEach((key) => {
+
+      const l = pathLengths[key];
+
       indices[index++] = offset;
       for (let j = 1; j < l - 1; j++) {
         indices[index++] = j + offset;
@@ -92,7 +98,8 @@ export default class ShipsLayer extends Layer {
       }
       indices[index++] = offset + l - 1;
       offset += l;
-    }
+    });
+
     attribute.value = indices;
     this.state.model.setVertexCount(indicesCount);
   }
@@ -103,16 +110,17 @@ export default class ShipsLayer extends Layer {
     const positions = new Float32Array(vertexCount * 3);
 
     let index = 0;
+    const keys = Object.keys(data);
 
-    for (let i = 0; i < data.length; i++) {
-      const agent_positions = data[i].positions;
+    keys.forEach((key) => {
+      const agent_positions = data[key].positions;
 
       for (let j = 0; j < agent_positions.length; j++) {
           positions[index++] = agent_positions[j].longitude;
           positions[index++] = agent_positions[j].latitude;
           positions[index++] = j; // This dictates the opacity of the vertex
       }
-    }
+    });
 
     attribute.value = positions;
   }
@@ -123,12 +131,14 @@ export default class ShipsLayer extends Layer {
     const utilization = new Float32Array(vertexCount * 1);
 
     let index = 0;
-    for (let i = 0; i < data.length; i++) {
-      const l = pathLengths[i];
-      for (let j = 0; j < l; j++) {
-        utilization[index++] = data[i].utilization;
+    const keys = Object.keys(data);
+
+    keys.forEach((key) => {
+      for (let j = 0; j < pathLengths[key]; j++) {
+        utilization[index++] = data[key].utilization;
       }
-    }
+    });
+
     attribute.value = utilization;
   }
 
