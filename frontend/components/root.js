@@ -187,7 +187,9 @@ export default class Root extends Component {
 
             if (agent.type === "FREIGHT_SHIP") {
                 ships.push(this.freightShip(agent));
-            } else if (agent.type === "LAND_PORT") {
+            } else if (agent.type === "SMART_SHIP") {
+                ships.push(this.freightShip(agent));
+            } else if (agent.type === "LAND_PORT" || agent.type === "SMART_PORT") {
                 portBases.push(this.portBase(agent));
                 northEastPortBars.push(this.portBar("NE", agent));
                 southEastPortBars.push(this.portBar("SE", agent));
