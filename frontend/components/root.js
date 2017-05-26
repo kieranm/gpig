@@ -183,7 +183,7 @@ export default class Root extends Component {
         var latitude = weather.coordinates.latitude;
         var longitude = weather.coordinates.longitude;
 
-        var n = 360;  // TODO lower this val if polygon recalculations is expensive
+        var n = 180;  // TODO lower this val if polygon recalculations is expensive
         for (var i = 0; i < n; i++) {
             polygon.push([longitude + r * Math.sin(2 * Math.PI * i / n),
                           latitude + r * Math.cos(2 * Math.PI * i / n)]);
@@ -197,7 +197,7 @@ export default class Root extends Component {
         };
     }
 
-    processAgents(d) {
+    _processAgents(d) {
         // Parse the update from the backend
         var freightShips = {};
         var autonomousShips = {};

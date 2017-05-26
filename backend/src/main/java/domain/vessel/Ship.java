@@ -144,15 +144,19 @@ public abstract class Ship extends Agent implements Carrier {
         }
     }
 
+    // TODO move this to smart ships ??
+    public void adjustToNewRouteIfPossible(List<Node> newRoute) {
+        // if there is a common node adjust the route. Otherwise keep original route to avoid strange behaviour
+        if(this.route == null || this.route.size() == 0) return;
+
+        if(newRoute.contains(this.next))
+        calculatePositionUpdateVector();
+    }
+
     public void assignRoute(List<Node> route) {
-        if(this.state == ShipState.TRAVELING) {
-            // TODO find next closes node
-        }
-        else{
-            this.state = ShipState.TRAVELING;
-            this.route = route;
-            this.next = route.get(1);
-        }
+        this.state = ShipState.TRAVELING;
+        this.route = route;
+        this.next = route.get(1);
 
         calculatePositionUpdateVector();
     }

@@ -14,11 +14,12 @@ import java.util.*;
 public class Weather extends Agent {
     private double range;
 
+    private boolean detected = false;
     private List<Port> affectedPorts = new ArrayList<>();
     private List<Route> orgRoutes = new ArrayList<>();
     private List<Route> altRoutes = new ArrayList<>();
 
-    public Weather(Coordinates initialCoordinates, int range) {
+    public Weather(Coordinates initialCoordinates, double range) {
         super(AgentType.WEATHER, initialCoordinates);
         super.kill();
         this.range = range;
@@ -29,12 +30,13 @@ public class Weather extends Agent {
         if(this.isAlive()) {
             if(!world.getShowWeather()){
                 this.kill();
+                this.detected = false;
                 this.setNewPathsForAffectedPorts(this.altRoutes, this.orgRoutes); // reset paths
-                this.setNewPathsForAffectedBoats(this.altRoutes, this.orgRoutes); // reset paths
+                this.setNewPathsForAffectedBoats(this.altRoutes, this.orgRoutes); // reset boats
                 return;
             }
 
-            checkForShipsInRange();
+            if(!this.detected) checkForShipsInRange();
 
         }else if(world.getShowWeather()) this.rewive();
     }
@@ -44,8 +46,8 @@ public class Weather extends Agent {
         return super.toJSON().put("range", this.range);
     }
 
-    private void addAffectedPort(Port port) { this.affectedPorts.add(port); }
-    private void addRoutes(Route orgRoute, Route altRoute) {
+    public void addAffectedPort(Port port) { this.affectedPorts.add(port); }
+    public void addAltRoute(Route orgRoute, Route altRoute) {
         this.orgRoutes.add(orgRoute);
         this.altRoutes.add(altRoute);
 
@@ -56,10 +58,12 @@ public class Weather extends Agent {
     private void checkForShipsInRange() { // updates paths when at least one ship is detected
         for(Port port : this.affectedPorts)
             for(Ship s : port.getManagedShips()){
-                if(s.getAgentType() != AgentType.SMART_SHIP && s.getState() == Ship.ShipState.TRAVELING &&
-                    s.getCoordinates().distance(this.getCoordinates()) <= range) continue;
+                if(s.getAgentType() != AgentType.SMART_SHIP || s.getState() != Ship.ShipState.TRAVELING ||
+                        s.getCoordinates().distance(this.getCoordinates()) > range) continue;
 
                 // weather has been detected
+                System.out.println("Weather discovered");
+                this.detected = true;
                 this.setNewPathsForAffectedPorts(this.orgRoutes, this.altRoutes);
                 this.setNewPathsForAffectedBoats(this.orgRoutes, this.altRoutes);
                 return;
@@ -69,11 +73,11 @@ public class Weather extends Agent {
     private void setNewPathsForAffectedBoats(List<Route> orgRoutes, List<Route> altRoutes){
         for(Port port : this.affectedPorts) {
             for(Ship s : port.getManagedShips()) {
-                if(s.getState() != Ship.ShipState.TRAVELING) continue;
+                if(s.getAgentType() != AgentType.SMART_SHIP || s.getState() != Ship.ShipState.TRAVELING) continue;
 
                 for(int i = 0; i < orgRoutes.size(); i++)
                     if(s.getCurrentRoute().equals(orgRoutes.get(i).getNodes()))
-                        s.assignRoute(altRoutes.get(i).getNodes());
+                        s.adjustToNewRouteIfPossible(altRoutes.get(i).getNodes());
             }
         }
     }
@@ -88,8 +92,9 @@ public class Weather extends Agent {
 
                 for(int i = 0; i < value.size(); i++)
                     for(int j = 0; j < orgRoutes.size(); j++)
-                        if(value.get(i).equals(orgRoutes.get(j)))
+                        if(value.get(i).areEqualRoutes(orgRoutes.get(j))) {
                             value.set(i, altRoutes.get(j));
+                        }
 
                 map.put(key, value); // overwrite old route
             }

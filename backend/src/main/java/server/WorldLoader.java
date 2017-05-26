@@ -1,6 +1,7 @@
 package server;
 
 import domain.port.AidSite;
+import domain.extra.Weather;
 import domain.port.CoastalPort;
 import domain.port.OffshorePort;
 import domain.port.Port;
@@ -376,5 +377,29 @@ class WorldLoader {
             }
         }
         throw new NoShipSpawnedException();
+    }
+
+    //TODO change this to be less hard coded if neccessary
+    public List<Weather> generateWeather(Map<String, Port> ports) {
+        List<Weather> weatherList = new LinkedList<>();
+
+        Weather weather1 = new Weather(new Coordinates(-18.9, 55.7), 10);
+        Port p1 = ports.get("Hong Kong");
+        Port p2 = ports.get("Cape Town");
+
+        weather1.addAffectedPort(p1);
+        weather1.addAffectedPort(p2);
+
+        Route orgRoute = p1.getRoutes().get(p2).get(0);
+        List<Node> altNodes = new ArrayList<>();
+        altNodes.addAll(orgRoute.getNodes());
+
+        // add A node that goes through a different side of madagascar
+        altNodes.set(7, new Node(IdGenerator.getId(), new Coordinates(-11.1, 43.54)));
+
+        weather1.addAltRoute(orgRoute, new Route(altNodes, orgRoute.getWeight()));
+        weatherList.add(weather1);
+
+        return weatherList;
     }
 }
