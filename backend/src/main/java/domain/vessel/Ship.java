@@ -25,7 +25,7 @@ public abstract class Ship extends Agent implements Carrier {
 
     private ShipState state = ShipState.IDLE;
 
-    private Integer waitingTime;
+    private Integer waitingTime = 0;
 
     public enum ShipState {
         IDLE,
@@ -48,13 +48,11 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     public void setState(ShipState state) {
-        if (this.state == ShipState.WAITING_UNLOADING && state != ShipState.WAITING_UNLOADING) {
-            this.waitingTime = null;
+        // set the waiting timer to 0 if moving into a waiting sate
+        if (state == ShipState.WAITING_LOADING || state == ShipState.WAITING_UNLOADING) {
+            this.waitingTime = 0;
         }
         this.state = state;
-        if (this.state == ShipState.WAITING_UNLOADING) {
-            this.waitingTime = 1;
-        }
     }
 
     public ShipState getState() { return this.state; }
@@ -72,16 +70,22 @@ public abstract class Ship extends Agent implements Carrier {
         return load;
     }
 
-    public int getBid(int cargoLeftToBeMoved) {
+    public Integer getBid(int cargoLeftToBeMoved, boolean requestingSmartShip) {
+
+        if (this.getAgentType() == AgentType.FREIGHT_SHIP && requestingSmartShip) {
+            return null;
+        }
+        if (this.getAgentType() == AgentType.SMART_SHIP && !requestingSmartShip) {
+            return null;
+        }
+
         if (this.state == ShipState.IDLE) {
             if (this.capacity >= cargoLeftToBeMoved) {
                 return cargoLeftToBeMoved - (this.capacity - cargoLeftToBeMoved);
             }
             return this.capacity;
         }
-        //TODO add logic to stop freight ships bidding on "internal" smart ship routes
-
-        return 0;
+        return null;
     }
 
     public void followRoute(int multiplier) {
@@ -180,6 +184,9 @@ public abstract class Ship extends Agent implements Carrier {
     }
 
     public void addWaitingTime(int multiplier) {
-        this.waitingTime += multiplier;
+        // only add time if in a waiting stage (should already be caught by state machine in tick function)
+        if (this.state == ShipState.WAITING_LOADING || this.state == ShipState.WAITING_UNLOADING) {
+            this.waitingTime += multiplier;
+        }
     }
 }
