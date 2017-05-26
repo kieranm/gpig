@@ -11,6 +11,11 @@ import java.util.*;
  */
 public class Statistics implements JSONable {
 
+    private static final int THROUGHPUT_AVERAGE_SIZE = 20;
+
+    private int[] throughputAverage;
+    private int throughputIndex;
+
     private int totalCargoDelivered;
     private int throughput;
 
@@ -18,9 +23,16 @@ public class Statistics implements JSONable {
 
     public Statistics(Collection<Ship> ships) {
         this.ships = ships;
+        throughputAverage = new int[THROUGHPUT_AVERAGE_SIZE];
+        this.throughputIndex = 0;
     }
 
     public void nextTick() {
+        this.throughputAverage[this.throughputIndex] = this.throughput;
+        this.throughputIndex++;
+        if (this.throughputIndex == THROUGHPUT_AVERAGE_SIZE) {
+            this.throughputIndex = 0;
+        }
         this.throughput = 0;
     }
 
@@ -33,8 +45,8 @@ public class Statistics implements JSONable {
         this.throughput += cargo;
     }
 
-    public int getThroughput() {
-        return throughput;
+    public double getThroughput() {
+        return Arrays.stream(this.throughputAverage).average().getAsDouble();
     }
 
     public double getAverageWaitingTime() {

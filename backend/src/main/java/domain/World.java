@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class World implements JSONable {
 
-    private static final int STAT_UPDATE_PERIOD = 20;
+    private static final int STAT_UPDATE_PERIOD = 1;
 
     private int multiplier = 1;
 
