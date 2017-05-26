@@ -59,4 +59,9 @@ public abstract class Agent implements JSONable {
     public void setStats(Statistics stats) {
         this.stats = stats;
     }
+
+    @Override
+    public int hashCode() {
+        return this.getId();
+    }
 }

@@ -70,16 +70,22 @@ public abstract class Ship extends Agent implements Carrier {
         return load;
     }
 
-    public int getBid(int cargoLeftToBeMoved) {
+    public Integer getBid(int cargoLeftToBeMoved, boolean requestingSmartShip) {
+
+        if (this.getAgentType() == AgentType.FREIGHT_SHIP && requestingSmartShip) {
+            return null;
+        }
+        if (this.getAgentType() == AgentType.SMART_SHIP && !requestingSmartShip) {
+            return null;
+        }
+
         if (this.state == ShipState.IDLE) {
             if (this.capacity >= cargoLeftToBeMoved) {
                 return cargoLeftToBeMoved - (this.capacity - cargoLeftToBeMoved);
             }
             return this.capacity;
         }
-        //TODO add logic to stop freight ships bidding on "internal" smart ship routes
-
-        return 0;
+        return null;
     }
 
     public void followRoute(int multiplier) {
