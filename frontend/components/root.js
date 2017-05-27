@@ -31,7 +31,7 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
-            mapStyle: "dark",
+            mapStyle: "satellite",
             ships: {},
             portBases: [],
             northEastPortBars: [],
@@ -140,6 +140,8 @@ export default class Root extends Component {
                 [longitude + padding_width, latitude - padding_height],
             ];
 
+            height = height * 20;
+
         } else if (direction == "SW") {
             polygon = [
                 [longitude - padding_width, latitude - padding_height],
@@ -148,6 +150,8 @@ export default class Root extends Component {
                 [longitude - (2*bar_width) - padding_width, latitude - padding_height],
                 [longitude - padding_width, latitude - padding_height],
             ];
+
+            height = height * 20;
 
         } else {
             polygon = [
@@ -163,7 +167,7 @@ export default class Root extends Component {
             id: port.id,
             title: title,
             description: description,
-            height: height * BAR_HEIGHT_FACTOR,
+            height: ((height+25) * BAR_HEIGHT_FACTOR),
             polygon: polygon
         };
     }
@@ -366,13 +370,7 @@ export default class Root extends Component {
             averageWaitTime
         } = this.state;
 
-        var actualMapStyleUrl = "";
-
-        if (mapStyle == "dark") {
-            actualMapStyleUrl = "mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9";
-        } else {
-            actualMapStyleUrl = "mapbox://styles/mapbox/"+ mapStyle +"-v9";
-        }
+        var actualMapStyleUrl = "mapbox://styles/mapbox/"+ mapStyle +"-v9";
 
         return (
             <div>
