@@ -34,6 +34,6 @@ public class OffshorePort extends Port {
             ship.setState(Ship.ShipState.IDLE);
         }
 
-        this.cargoLoad += amountUnloaded;
+        this.cargoLoad += Math.min(amountUnloaded, this.cargoCapacity - this.cargoLoad);
     }
 }

@@ -383,12 +383,6 @@ public abstract class Port extends Agent implements Carrier {
         int total = managedShips.size();
         if (total == 0) return 0;
 
-        // remove "idle" from total, more of a quirk of our system than a realistic state to be in
-        // or implement some "smart" planning to avoid stats looking bad for OceanX case
-        total -= managedShips.stream()
-                .filter(s -> s.getState() == Ship.ShipState.IDLE)
-                .count();
-
         // calculate how many ships are currently in one of the waiting states
         long queueing = managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_UNLOADING)
@@ -397,8 +391,7 @@ public abstract class Port extends Agent implements Carrier {
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_LOADING)
                 .count();
 
-        double prop = (double) queueing / (double) total;
-        return Math.round(prop * 1000.0);
+        return queueing;
     }
 
     private long calculateIdleShips() {
@@ -434,6 +427,10 @@ public abstract class Port extends Agent implements Carrier {
                 .filter(s -> s.getState() == Ship.ShipState.LOADING_CARGO ||
                         s.getState() == Ship.ShipState.UNLOADING_CARGO)
                 .count());
+        debugging.put("Dock Capacity", this.dockCapacity);
+        debugging.put("Dock Load", this.dockLoad);
+        debugging.put("Container Capacity", this.cargoCapacity);
+        debugging.put("Container Load", this.cargoLoad);
         return super.toJSON()
                 .put("name", this.name)
                 .put("statistics", m)
