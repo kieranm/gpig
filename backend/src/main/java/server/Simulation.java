@@ -86,7 +86,8 @@ public class Simulation {
     }
 
     public void setMultiplier(int multiplier) {
-        this.world.setMultiplier(multiplier);
+        this.legacyWorld.setMultiplier(multiplier);
+        this.oceanXWorld.setMultiplier(multiplier);
     }
 
     public void switchWorld(String worldKey) {
