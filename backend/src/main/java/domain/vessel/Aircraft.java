@@ -15,6 +15,16 @@ public class Aircraft extends Ship {
 
     @Override
     public void tick(World world, int multiplier) {
-
+        switch(this.getState()) {
+            case WAITING_UNLOADING:
+                this.addWaitingTime(multiplier);
+                break;
+            case WAITING_LOADING:
+                this.addWaitingTime(multiplier);
+                break;
+            case TRAVELING:
+                this.followRoute(multiplier);
+                break;
+        }
     }
 }
