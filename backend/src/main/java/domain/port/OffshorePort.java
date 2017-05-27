@@ -21,19 +21,23 @@ public class OffshorePort extends Port {
     }
 
     @Override
-    void produceCargo() {}
+    void produceCargo(int multiplier) {}
 
     @Override
     void unloadDockedShip(Ship ship, int multiplier) {
         int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
         requestedUnload *= multiplier;
         int amountUnloaded = ship.unloadCargo(requestedUnload);
+        amountUnloaded =  Math.min(amountUnloaded, this.cargoCapacity - this.cargoLoad);
         this.stats.addDeliveredCargo(amountUnloaded);
+        this.cargoLoad += amountUnloaded;
         if (ship.isEmpty()) {
             this.dockLoad -= ship.getCapacity();
             ship.setState(Ship.ShipState.IDLE);
+        } else if (this.isFull()) {
+            this.dockLoad -= ship.getCapacity();
+            ship.setState(Ship.ShipState.WAITING_LOADING);
+            sendToBack(ship);
         }
-
-        this.cargoLoad += Math.min(amountUnloaded, this.cargoCapacity - this.cargoLoad);
     }
 }

@@ -10,9 +10,9 @@ import domain.util.Coordinates;
 public class SmartShip extends Ship {
 
     // TODO use different sizes?
-    public static final int SMALL_CAPACITY = 100;
-    public static final int MEDIUM_CAPACITY = 500;
-    public static final int LARGE_CAPACITY = 1000;
+    public static final int SMALL_CAPACITY = 10;
+    public static final int MEDIUM_CAPACITY = 50;
+    public static final int LARGE_CAPACITY = 100;
 
 
     public SmartShip(Coordinates initialCoord, int capacity) {
