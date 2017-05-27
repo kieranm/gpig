@@ -74,7 +74,6 @@ public class Simulation {
         agents.addAll(ports.values());
 
         return new World(agents);
-
     }
 
     public void end() {

@@ -43,10 +43,6 @@ public abstract class Ship extends Agent implements Carrier {
         this.load = 0;
     }
 
-    public void setNext(Node next) {
-        this.next = next;
-    }
-
     public void setState(ShipState state) {
         // set the waiting timer to 0 if moving into a waiting sate
         if (state == ShipState.WAITING_LOADING || state == ShipState.WAITING_UNLOADING) {
