@@ -32,7 +32,7 @@ export default class Root extends Component {
                 height: 500
             },
             mapStyle: "dark",
-            ships: [],
+            ships: {},
             portBases: [],
             northEastPortBars: [],
             southEastPortBars: [],
@@ -52,37 +52,31 @@ export default class Root extends Component {
         // Update position of freight ship agent or move it on the map
         var new_ship = null;
 
-        for (var j = 0; j < this.state.ships.length; j++) {
-            var target_ship = this.state.ships[j];
+        if (ship.id in this.state.ships) {
+            var target_ship = this.state.ships[ship.id];
 
-            if(ship.id == target_ship.id) {
+            var positions = target_ship.positions.slice();
+            const difference = positions[0].longitude - ship.coordinates.longitude;
 
-                var positions = target_ship.positions.slice();
-                const difference = positions[positions.length-1].longitude - ship.coordinates.longitude;
-
-                if ((ship.coordinates.longitude < 0 && difference > 300) || (ship.coordinates.longitude > 0 && difference < -300)) {
-                    positions = [ship.coordinates];
-                } else {
-                    positions.unshift(ship.coordinates);
-                    if (positions.length > 30) {
-                        positions.pop();
-                    }
+            if ((ship.coordinates.longitude < 0 && difference > 300) || (ship.coordinates.longitude > 0 && difference < -300)) {
+                positions = [ship.coordinates];
+            } else {
+                positions.unshift(ship.coordinates);
+                if (positions.length > 30) {
+                    positions.pop();
                 }
-
-                new_ship = {
-                    id: ship.id,
-                    positions: positions,
-                    utilization: ship.load/ship.capacity
-                };
             }
-        }
 
-        if (new_ship == null) {
+            new_ship = {
+                id: ship.id,
+                positions: positions,
+                utilization: ship.load/ship.capacity
+            };
+        } else {
             new_ship = {
                 id: ship.id,
                 positions: [ship.coordinates],
                 utilization: ship.load/ship.capacity
-
             };
         }
 
@@ -177,7 +171,7 @@ export default class Root extends Component {
 
     _processAgents(d) {
         // Parse the update from the backend
-        var ships = [];
+        var ships = {};
         var portBases = [];
         var northEastPortBars = [];
         var southEastPortBars = [];
@@ -188,9 +182,9 @@ export default class Root extends Component {
             var agent = d.agents[i];
 
             if (agent.type === "FREIGHT_SHIP") {
-                ships.push(this.freightShip(agent));
+                ships[agent.id] = this.freightShip(agent);
             } else if (agent.type === "SMART_SHIP") {
-                ships.push(this.freightShip(agent));
+                ships[agent.id] = this.freightShip(agent);
             } else if (agent.type === "LAND_PORT" || agent.type === "SMART_PORT") {
                 portBases.push(this.portBase(agent));
                 northEastPortBars.push(this.portBar("NE", agent));
