@@ -21,7 +21,7 @@ public class OffshorePort extends Port {
     }
 
     @Override
-    void produceCargo() {}
+    void produceCargo(int multiplier) {}
 
     @Override
     void unloadDockedShip(Ship ship, int multiplier) {

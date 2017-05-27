@@ -14,8 +14,9 @@ public class CoastalPort extends Port {
         super(AgentType.LAND_PORT, name, node, capacity, dock_capacity);
     }
 
-    void produceCargo() {
+    void produceCargo(int multiplier) {
         int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
+        newCargo *= multiplier;
         newCargo = Math.min(newCargo, this.cargoCapacity - this.cargoLoad);
         this.cargoLoad += newCargo;
     }

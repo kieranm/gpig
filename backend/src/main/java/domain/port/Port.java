@@ -14,9 +14,9 @@ import java.util.*;
 public abstract class Port extends Agent implements Carrier {
 
     // used to determine how much cargo is produced per tick (based on capacity)
-    static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.005;
+    static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.0005;
     // determines how many times cargo will be produced at the ports on initialisation
-    private static final double CARGO_INITIALISATION_MULTIPLIER = 10;
+    private static final int CARGO_INITIALISATION_MULTIPLIER = 10;
 
     // Multiplier applied to loading/unloading, a sort of global crane speed
     static final int BASE_LOAD_UNLOAD_SPEED = 10;
@@ -47,10 +47,9 @@ public abstract class Port extends Agent implements Carrier {
         this.name = name;
         this.cargoCapacity = capacity;
         this.cargoLoad = 0;
-        for (int i = 0; i < CARGO_INITIALISATION_MULTIPLIER; i++) {
-            produceCargo();
-        }
 
+        produceCargo(CARGO_INITIALISATION_MULTIPLIER);
+        
         this.dockCapacity = dock_capacity;
 
         this.managedShips = new HashSet<>();
@@ -172,10 +171,10 @@ public abstract class Port extends Agent implements Carrier {
         // currently at port. Bid for additional ships to travel to the dock
         this.bidForShips();
 
-        produceCargo();
+        produceCargo(multiplier);
     }
 
-    abstract void produceCargo();
+    abstract void produceCargo(int multiplier);
 
     abstract void unloadDockedShip(Ship ship, int multiplier);
 
