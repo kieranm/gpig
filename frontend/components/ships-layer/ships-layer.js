@@ -43,7 +43,7 @@ export default class ShipsLayer extends Layer {
         gl.enable(gl.BLEND);
         gl.enable(gl.POLYGON_OFFSET_FILL);
         gl.polygonOffset(2.0, 1.0);
-        gl.lineWidth(3);
+        gl.lineWidth(this.props.lineWidth);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.blendEquation(gl.FUNC_ADD);
       },
@@ -118,7 +118,7 @@ export default class ShipsLayer extends Layer {
       for (let j = 0; j < agent_positions.length; j++) {
           positions[index++] = agent_positions[j].longitude;
           positions[index++] = agent_positions[j].latitude;
-          positions[index++] = j; // This dictates the opacity of the vertex
+          positions[index++] = j / this.props.lengthMultiplier; // This dictates the opacity of the vertex
       }
     });
 

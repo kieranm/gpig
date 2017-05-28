@@ -12,7 +12,6 @@ const bar_height = 0.005;
 const padding_width = bar_width/3;
 const padding_height = bar_height/3;
 const startingSpeed = 1;
-const startingMode = "legacy";
 
 const BAR_HEIGHT_FACTOR = 10;
 
@@ -31,7 +30,10 @@ export default class Root extends Component {
                 width: 500,
                 height: 500
             },
+            mode: "legacy",
             mapStyle: "satellite",
+            autonomousShips: {},
+            freightShips: {},
             ships: {},
             portBases: [],
             northEastPortBars: [],
@@ -48,12 +50,12 @@ export default class Root extends Component {
         this.connection = new WebSocket('ws://localhost:4567/sim');
     }
 
-    freightShip(ship) {
+    processShip(ship, ships) {
         // Update position of freight ship agent or move it on the map
         var new_ship = null;
 
-        if (ship.id in this.state.ships) {
-            var target_ship = this.state.ships[ship.id];
+        if (ship.id in ships) {
+            var target_ship = ships[ship.id];
 
             var positions = target_ship.positions.slice();
             const difference = positions[0].longitude - ship.coordinates.longitude;
@@ -62,7 +64,7 @@ export default class Root extends Component {
                 positions = [ship.coordinates];
             } else {
                 positions.unshift(ship.coordinates);
-                if (positions.length > 30) {
+                if (positions.length > 60) {
                     positions.pop();
                 }
             }
@@ -175,7 +177,8 @@ export default class Root extends Component {
 
     _processAgents(d) {
         // Parse the update from the backend
-        var ships = {};
+        var freightShips = {};
+        var autonomousShips = {};
         var portBases = [];
         var northEastPortBars = [];
         var southEastPortBars = [];
@@ -186,9 +189,9 @@ export default class Root extends Component {
             var agent = d.agents[i];
 
             if (agent.type === "FREIGHT_SHIP") {
-                ships[agent.id] = this.freightShip(agent);
+                freightShips[agent.id] = this.processShip(agent, this.state.freightShips);
             } else if (agent.type === "SMART_SHIP") {
-                ships[agent.id] = this.freightShip(agent);
+                autonomousShips[agent.id] = this.processShip(agent, this.state.autonomousShips);
             } else if (agent.type === "LAND_PORT" || agent.type === "SMART_PORT") {
                 portBases.push(this.portBase(agent));
                 northEastPortBars.push(this.portBar("NE", agent));
@@ -199,12 +202,13 @@ export default class Root extends Component {
         }
 
         this.setState({
-            ships: ships,
-            portBases: portBases,
-            northEastPortBars: northEastPortBars,
-            southEastPortBars: southEastPortBars,
-            southWestPortBars: southWestPortBars,
-            northWestPortBars: northWestPortBars
+            autonomousShips,
+            freightShips,
+            portBases,
+            northEastPortBars,
+            southEastPortBars,
+            southWestPortBars,
+            northWestPortBars
         });
 
     }
@@ -230,7 +234,7 @@ export default class Root extends Component {
             message_type: "start",
             message_data: {
                 speed_multiplier: startingSpeed,
-                mode: startingMode
+                mode: this.state.mode
             }
         }));
     }
@@ -360,7 +364,9 @@ export default class Root extends Component {
     render() {
         const {
             viewport,
-            ships,
+            autonomousShips,
+            freightShips,
+            mode,
             portBases,
             northEastPortBars,
             southEastPortBars,
@@ -373,7 +379,13 @@ export default class Root extends Component {
             averageWaitTime
         } = this.state;
 
-        var actualMapStyleUrl = "mapbox://styles/mapbox/"+ mapStyle +"-v9";
+        var actualMapStyleUrl = "";
+
+        if (mapStyle == "dark") {
+            actualMapStyleUrl = "mapbox://styles/matzipan/cj2t849hk001c2rpeljwuiji9";
+        } else {
+            actualMapStyleUrl = "mapbox://styles/mapbox/"+ mapStyle +"-v9";
+        }
 
         return (
             <div>
@@ -387,7 +399,7 @@ export default class Root extends Component {
                     changeModeCallback={this._changeMode.bind(this)}
                     changeSpeedCallback={this._changeSpeed.bind(this)}
                     startingSpeed={startingSpeed}
-                    startingMode={startingMode}
+                    startingMode={mode}
                     startingScenario="coastal ports"
                     startingMapStyle={mapStyle}
                 />
@@ -398,7 +410,9 @@ export default class Root extends Component {
                     onChangeViewport={this._onChangeViewport.bind(this)}
                     mapboxApiAccessToken={MAPBOX_TOKEN}>
                     <DeckGLOverlay viewport={viewport}
-                                   ships={ships}
+                                   autonomousShips={autonomousShips}
+                                   freightShips={freightShips}
+                                   mode={mode}
                                    portBases={portBases}
                                    northEastPortBars={northEastPortBars}
                                    southEastPortBars={southEastPortBars}

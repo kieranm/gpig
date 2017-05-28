@@ -22,7 +22,8 @@ export default class DeckGLOverlay extends Component {
     render() {
         const {
             viewport,
-            ships,
+            autonomousShips,
+            freightShips,
             portBases,
             northEastPortBars,
             southEastPortBars,
@@ -34,9 +35,17 @@ export default class DeckGLOverlay extends Component {
             // Ship spark-line layer
             new ShipsLayer({
                 id: 'ships',
-                data: ships,
-                opacity: 1,
-
+                data: autonomousShips,
+                lineWidth: 4,
+                lengthMultiplier: 1,
+                opacity: 1
+            }),
+            new ShipsLayer({
+                id: 'ships',
+                data: freightShips,
+                lineWidth: this.props.mode == "legacy" ? 4 : 8,
+                lengthMultiplier: this.props.mode == "legacy" ? 1 : 2,
+                opacity: 1
             }),
 
             // Port Bases Layer
