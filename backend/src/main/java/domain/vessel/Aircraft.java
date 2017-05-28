@@ -5,27 +5,21 @@ import domain.util.AgentType;
 import domain.util.Coordinates;
 
 /**
- * @author Oliver Lea
+ * Created by liamw on 27/05/2017.
  */
-public class SmartShip extends Ship {
+public class Aircraft extends Ship {
 
-    // TODO use different sizes?
-    public static final int SMALL_CAPACITY = 10;
-    public static final int MEDIUM_CAPACITY = 50;
-    public static final int LARGE_CAPACITY = 100;
-
-
-    public SmartShip(Coordinates initialCoord, int capacity) {
-        super(AgentType.SMART_SHIP, initialCoord, capacity);
+    public Aircraft(Coordinates initialLoc, int capacity) {
+        super(AgentType.AIRCRAFT, initialLoc, capacity);
     }
 
     @Override
     public void tick(World world, int multiplier) {
         switch(this.getState()) {
-            case WAITING_LOADING:
+            case WAITING_UNLOADING:
                 this.addWaitingTime(multiplier);
                 break;
-            case WAITING_UNLOADING:
+            case WAITING_LOADING:
                 this.addWaitingTime(multiplier);
                 break;
             case TRAVELING:

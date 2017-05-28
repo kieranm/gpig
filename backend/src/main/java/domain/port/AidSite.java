@@ -6,12 +6,12 @@ import domain.vessel.Ship;
 import domain.world.Node;
 
 /**
- * @author Oliver Lea
+ * Created by liamw on 27/05/2017.
  */
-public class CoastalPort extends Port {
+public class AidSite extends Port {
 
-    public CoastalPort(String name, Node node, int capacity, int dock_capacity) {
-        super(AgentType.LAND_PORT, name, node, capacity, dock_capacity);
+    public AidSite(String name, Node node, int capacity, int dock_capacity) {
+        super(AgentType.AID_PORT, name, node, capacity, dock_capacity);
     }
 
     void produceCargo(int multiplier) {

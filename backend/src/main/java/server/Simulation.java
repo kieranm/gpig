@@ -15,7 +15,7 @@ public class Simulation {
     private final long PERIOD = 100l;
     private final long INITIAL_DELAY = 0l;
 
-    private final int NUMBER_OF_SHIPS = 4000;
+    private final int NUMBER_OF_SHIPS = 1000;
 
     private final String LEGACY_WORLD_KEY = "legacy";
     private final String OCEAN_WORLD_KEY = "oceanx";
@@ -74,7 +74,6 @@ public class Simulation {
         agents.addAll(ports.values());
 
         return new World(agents);
-
     }
 
     public void end() {
@@ -86,7 +85,8 @@ public class Simulation {
     }
 
     public void setMultiplier(int multiplier) {
-        this.world.setMultiplier(multiplier);
+        this.legacyWorld.setMultiplier(multiplier);
+        this.oceanXWorld.setMultiplier(multiplier);
     }
 
     public void switchWorld(String worldKey) {

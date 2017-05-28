@@ -5,10 +5,10 @@ import ShipsLayer from './ships-layer';
 
 const LIGHT_SETTINGS = {
     lightsPosition: [0, 53.32463, 300000],
-    ambientRatio: 0.05,
+    ambientRatio: 0.5,
     diffuseRatio: 0.6,
     specularRatio: 0.8,
-    lightsStrength: [2.0, 0.0, 0.0, 0.0],
+    lightsStrength: [1.35, 0.0, 0.0, 0.0],
     numberOfLights: 1
 };
 

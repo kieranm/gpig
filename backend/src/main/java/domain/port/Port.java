@@ -10,20 +10,19 @@ import domain.world.Route;
 import org.json.JSONObject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class Port extends Agent implements Carrier {
 
     // used to determine how much cargo is produced per tick (based on capacity)
-    private static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.001;
+    static final double CAPACITY_CARGO_PRODUCTION_RATIO = 0.0005;
     // determines how many times cargo will be produced at the ports on initialisation
-    private static final double CARGO_INITIALISATION_MULTIPLIER = 3;
+    private static final int CARGO_INITIALISATION_MULTIPLIER = 10;
 
     // Multiplier applied to loading/unloading, a sort of global crane speed
-    private static final int BASE_LOAD_UNLOAD_SPEED = 20;
+    static final int BASE_LOAD_UNLOAD_SPEED = 10;
 
     // For every SHIP_SIZE_LOADING_OFFSET points of capacity an extra crane can be employed on a ship
-    private static final int SHIP_SIZE_LOADING_OFFSET = 50;
+    static final int SHIP_SIZE_LOADING_OFFSET = 50;
 
     private String name;
 
@@ -31,14 +30,15 @@ public abstract class Port extends Agent implements Carrier {
     private Map<Port, List<Route>> routes;
     private Map<Port, Double> probabilities = new HashMap<>();
 
-    private int cargoCapacity;
-    private int cargoLoad;
+    int cargoCapacity;
+    int cargoLoad;
 
     private int dockCapacity;
-    private int dockLoad = 0;
+    int dockLoad = 0;
 
     private Set<Ship> managedShips;
     private Set<Ship> removedShips;
+    private Set<Ship> sentToBack;
 
     public Port(AgentType agentType, String name, Node node, int capacity, int dock_capacity) {
         super(agentType, node.getCoordinates());
@@ -47,10 +47,9 @@ public abstract class Port extends Agent implements Carrier {
         this.name = name;
         this.cargoCapacity = capacity;
         this.cargoLoad = 0;
-        for (int i = 0; i < CARGO_INITIALISATION_MULTIPLIER; i++) {
-            produceCargo();
-        }
 
+        produceCargo(CARGO_INITIALISATION_MULTIPLIER);
+        
         this.dockCapacity = dock_capacity;
 
         this.managedShips = new HashSet<>();
@@ -107,6 +106,7 @@ public abstract class Port extends Agent implements Carrier {
         // ships will be added to this list if they are no longer managed by this port
         // after this update
         removedShips = new HashSet<>();
+        sentToBack = new HashSet<>();
 
         boolean isFrontOfQueue = true; // flag is unset after the first waiting ship is addressed (FIFO)
         // TODO cheap "collaboration" if we drop the fifo queue for first fit in OceanX approach
@@ -162,31 +162,21 @@ public abstract class Port extends Agent implements Carrier {
             managedShips.remove(s);
         }
 
+        for (Ship s : sentToBack) {
+            managedShips.remove(s);
+            managedShips.add(s);
+        }
+
         // if the port has outbound cargo, but not enough ships to fulfil the load
         // currently at port. Bid for additional ships to travel to the dock
         this.bidForShips();
 
-        produceCargo();
+        produceCargo(multiplier);
     }
 
-    private void produceCargo() {
-        int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
-        newCargo = Math.min(newCargo, this.cargoCapacity - this.cargoLoad);
-        this.cargoLoad += newCargo;
-    }
+    abstract void produceCargo(int multiplier);
 
-    private void unloadDockedShip(Ship ship, int multiplier){
-        int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
-        requestedUnload *= multiplier;
-        int amountUnloaded = ship.unloadCargo(requestedUnload);
-        this.stats.addDeliveredCargo(amountUnloaded);
-        if (ship.isEmpty()) {
-            this.dockLoad -= ship.getCapacity();
-            ship.setState(Ship.ShipState.IDLE);
-        }
-
-        // TODO notify the amount of cargo that has been consumed to the "Cargo producer"
-    }
+    abstract void unloadDockedShip(Ship ship, int multiplier);
 
     private void loadDockedShip(Ship ship, int multiplier) {
         int requestedLoad = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
@@ -232,7 +222,8 @@ public abstract class Port extends Agent implements Carrier {
         for (Ship s : this.managedShips) {
             if (s.getState() == Ship.ShipState.WAITING_LOADING ||
                     s.getState() == Ship.ShipState.LOADING_CARGO ||
-                    s.getState() == Ship.ShipState.TRAVELING) {
+                    (s.getState() == Ship.ShipState.TRAVELING &&
+                    s.isEmpty())) {
                 maximumMovableCargo += s.getCapacity();
 
                 // TODO subtract the current load from ships loading cargo
@@ -245,6 +236,10 @@ public abstract class Port extends Agent implements Carrier {
 
             // check if any ships currently at this port can be used
             if (!this.findBidder(this, cargoLeftToBeMoved)) {
+                if (this.getManagedShips().stream().anyMatch(s ->
+                    s.getState() == Ship.ShipState.IDLE)) {
+                    return;
+                }
 
                 //  otherwise check the other ports in this network, starting at the closest port
                 for (Port port : this.routes.keySet()) {
@@ -276,14 +271,22 @@ public abstract class Port extends Agent implements Carrier {
         for (Ship s : p.getManagedShips()) {
             if (s.getCapacity() > this.dockCapacity) {
                 bids.put(s, null);
+            } else {
+                bids.put(s, s.getBid(cargoToBeMoved, requestSmartShip));
             }
-            bids.put(s, s.getBid(cargoToBeMoved, requestSmartShip));
         }
         Map.Entry<Ship, Integer> best = null;
         for (Map.Entry<Ship, Integer> si : bids.entrySet()) {
-            if (best == null || (si.getValue() != null && best.getValue() != null && si.getValue() > best.getValue())) {
+            if (best == null) {
                 best = si;
+            } else if (si.getValue() != null) {
+                if (best.getValue() == null || si.getValue() > best.getValue()) {
+                    best = si;
+                }
             }
+        }
+        if (best == null) {
+            return false;
         }
         Integer bestBid = best.getValue();
         Ship bestShip = best.getKey();
@@ -318,9 +321,11 @@ public abstract class Port extends Agent implements Carrier {
         Map<Port, Double> validProbabilities = new HashMap<>();
         double total = 0.0;
         for (Port p : this.routes.keySet()) {
-            if (s.getCapacity() <= p.getCapacity()) {
-                validProbabilities.put(p, this.probabilities.get(p));
-                total += this.probabilities.get(p);
+            if (s.getCapacity() <= p.getCapacity()) { // check that the ship will fit in the possible destination
+                if (isValidDestination(s, p)) { // check that the ship is the correct type for this route
+                    validProbabilities.put(p, this.probabilities.get(p));
+                    total += this.probabilities.get(p);
+                }
             }
         }
         double randomVal = Math.random() * total;
@@ -341,6 +346,22 @@ public abstract class Port extends Agent implements Carrier {
 
             }
         }
+    }
+
+    private boolean isValidDestination(Ship s, Port p) {
+        // legacy case, only one type so all ship types valid
+        if ((this.getAgentType() == AgentType.LAND_PORT) && (p.getAgentType() == AgentType.LAND_PORT)) {
+            return true;
+        }
+
+        // if the route is between a land port and offshore port only smart ships are valid
+        if ((this.getAgentType() == AgentType.LAND_PORT && p.getAgentType() == AgentType.SMART_PORT) ||
+                (this.getAgentType() == AgentType.SMART_PORT && p.getAgentType() == AgentType.LAND_PORT)) {
+            return s.getAgentType() == AgentType.SMART_SHIP;
+        }
+
+        // if the route is between offshore and offshore then freight are valid
+        return s.getAgentType() == AgentType.FREIGHT_SHIP;
     }
 
     /**
@@ -377,6 +398,10 @@ public abstract class Port extends Agent implements Carrier {
         }
     }
 
+    void sendToBack(Ship ship) {
+        sentToBack.add(ship);
+    }
+
     public Set<Ship> getManagedShips() {
         return managedShips;
     }
@@ -395,12 +420,6 @@ public abstract class Port extends Agent implements Carrier {
         int total = managedShips.size();
         if (total == 0) return 0;
 
-        // remove "idle" from total, more of a quirk of our system than a realistic state to be in
-        // or implement some "smart" planning to avoid stats looking bad for OceanX case
-        total -= managedShips.stream()
-                .filter(s -> s.getState() == Ship.ShipState.IDLE)
-                .count();
-
         // calculate how many ships are currently in one of the waiting states
         long queueing = managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_UNLOADING)
@@ -409,12 +428,18 @@ public abstract class Port extends Agent implements Carrier {
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_LOADING)
                 .count();
 
-        double prop = (double) queueing / (double) total;
-        return Math.round(prop * 1000.0);
+        return queueing;
     }
 
-    private long calculateThroughputStatistics() {
-        return 0l;
+    private long calculateIdleShips() {
+        int total = managedShips.size();
+        if (total == 0) return 0;
+
+        long idle = this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.IDLE)
+                .count();
+
+        return idle;
     }
 
     @Override
@@ -423,7 +448,7 @@ public abstract class Port extends Agent implements Carrier {
         m.put("NW", new JSONObject().put("name", "Container Load").put("value", calculateContainerLoadStatistics()));
         m.put("NE", new JSONObject().put("name", "Dock Load").put("value", calculateDockLoadStatistics()));
         m.put("SW", new JSONObject().put("name", "Queue Load").put("value", calculateQueueLoadStatistics()));
-        m.put("SE", new JSONObject().put("name", "Throughput").put("value", calculateThroughputStatistics()));
+        m.put("SE", new JSONObject().put("name", "Idle Ships").put("value", calculateIdleShips()));
         JSONObject debugging = new JSONObject();
         debugging.put("Travelling", this.managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.TRAVELING)
@@ -431,6 +456,23 @@ public abstract class Port extends Agent implements Carrier {
         debugging.put("Queueing", this.managedShips.stream()
                 .filter(s -> s.getState() == Ship.ShipState.WAITING_LOADING ||
                             s.getState() == Ship.ShipState.WAITING_UNLOADING)
+                .count());
+        debugging.put("Idle", this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.IDLE)
+                .count());
+        debugging.put("Utilising Port", this.managedShips.stream()
+                .filter(s -> s.getState() == Ship.ShipState.LOADING_CARGO ||
+                        s.getState() == Ship.ShipState.UNLOADING_CARGO)
+                .count());
+        debugging.put("Dock Capacity", this.dockCapacity);
+        debugging.put("Dock Load", this.dockLoad);
+        debugging.put("Container Capacity", this.cargoCapacity);
+        debugging.put("Container Load", this.cargoLoad);
+        debugging.put("Smart Ships", this.managedShips.stream()
+                .filter(s -> s.getAgentType() == AgentType.SMART_SHIP)
+                .count());
+        debugging.put("Freight Ships", this.managedShips.stream()
+                .filter(s -> s.getAgentType() == AgentType.FREIGHT_SHIP)
                 .count());
         return super.toJSON()
                 .put("name", this.name)

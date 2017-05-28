@@ -31,9 +31,10 @@ export default class Root extends Component {
                 height: 500
             },
             mode: "legacy",
-            mapStyle: "dark",
+            mapStyle: "satellite",
             autonomousShips: {},
             freightShips: {},
+            ships: {},
             portBases: [],
             northEastPortBars: [],
             southEastPortBars: [],
@@ -141,6 +142,8 @@ export default class Root extends Component {
                 [longitude + padding_width, latitude - padding_height],
             ];
 
+            height = height * 20;
+
         } else if (direction == "SW") {
             polygon = [
                 [longitude - padding_width, latitude - padding_height],
@@ -149,6 +152,8 @@ export default class Root extends Component {
                 [longitude - (2*bar_width) - padding_width, latitude - padding_height],
                 [longitude - padding_width, latitude - padding_height],
             ];
+
+            height = height * 20;
 
         } else {
             polygon = [
@@ -164,7 +169,7 @@ export default class Root extends Component {
             id: port.id,
             title: title,
             description: description,
-            height: height * BAR_HEIGHT_FACTOR,
+            height: ((height+25) * BAR_HEIGHT_FACTOR),
             polygon: polygon
         };
     }
@@ -277,8 +282,9 @@ export default class Root extends Component {
                     ...this.state.viewport,
                     latitude: 53.459204,
                     longitude: -3.031712,
-                    zoom: 11,
-                    pitch: 45
+                    zoom: 10,
+                    pitch: 45,
+                    bearing: 25
                 }
             });
         }
@@ -287,10 +293,11 @@ export default class Root extends Component {
             this.setState({
                 viewport: {
                     ...this.state.viewport,
-                    latitude: 46.732331,
-                    longitude: -7.558594,
-                    zoom: 14,
-                    pitch: 45
+                    latitude: 53.490970,
+                    longitude: -4.916830,
+                    zoom: 8,
+                    pitch: 45,
+                    bearing: 25
                 }
             });
         }
@@ -310,7 +317,8 @@ export default class Root extends Component {
                     latitude: 20.210656,
                     longitude: 0,
                     zoom: 1.5,
-                    pitch: 0
+                    pitch: 0,
+                    bearing: 0
                 }
             });
         }
