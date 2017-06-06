@@ -5,7 +5,10 @@ import {Model, Program, Geometry} from 'luma.gl';
 import shipsVertexShader from './ships-layer-vertex.glsl';
 import shipsFragmentShader from './ships-layer-fragment.glsl';
 
-export default class ShipsLayer extends Layer {
+import airplaneVertexShader from './airplane-layer-vertex.glsl';
+import airplaneFragmentShader from './airplane-layer-fragment.glsl';
+
+export default class AgentLayer extends Layer {
 
   initializeState() {
     const model = this.getModel(this.context.gl);
@@ -28,10 +31,21 @@ export default class ShipsLayer extends Layer {
   }
 
   getModel(gl) {
+    var vertexShader;
+    var fragmentShader;
+
+    if (this.props.shader == "ship") {
+      vertexShader = shipsVertexShader;
+      fragmentShader = shipsFragmentShader;
+    } else {
+      vertexShader = airplaneVertexShader;
+      fragmentShader = airplaneFragmentShader;
+    }
+
     return new Model({
       program: new Program(gl, assembleShaders(gl, {
-        vs: shipsVertexShader,
-        fs: shipsFragmentShader
+        vs: vertexShader,
+        fs: fragmentShader
       })),
       geometry: new Geometry({
         id: this.props.id,
@@ -144,4 +158,4 @@ export default class ShipsLayer extends Layer {
 
 }
 
-ShipsLayer.layerName = 'ShipsLayer';
+AgentLayer.layerName = 'AgentLayer';

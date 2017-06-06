@@ -34,6 +34,7 @@ export default class Root extends Component {
             mapStyle: "satellite",
             autonomousShips: {},
             freightShips: {},
+            aircraft: {},
             ships: {},
             portBases: [],
             northEastPortBars: [],
@@ -179,6 +180,7 @@ export default class Root extends Component {
         // Parse the update from the backend
         var freightShips = {};
         var autonomousShips = {};
+        var aircraft = {};
         var portBases = [];
         var northEastPortBars = [];
         var southEastPortBars = [];
@@ -192,6 +194,8 @@ export default class Root extends Component {
                 freightShips[agent.id] = this.processShip(agent, this.state.freightShips);
             } else if (agent.type === "SMART_SHIP") {
                 autonomousShips[agent.id] = this.processShip(agent, this.state.autonomousShips);
+            } else if (agent.type === "AIRCRAFT") {
+                aircraft[agent.id] = this.processShip(agent, this.state.aircraft);
             } else if (agent.type === "LAND_PORT" || agent.type === "SMART_PORT") {
                 portBases.push(this.portBase(agent));
                 northEastPortBars.push(this.portBar("NE", agent));
@@ -204,6 +208,7 @@ export default class Root extends Component {
         this.setState({
             autonomousShips,
             freightShips,
+            aircraft,
             portBases,
             northEastPortBars,
             southEastPortBars,
@@ -366,6 +371,7 @@ export default class Root extends Component {
             viewport,
             autonomousShips,
             freightShips,
+            aircraft,
             mode,
             portBases,
             northEastPortBars,
@@ -412,6 +418,7 @@ export default class Root extends Component {
                     <DeckGLOverlay viewport={viewport}
                                    autonomousShips={autonomousShips}
                                    freightShips={freightShips}
+                                   aircraft={aircraft}
                                    mode={mode}
                                    portBases={portBases}
                                    northEastPortBars={northEastPortBars}
