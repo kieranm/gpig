@@ -75,7 +75,7 @@ export default class ControlPanel extends Component {
                         <Button fluid color="teal" onClick={(e) => this.showScenario("coastal port") }>Coastal Port</Button>
                         <Button fluid color="teal" onClick={(e) => this.showScenario("offshore port") }>Offshore Smart Port</Button>
                         <Button fluid color="teal" onClick={(e) => this.showScenario("weather avoidance") }>Weather Avoidance</Button>
-                        <Button fluid color="teal" onClick={(e) => this.showScenario("road traffic") }>Humanitarian Aid</Button>
+                        <Button fluid color="teal" onClick={(e) => this.showScenario("humanitarian aid") }>Humanitarian Aid</Button>
                         <Button fluid color="teal" onClick={(e) => this.showScenario("global movements") }>Global Movements</Button>
 
                         <Divider horizontal>Map Style</Divider>
