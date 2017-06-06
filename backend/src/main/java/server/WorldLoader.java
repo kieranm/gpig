@@ -278,6 +278,8 @@ class WorldLoader {
      * @return
      */
     public List<Ship> generateShips(int numberOfShips) {
+        List<Ship> ships = new ArrayList<>();
+
         // initialise probabilities based on capacity of the ports
         Map<Port, Double> probabilities = new HashMap<>();
 
@@ -291,16 +293,20 @@ class WorldLoader {
 
             if (p.getAgentType() == AgentType.AID_PORT) {
                 for (int i = 0; i < 5; i++) {
-                    try {
-                        spawnShip(p);
-                    } catch (NoShipSpawnedException e) {
-                        e.printStackTrace();
-                    }
+                    // make sure the aid port has a few ships
+                    Coordinates c = new Coordinates(
+                            p.getCoordinates().getLatitude(),
+                            p.getCoordinates().getLongitude()
+                    );
+                    Ship s = new Aircraft(c, SmartShip.SMALL_CAPACITY);
+                    s.setState(Ship.ShipState.IDLE);
+                    p.addShip(s);
+                    ships.add(s);
+
                 }
             }
         }
 
-        List<Ship> ships = new ArrayList<>();
         for (int i = 0; i < numberOfShips; i++) {
 
             // weighted random selection of port
@@ -346,12 +352,6 @@ class WorldLoader {
         // currently each ship will be classed as small, medium, or large
         double numTypes = 3; // so 3 types of ship
         int type = ((int) (Math.random() * numTypes));
-
-        if (atPort.getAgentType() == AgentType.AID_PORT) {
-            Ship s = new Aircraft(c, SmartShip.SMALL_CAPACITY);
-            s.setState(Ship.ShipState.IDLE);
-            atPort.addShip(s);
-        }
 
         // create ship based on port type and selected ship size
         Ship s = createShip(shiptype, c, type);
