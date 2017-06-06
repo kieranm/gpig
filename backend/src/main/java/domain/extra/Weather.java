@@ -43,7 +43,9 @@ public class Weather extends Agent {
 
     @Override
     public JSONObject toJSON() {
-        return super.toJSON().put("range", this.range);
+        return super.toJSON()
+                .put("range", this.range)
+                .put("detected", this.detected);
     }
 
     public void addAffectedPort(Port port) { this.affectedPorts.add(port); }

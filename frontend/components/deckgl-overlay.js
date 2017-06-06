@@ -38,7 +38,7 @@ export default class DeckGLOverlay extends Component {
             new PolygonLayer({
                 id: 'weather',
                 data: weather,
-                getFillColor: d => [216, 100, 100],
+                getFillColor: d =>  d.colour,
                 extruded: true,
                 filled: true,
                 getElevation: d => d.height,

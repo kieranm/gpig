@@ -177,8 +177,7 @@ class WorldLoader {
     }
 
     private Node createNode(double latitude, double longitude) {
-        Node node = new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
-        return node;
+        return new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
     }
 
     private void generatePorts(List<JSONObject> jPorts) {
@@ -382,19 +381,18 @@ class WorldLoader {
     public List<Weather> generateWeather(Map<String, Port> ports) {
         List<Weather> weatherList = new LinkedList<>();
 
-        Weather weather1 = new Weather(new Coordinates(-18.9, 55.7), 10);
-        Port p1 = ports.get("China Offshore");
-        Port p2 = ports.get("Cape Town");
+        Port p1 = ports.get("Irish Sea Offshore");
+        Port p2 = ports.get("Liverpool");
+        Route orgRoute = p1.getRoutes().get(p2).get(0);
+
+        Weather weather1 = new Weather(orgRoute.getNodes().get(2).getCoordinates(), 0.2);
 
         weather1.addAffectedPort(p1);
         weather1.addAffectedPort(p2);
 
-        Route orgRoute = p1.getRoutes().get(p2).get(0);
         List<Node> altNodes = new ArrayList<>();
         altNodes.addAll(orgRoute.getNodes());
-
-        // add A node that goes through a different side of madagascar
-        altNodes.set(6, new Node(IdGenerator.getId(), new Coordinates(-11.1, 43.54)));
+        altNodes.set(2, new Node(IdGenerator.getId(), new Coordinates(53.7500794, -3.983348)));
 
         weather1.addAltRoute(orgRoute, new Route(altNodes, orgRoute.getWeight()));
         weatherList.add(weather1);

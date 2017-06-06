@@ -144,7 +144,6 @@ public abstract class Ship extends Agent implements Carrier {
         }
     }
 
-    // TODO move this to smart ships ??
     public void adjustToNewRouteIfPossible(List<Node> newRoute) {
         // if there is a common node adjust the route. Otherwise keep original route to avoid strange behaviour
         if(this.route == null || this.route.size() == 0) return;

@@ -180,10 +180,11 @@ export default class Root extends Component {
 
         var polygon = [];
         var r = weather.range;
+        var detected = weather.detected;
         var latitude = weather.coordinates.latitude;
         var longitude = weather.coordinates.longitude;
 
-        var n = 180;  // TODO lower this val if polygon recalculations is expensive
+        var n = 180;
         for (var i = 0; i < n; i++) {
             polygon.push([longitude + r * Math.sin(2 * Math.PI * i / n),
                           latitude + r * Math.cos(2 * Math.PI * i / n)]);
@@ -192,6 +193,7 @@ export default class Root extends Component {
 
         return {
             id: weather.id,
+            colour: detected ? [60, 179, 113] : [216, 100, 100],
             height : 20,
             polygon: polygon
         };
@@ -234,7 +236,7 @@ export default class Root extends Component {
             southEastPortBars,
             southWestPortBars,
             northWestPortBars,
-            weather: weather
+            weather
         });
 
     }
