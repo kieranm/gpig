@@ -1,0 +1,99 @@
+\documentclass[twoside,a4paper,12pt]{article}
+
+\usepackage[left=1.5cm, right=1.5cm, top=2.5cm, bottom=1.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[british]{babel}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+\usepackage[scaled=0.9]{DejaVuSansMono}
+\usepackage{eurosym}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\def\arraystretch{1.5}
+\usepackage{pbox}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{comment}
+\definecolor{lightgrey}{RGB}{240,240,240}
+\setlength{\fboxsep}{7pt}
+\captionsetup[figure]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
+\captionsetup[table]{box=colorbox,boxcolor=lightgrey,slc=off, margin=5pt}
+
+\usepackage{url}
+
+\usepackage{afterpage}
+\usepackage{xcolor}
+\definecolor{lightGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mediumGray}{rgb}{0.3,0.3,0.3}
+\usepackage{listings}
+\lstdefinestyle{base}{
+	language=Python,
+	basicstyle=\footnotesize\ttfamily,
+	commentstyle=\color{lightGray},
+	breaklines=true,
+	showspaces=false,
+	showstringspaces=false,
+	stringstyle=\color{lightGray},
+	keywordstyle=\color{mediumGray}
+}
+\lstset{xleftmargin=10pt,xrightmargin=10pt}
+\lstset{framesep=10pt}
+
+\usepackage{charter}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+
+\pagestyle{fancy}
+\fancyhead[LO,RE]{GPIG Initial Report -- Group D}
+\fancyhead[RO,LE]{\thepage}
+\cfoot{}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
+
+
+\begin{document}
+	\pagenumbering{roman}
+	\title{ 
+	\vspace{1cm}
+	{\includegraphics[scale=0.25]{images/shield}} \\
+	\vspace{1.5cm}
+	{GPIG -- Final Report}\\
+	{\large Department of Computer Science, University of York}\\
+	\vspace{1cm}
+    }
+    \author{\textbf{Group D} \\ Kieran McHugh (KM) \\ Liam Wellacott (LW) \\ Andrei Zisu (AZ) \\ Lloyd Still (LS) \\ Oliver Lea (OL) \\ Mark Woosey (MW) \\ Paulius Kazakas (PK) }
+    \date{Submission by 8th June 2017}
+    \maketitle 
+    \vspace{0.2cm}
+    \begin{center}
+    \small
+    This report contains X words, as counted by the \textit{Texpad} IDE. 
+	
+    \end{center}
+
+    \thispagestyle{empty}
+    
+    \setlength{\parskip}{0.5em}
+    
+    \newpage
+    \tableofcontents
+    
+	\newpage
+	\pagenumbering{arabic}
+
+	\input{introduction}
+	
+	\input{market_analysis}
+	
+	\input{group_evaluation}
+
+	\input{conclusion}
+		
+	\newpage
+
+	\addcontentsline{toc}{section}{\protect\numberline{}References}
+	\bibliography{references}
+	\bibliographystyle{IEEEtran}
+
+\end{document}
