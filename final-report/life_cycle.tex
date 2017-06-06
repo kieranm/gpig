@@ -1,27 +1,25 @@
-\section{Development Life Cycle Assessment}
+\section{Development Life Cycle}
 
 \subsection{Planning}
 
-Prior to beginning design and implementation of our system, we fi establish the fundamental requirements. Since the majority of the functionality of the system was discussed and decided prior to the submission of the initial report, this stage was spent predominantly with determining how best to present our system. Emphasis was given to producing a highly detailed and visual simulation of how the system could work in the real-world. At this stage, roles designating responsibility for various components of the software development process were assigned. Further details of our planning and organisation  procedure are discussed in Section \ref{sec:group_evaluation}.
-
-Prior to beginning the implementation of the system, we must first establish a set of fundamental requirements that our software aims to fulfil. 
-
-...
-
-At this state, we assigned roles designating responsibility for various components of the software development process. Further details of our planning and organisation procedure are discussed in Section \ref{sec:group_evaluation}.
+Prior to the design and implementation of our system, we first established the fundamental requirements. We had deliberated and defined the core functionality of our system prior to the submission of the initial report. We therefore spent this stage predominantly determining what aspects of the system we needed to simulate to deliver maximum value. We agreed that we wanted to produce a rich high-level simulation, illustrating the movement of cargo through the whole system. At this stage, we also designated writing tasks to members of the team. Further details of our planning and organisation procedure are discussed in Section \ref{sec:group_evaluation}.
 
 \subsection{Analysis}
 
-Following on from the analysis carried out for the initial system report, further research was carried out into the potential advantages of our system, and how these could best be represented by the software (see Section \ref{sec:market_assessment}). Software frameworks that had the capacity to be useful as components of this software, such as graphical or simulation libraries, were analysed. Those with the most potential were then evaluated by creating minimal demonstrations that showcased their suitability. The choice to use \lstinline{deck.gl} was made following such a demonstration. Following this, the decision was then taken to implement a heavy Java back-end that could provide simulation information to a developed \lstinline{deck.gl} front-end using websockets.
+Following on from the analysis we carried out for the initial system report, we investigated further potential advantages of our system and how these could best be represented by our simulation. We also considered the customer's additional requirements, and established how we could incorporate these into the software. We analysed a range of software languages and libraries, creating a shortlist of those with the most potential. We created very basic prototypes to establish which of these tools we would carry forward to full implementation. We chose to use Deck.gl and Mapbox owing to their powerful 3D visualisation capabilities. After further discussion, we decided that Java was the most apprioriate language in which to write our back-end model, with communication between the components taking place over websockets. 
 
 \subsection{Design}
 
-Much of the decisions regarding the design and architecture of the software were taken as part of the software framework choices, with the end product expected to be a global-level simulation that demonstrated the shipping of freight containers between coastal and offshore ports. For further details of the architecture of the demonstration system, see Section \ref{sec:system_state}.
+We then embarked on a design phase. This phase was coordinated by the Lead Architect and supported by the Lead Engineer. During this phase, we defined the architecture of the whole OceanX system, before deciding how best to translate this into a simulation model. We created high-level class diagrams, and designed a JSON communication interface that would allow information to flow between the front end and back end. 
 
 \subsection{Implementation}
 
-Implementation roles were split between working on the front- or back-end. The API by which these would communicate was established early on in order to facilitate concurrent development of both tiers. Whenever a feature request was made by a member of the team, or if a bug in the software was found, members of both the front- and back-end development teams would meet to establish the impact on their respective tiers, and what work would be required from each. Upon completion any development, code-review by someone else on the same team was required in order for the changes to be integrated into the master codebase. A feature-freeze date was set at the beginning of the software development process that prevented new features from being added to the system from that point. This date, together with our internal development timetable, set a clear and decisive mandate developmental progress.
+During the implementation phase, the Lead Engineer established whether team members would be more comfortable developing front-end or back-end components, and allocated tasks accordingly. Our common communication interface enabled simultaneous development of these features. Whenever a team member made a code pull request, or if any bugs in the software were found, members of both the front-end and back-end development teams would meet to establish the impact on their respective tiers, and what work would be required from each. Before code was merged into the master branch, we always performed a peer review process using Github. We set a feature freeze date, Saturday 27th May, after which new features would not be added. This date, together with our internal development schedule, gave us clear a clear timetable to follow.
 
 \subsection{Testing and Integration}
 
-The majority of the system testing was carried out through visual evaluation of the demonstration, and how it compared to the shipping industry as it exists today. Additionally, debugging capability was integrated into the software to allow detailed statistics about the current simulation to be extracted. For example, hovering over a port provides a detailed set of statistics about that port, such as current cargo load and throughput. Given more time, it would be useful to add formal unit and integration tests that could specifically test the functionality and completeness of the system. Such tests would make it much easier to identify and fix bugs, as well as integrate new functionality into the system - particularly useful for any migration of the developed system to the real-world.
+We carried out the majority of our system testing through visual evaluation of the simulation. We compared our simulation engine to similar tools in order to ensure the system's behaviour was realistic. We integrated comprehensive debugging facilities into our software, in order to log a range of statistics and to allow closer inspection of ports simply by hovering the cursor over their visual representation. Given more time, it would have been useful to add formal unit and integration tests, along with continuous integration to detect any errors before they are merged into the master branch.
+
+
+
+
