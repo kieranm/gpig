@@ -311,8 +311,17 @@ export default class Root extends Component {
 
         }
 
-        if(scenario == "road traffic") {
-
+        if(scenario == "humanitarian aid") {
+            this.setState({
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: 19.117760,
+                    longitude: -72.828369,
+                    zoom: 8,
+                    pitch: 0,
+                    bearing: 0
+                }
+            });
         }
 
         if(scenario == "global movements") {
