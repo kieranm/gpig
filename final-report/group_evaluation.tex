@@ -33,12 +33,15 @@ The Chair and Secretary worked together to carefully plan out each phase of the 
 	\label{fig:gantt_chart}
 \end{figure}
 
+\newpage
 \subsection{Writing and Documentation}
 It appeared that some teams elected at an early stage to segregate their members into engineers and writers. We chose not to adopt the same approach for several reasons:
 
-all members of the team were keen to get involved with programming tasks, and it would not have been reasonable to deprive them of this opportunity;
-we collectively believed that the best person to write documentation for specific system components is the person who also wrote the code;
-it would have been very challenging, and possibly wasteful, to write report sections as our solution was undergoing constant changes and adaptation.
+\begin{itemize}[noitemsep]
+	\item all members of the team were keen to get involved with programming tasks, and it would not have been reasonable to deprive them of this opportunity;
+	\item we collectively believed that the best person to write documentation for specific system components is the person who also wrote the code;
+	\item it would have been very challenging, and possibly wasteful, to write report sections as our solution was undergoing constant changes and adaptation.
+\end{itemize}
 
 Instead, our writing phase followed our implementation phase. We believe that this decision worked in our favour: since our prototype had been completed before writing started, we had little difficulty explaining how it worked. It was the first time many team members had to coordinate and delegate the writing of such a large report to so many people. 
 
@@ -48,23 +51,30 @@ We learned a lot from the process of writing the initial report, where we had no
 \label{sec:standups}
 We tracked the progress of individual team members and collected metrics through an automated daily stand-up process. While we had some initial reservations that people would forget to complete it, the participation rate was around 95\%. This gave us a comprehensive picture of our productivity and team sentiment. On several occasions, team members recorded low sentiment scores. We were able to investigate why people were unhappy, and address these problems as soon as they occurred. Since this process was fully automated, it required no additional effort from team members to coordinate. 
 
+The burndown chart in Figure \ref{fig:plot_story_points} illustrates some of the metrics we were able to collect during the daily stand up. Amongst other things, we recorded the number of story points that each team member completed per day. 
+
+We also included in the daily stand up a range of qualitative open-answer questions, such as “What progress do you hope to complete before the next stand up?” and “What obstacles do you anticipate facing?”. These facilitated reflection, but were sometimes seen as burdensome, and we would probably include less of these questions if we were to undertake a similar project in future. We found that, while they improved the ability of the team to focus, they did not tell us anything we didn’t already know.
+
+\newpage
+\phantom{.}
+\vfill
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\textwidth]{images/plot_satisfaction}
 	\caption{Mean satisfaction of team members with both the rest of the team, and the project solution.}
 	\label{fig:plot_satisfaction}
 \end{figure}
-
-The burndown chart in Figure \ref{fig:plot_story_points} illustrates some of the metrics we were able to collect during the daily stand up. Amongst other things, we recorded the number of story points that each team member completed per day. 
-
+\phantom{.}
+\vfill
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\textwidth]{images/plot_story_points}
 	\caption{Burndown chart showing the actual rate of story point completion compared to the ideal rate.}
 	\label{fig:plot_story_points}
 \end{figure}
-
-We also included in the daily stand up a range of qualitative open-answer questions, such as “What progress do you hope to complete before the next stand up?” and “What obstacles do you anticipate facing?”. These facilitated reflection, but were sometimes seen as burdensome, and we would probably include less of these questions if we were to undertake a similar project in future. We found that, while they improved the ability of the team to focus, they did not tell us anything we didn’t already know.
+\vfill
+\phantom{.}
+\clearpage
 
 \subsection{Issue Tracking and Code Maturity}
 \label{sec:issuetracking}

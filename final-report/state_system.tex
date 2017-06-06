@@ -9,7 +9,7 @@ Our solution architecture is composed of three logically distinct tiers: back-en
 
 The simulation itself is executed on a `tick-by-tick’ basis, where a tick can be described as the software’s atomic time unit. Each entity in the system is assigned one of several possible agent types, which determines how the agent behaves and moves. Our possible agent types include autonomous ships, freight ships, coastal ports, and offshore ports. On each tick of the system, every agent is provided the ‘world’ as it appeared in the previous tick. From this, agents are expected to determine an appropriate action. This decentralised control system models collaborative autonomy. It provides more redundancy and resiliency than would be possible with a single monolithic controller, where a single point of failure could disrupt the entire system. The speed of the simulation is controlled by a speed scaling factor that can be set by the user. This factor is used to modify the speed of operations such as ship movement or cargo loading or unloading. 
 
-Some key classes from the system that provide fundamental functionality in regard to the simulation:
+Figure \ref{fig:class_diagram} shows a class diagram detailing all classes used by the backend. Several key classes from the system that provide fundamental functionality in regard to the simulation are briefly outlined below. 
 
 \begin{description}
 	\item[JSONable] An interface that requires the implementation of the \texttt{toJSON} method. Used to serialise the world and its constituent agents for transfer to the front-end Javascript.
@@ -17,6 +17,17 @@ Some key classes from the system that provide fundamental functionality in regar
 	\item[Simulation] Ticks the world and all agents that it contains in time with the number of ticks per second specified. Responsible for sending the state of the world to the front-end.
 \end{description}
 
+\newpage
+\begin{figure}[h!]
+	\centering
+	\includegraphics[height=0.93\textheight]{images/class_diagram}
+	\caption{Class diagram detailing all classes used by the backend.}
+	\label{fig:class_diagram}
+\end{figure}
+
+
+
+\newpage
 In order to make sure our model was accurate, we had to implement many of the processes that ships would have to follow in a real-world system. For example, we included a mechanism by which ports could request collection of cargo from nearby idle ships. This collaborative process is essential in ensuring that containers are able to flow efficiently through the system. For this purpose, we developed a heuristic algorithm capable of establishing the most suitable ship for collecting cargo awaiting transport. Specifically, idle ships servicing the port at which this cargo is based are required to submit a `bid’ detailing their suitability to collect the cargo. Each bid is a trade-off between the capacity of the ship and the number of containers that require collection. A ship that could collect all cargo but has a large amount of empty space is penalised, with the system instead favouring ships that can be utilized more efficiently. If all nearby ships are occupied, the port will instead request idle ships from other ports that are connected to it by shipping routes. Allowing each ship to create its own bid allows for a much more flexible system than one controlled centrally, which fundamentally increases the reliability of the overall system.
 
 Our simulation engine allowed us to compare the OceanX system with traditional shipping operations. In order to achieve this, we built a separate shipping lane dataset that did not contain the offshore ports, again fetched from the Mapbox web service by the Java back-end. We developed and integrated a comprehensive statistics suite, which collects and displays information pertaining to the performance of both the OceanX and legacy systems. It is based on these statistics that we reached informed conclusions as to the benefits our system can attain. The statistics we collected include:
