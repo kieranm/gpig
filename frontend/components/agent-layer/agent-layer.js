@@ -5,7 +5,10 @@ import {Model, Program, Geometry} from 'luma.gl';
 import shipsVertexShader from './ships-layer-vertex.glsl';
 import shipsFragmentShader from './ships-layer-fragment.glsl';
 
-export default class ShipsLayer extends Layer {
+import airplaneVertexShader from './airplane-layer-vertex.glsl';
+import airplaneFragmentShader from './airplane-layer-fragment.glsl';
+
+export default class AgentLayer extends Layer {
 
   initializeState() {
     const model = this.getModel(this.context.gl);
@@ -28,10 +31,21 @@ export default class ShipsLayer extends Layer {
   }
 
   getModel(gl) {
+    var vertexShader;
+    var fragmentShader;
+
+    if (this.props.shader == "ship") {
+      vertexShader = shipsVertexShader;
+      fragmentShader = shipsFragmentShader;
+    } else {
+      vertexShader = airplaneVertexShader;
+      fragmentShader = airplaneFragmentShader;
+    }
+
     return new Model({
       program: new Program(gl, assembleShaders(gl, {
-        vs: shipsVertexShader,
-        fs: shipsFragmentShader
+        vs: vertexShader,
+        fs: fragmentShader
       })),
       geometry: new Geometry({
         id: this.props.id,
@@ -43,7 +57,7 @@ export default class ShipsLayer extends Layer {
         gl.enable(gl.BLEND);
         gl.enable(gl.POLYGON_OFFSET_FILL);
         gl.polygonOffset(2.0, 1.0);
-        gl.lineWidth(3);
+        gl.lineWidth(this.props.lineWidth);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.blendEquation(gl.FUNC_ADD);
       },
@@ -118,7 +132,7 @@ export default class ShipsLayer extends Layer {
       for (let j = 0; j < agent_positions.length; j++) {
           positions[index++] = agent_positions[j].longitude;
           positions[index++] = agent_positions[j].latitude;
-          positions[index++] = j; // This dictates the opacity of the vertex
+          positions[index++] = j / this.props.lengthMultiplier; // This dictates the opacity of the vertex
       }
     });
 
@@ -144,4 +158,4 @@ export default class ShipsLayer extends Layer {
 
 }
 
-ShipsLayer.layerName = 'ShipsLayer';
+AgentLayer.layerName = 'AgentLayer';

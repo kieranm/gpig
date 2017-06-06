@@ -25,30 +25,13 @@ Particularly towards the end of the project, we found that meetings were called 
 \subsection{Planning and Scheduling}
 The Chair and Secretary worked together to carefully plan out each phase of the project. We are very pleased that the team managed to adhere to this schedule closely. We had different phases for initial report writing, planning, implementation, final report writing, and presentation planning. These phases are presented graphically in the Gantt chart in Figure \ref{fig:gantt_chart}.
 
-[Gantt Chart]
-
-\subsection{Daily Stand Ups}
-\label{sec:standups}
-We tracked the progress of individual team members and collected metrics through an automated daily stand-up process. While we had some initial reservations that people would forget to complete it, the participation rate was around 95\%. This gave us a comprehensive picture of our productivity and team sentiment. On several occasions, team members recorded low sentiment scores. We were able to investigate why people were unhappy, and address these problems as soon as they occurred. Since this process was fully automated, it required no additional effort from team members to coordinate. 
-
-The burndown chart in Figure \ref{fig:burndown_chart} illustrates some of the metrics we were able to collect during the daily stand up. Amongst other things, we recorded the number of story points that each team member completed per day. 
-
-[Burndown chart]
-
-We also included in the daily stand up a range of qualitative open-answer questions, such as “What progress do you hope to complete before the next stand up?” and “What obstacles do you anticipate facing?”. These facilitated reflection, but were sometimes seen as burdensome, and we would probably include less of these questions if we were to undertake a similar project in future. We found that, while they improved the ability of the team to focus, they did not tell us anything we didn’t already know.
-
-\subsection{Issue Tracking and Code Maturity}
-\label{sec:issuetracking}
-We used GitHub Issues to record pending tasks and faults identified with our code. We then placed these issues on a `kanban board’, allowing us to keep track of the current status of each ticket. A screenshot of our kanban board is provided in Figure \ref{fig:kanban_board}.
-
-[Kanban Board]
-We used issue tickets to triage issues and assign a number of story points to each, indicating the amount of development effort that the issue ticket would require to complete. We found that this provided useful reference information when completing the daily stand up. However, we sometimes forgot to create or update issue tickets, meaning that the kanban board was not always up to date. In future, we would make more of an effort to create all of our tickets at the start of each agile sprint, along with story point estimations. We would also schedule a short daily review session to make sure that completed issues are always marked as resolved.
-
-
-\subsection{Architecture Selection and Programming}
-All team members took part in programming activities, allowing us to draw upon a very broad range of experience. Deciding on programming languages and frameworks was not a straightforward task, and we had to reconcile several opposing viewpoints. We were able to reach a consensus through compromise: splitting our code base into `front-end’ and`back-end’ components, each using a different language and set of frameworks. Those who were initially less comfortable with one of the languages were able to learn from those who were. Incidentally, this structure worked strongly in our favour, and we believe our solution was far superior to any we could have produced using just a single language.
-
-We followed agile practices, allowing us to iterate quickly, mitigate risks, and come up with a `minimum viable product’ as early as possible. We felt that this was the most appropriate strategy given the tight time scale. By design, agile involves less onerous and detailed planning -- which we found to be both a blessing and a curse. We firmly believe that it would have been impossible to plan out all of our development efforts right at the beginning, and agile afforded us the capability of planning as we went along. However, there were several scenarios in which well-intentioned team members devoted a lot of effort to completing their tasks only to discover that their code was not fully compatible with what others had developed. This resulted in tedious merge conflicts that could have been avoided with more meticulous planning.
+\begin{figure}[h!]
+	\includegraphics[width=\textwidth]{images/gantt_chart1}
+	\vspace{0.1cm}\newline
+	\includegraphics[width=0.83\textwidth]{images/gantt_chart2}
+	\caption{Screenshots of the Gantt chart, showing the different phases throughout the project.}
+	\label{fig:gantt_chart}
+\end{figure}
 
 \subsection{Writing and Documentation}
 It appeared that some teams elected at an early stage to segregate their members into engineers and writers. We chose not to adopt the same approach for several reasons:
@@ -60,6 +43,55 @@ it would have been very challenging, and possibly wasteful, to write report sect
 Instead, our writing phase followed our implementation phase. We believe that this decision worked in our favour: since our prototype had been completed before writing started, we had little difficulty explaining how it worked. It was the first time many team members had to coordinate and delegate the writing of such a large report to so many people. 
 
 We learned a lot from the process of writing the initial report, where we had not left sufficient time to proof-read, edit, and merge disparate report sections. For our final report, we adopted a three-stage review process to prevent a verbatim repeat of the difficulties we faced with our initial report. For both reports, it was sometimes challenging to assign writing tasks to relevant individuals whilst ensuring that the workload was evenly distributed.
+
+\subsection{Daily Stand Ups}
+\label{sec:standups}
+We tracked the progress of individual team members and collected metrics through an automated daily stand-up process. While we had some initial reservations that people would forget to complete it, the participation rate was around 95\%. This gave us a comprehensive picture of our productivity and team sentiment. On several occasions, team members recorded low sentiment scores. We were able to investigate why people were unhappy, and address these problems as soon as they occurred. Since this process was fully automated, it required no additional effort from team members to coordinate. 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/plot_satisfaction}
+	\caption{Mean satisfaction of team members with both the rest of the team, and the project solution.}
+	\label{fig:plot_satisfaction}
+\end{figure}
+
+The burndown chart in Figure \ref{fig:plot_story_points} illustrates some of the metrics we were able to collect during the daily stand up. Amongst other things, we recorded the number of story points that each team member completed per day. 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/plot_story_points}
+	\caption{Burndown chart showing the actual rate of story point completion compared to the ideal rate.}
+	\label{fig:plot_story_points}
+\end{figure}
+
+We also included in the daily stand up a range of qualitative open-answer questions, such as “What progress do you hope to complete before the next stand up?” and “What obstacles do you anticipate facing?”. These facilitated reflection, but were sometimes seen as burdensome, and we would probably include less of these questions if we were to undertake a similar project in future. We found that, while they improved the ability of the team to focus, they did not tell us anything we didn’t already know.
+
+\subsection{Issue Tracking and Code Maturity}
+\label{sec:issuetracking}
+We used GitHub Issues to record pending tasks and faults identified with our code. We then placed these issues on a `kanban board’, allowing us to keep track of the current status of each ticket. A screenshot of our kanban board is provided in Figure \ref{fig:kanban_board}.
+
+\begin{figure}[h!]
+	%\includegraphics[width=\textwidth]{images/plot_story_points}
+	\caption{Example of the kanban board during development.}
+	\label{fig:kanban_board}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/plot_faults}
+	\caption{Number of critical, major and minor faults present in the solution.}
+	\label{fig:plot_faults}
+\end{figure}
+
+
+
+We used issue tickets to triage issues and assign a number of story points to each, indicating the amount of development effort that the issue ticket would require to complete. We found that this provided useful reference information when completing the daily stand up. However, we sometimes forgot to create or update issue tickets, meaning that the kanban board was not always up to date. In future, we would make more of an effort to create all of our tickets at the start of each agile sprint, along with story point estimations. We would also schedule a short daily review session to make sure that completed issues are always marked as resolved.
+
+
+\subsection{Architecture Selection and Programming}
+All team members took part in programming activities, allowing us to draw upon a very broad range of experience. Deciding on programming languages and frameworks was not a straightforward task, and we had to reconcile several opposing viewpoints. We were able to reach a consensus through compromise: splitting our code base into `front-end’ and`back-end’ components, each using a different language and set of frameworks. Those who were initially less comfortable with one of the languages were able to learn from those who were. Incidentally, this structure worked strongly in our favour, and we believe our solution was far superior to any we could have produced using just a single language.
+
+We followed agile practices, allowing us to iterate quickly, mitigate risks, and come up with a `minimum viable product’ as early as possible. We felt that this was the most appropriate strategy given the tight time scale. By design, agile involves less onerous and detailed planning -- which we found to be both a blessing and a curse. We firmly believe that it would have been impossible to plan out all of our development efforts right at the beginning, and agile afforded us the capability of planning as we went along. However, there were several scenarios in which well-intentioned team members devoted a lot of effort to completing their tasks only to discover that their code was not fully compatible with what others had developed. This resulted in tedious merge conflicts that could have been avoided with more meticulous planning.
 
 \subsection{Risk Management}
 In the initial report (§10), we included a register of the main risks involved with our project.  We found that risks did not need to be added or removed as development progressed. Thankfully, many of the risks in the register (R2, R3, R5, R7, R9, R10) did not materialise because we took adequate reduction measures. However, other risks did materialise in some form. 

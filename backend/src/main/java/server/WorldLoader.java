@@ -1,10 +1,12 @@
 package server;
 
+import domain.port.AidSite;
 import domain.port.CoastalPort;
 import domain.port.OffshorePort;
 import domain.port.Port;
 import domain.util.AgentType;
 import domain.util.Coordinates;
+import domain.vessel.Aircraft;
 import domain.vessel.FreightShip;
 import domain.vessel.Ship;
 import domain.vessel.SmartShip;
@@ -187,8 +189,8 @@ class WorldLoader {
 
         for(JSONObject jPort: jPorts) {
             name = jPort.getJSONObject("properties").getString("name");
-            latitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(1);
-            longitude = (double)jPort.getJSONObject("geometry").getJSONArray("coordinates").get(0);
+            latitude = (double) jPort.getJSONObject("geometry").getJSONArray("coordinates").get(1);
+            longitude = (double) jPort.getJSONObject("geometry").getJSONArray("coordinates").get(0);
             portNode = this.createNode(latitude, longitude);
             // TODO check the type of port to create
             if (jPort.getJSONObject("properties").getString("type").equals("coastal_port")) {
@@ -199,6 +201,15 @@ class WorldLoader {
                         10000,
                         //jPort.getJSONObject("properties").getInt("dock_capacity"),
                         5000
+                );
+            } else if (jPort.getJSONObject("properties").getString("type").equals("aid_port")) {
+                port = new AidSite(
+                        name,
+                        portNode,
+                        //jPort.getJSONObject("properties").getInt("capacity"),
+                        1000,
+                        //jPort.getJSONObject("properties").getInt("dock_capacity"),
+                        1000
                 );
             } else {
                 port = new OffshorePort(
@@ -277,6 +288,16 @@ class WorldLoader {
         // create map of ports to probabilities
         for (Port p : this.portAgents.values()) {
             probabilities.put(p, ((double) p.getCapacity()) / total);
+
+            if (p.getAgentType() == AgentType.AID_PORT) {
+                for (int i = 0; i < 5; i++) {
+                    try {
+                        spawnShip(p);
+                    } catch (NoShipSpawnedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
         List<Ship> ships = new ArrayList<>();
@@ -325,6 +346,12 @@ class WorldLoader {
         // currently each ship will be classed as small, medium, or large
         double numTypes = 3; // so 3 types of ship
         int type = ((int) (Math.random() * numTypes));
+
+        if (atPort.getAgentType() == AgentType.AID_PORT) {
+            Ship s = new Aircraft(c, SmartShip.SMALL_CAPACITY);
+            s.setState(Ship.ShipState.IDLE);
+            atPort.addShip(s);
+        }
 
         // create ship based on port type and selected ship size
         Ship s = createShip(shiptype, c, type);

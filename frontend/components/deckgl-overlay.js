@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import DeckGL, {PolygonLayer} from 'deck.gl';
 
-import ShipsLayer from './ships-layer';
+import AgentLayer from './agent-layer';
 
 const LIGHT_SETTINGS = {
     lightsPosition: [0, 53.32463, 300000],
@@ -22,7 +22,9 @@ export default class DeckGLOverlay extends Component {
     render() {
         const {
             viewport,
-            ships,
+            autonomousShips,
+            freightShips,
+            aircraft,
             portBases,
             northEastPortBars,
             southEastPortBars,
@@ -32,11 +34,29 @@ export default class DeckGLOverlay extends Component {
 
         const layers = [
             // Ship spark-line layer
-            new ShipsLayer({
-                id: 'ships',
-                data: ships,
+            new AgentLayer({
+                id: 'autonomousShips',
+                data: autonomousShips,
+                lineWidth: 4,
+                lengthMultiplier: 1,
                 opacity: 1,
-
+                shader: "ship"
+            }),
+            new AgentLayer({
+                id: 'freightShips',
+                data: freightShips,
+                lineWidth: this.props.mode == "legacy" ? 4 : 8,
+                lengthMultiplier: this.props.mode == "legacy" ? 1 : 2,
+                opacity: 1,
+                shader: "ship"
+            }),
+            new AgentLayer({
+                id: 'aircraft',
+                data: aircraft,
+                lineWidth: 4,
+                lengthMultiplier: 1,
+                opacity: 1,
+                shader: "airplane"
             }),
 
             // Port Bases Layer
