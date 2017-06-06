@@ -1,5 +1,6 @@
 \newpage
 \section{State of the Implementation}
+\label{sec:system_state}
 
 \subsection{Implementation Structure and Capabilities}
 
@@ -32,7 +33,7 @@ In order to make sure our model was accurate, we had to implement many of the pr
 
 Our simulation engine allowed us to compare the OceanX system with traditional shipping operations. In order to achieve this, we built a separate shipping lane dataset that did not contain the offshore ports, again fetched from the Mapbox web service by the Java back-end. We developed and integrated a comprehensive statistics suite, which collects and displays information pertaining to the performance of both the OceanX and legacy systems. It is based on these statistics that we reached informed conclusions as to the benefits our system can attain. The statistics we collected include:
 
-\begin{itemize}[noitemsep]
+\begin{itemize}[noitemsep, topsep=1pt]
 	\item the total number of containers moved;
 	\item the throughput, or number of containers moved per time tick;
 	\item the average waiting time at ports.
