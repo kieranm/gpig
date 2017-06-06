@@ -1,5 +1,6 @@
 \newpage
 \section{System Architecture}
+\label{sec:system_architecture}
 
 \subsection{System Components and Key Control Processes}
 The distributed cargo approach that we have proposed is dependent on two major innovations. Firstly, the offshore ports are a crucial component of the system. They are intended to be similar in structure to the sort of rigs currently used to extract oil. These ports act as hubs for our second innovation: a large fleet of autonomous shuttle ships. The offshore ports serve as an intermediary between the shuttle ships and pre-existing intercontinental cargo ships. It is the broader distribution of the cargo from these offshore ports that enables greater throughput and efficiency of shipping within a region. As such, the effective allocation and scheduling of autonomous shuttle ships is one of the most important components of the system.
@@ -8,17 +9,17 @@ In the proposed system, ports collaborate with shuttle ships in real time to man
 
 \begin{figure}[h!]
 \centering
-	\includegraphics[width=0.75\textwidth]{images/arch_1}
-	\caption{}
+	\includegraphics[width=0.85\textwidth]{images/arch_1}
+	\caption{Control flow showing the process of transferring inbound cargo at an offshore port from the intercontinental ships to the autonomous shuttle ships.} 
 	\label{fig:arch_1}
 \end{figure}
 
-Likewise, the ports gather incoming containers from shuttle ships, and route this automatically to intercontinental ships when ready for export. If cargo is not ready for export immediately, it is buffered automatically in a purpose-built container storage system. Since containers in our storage system are not directly stacked, any container in the system can be accessed on demand. The control process for this system is illustrated in Figure \ref{fig:arch_2}.
+Likewise, the ports gather incoming containers from shuttle ships, and route them automatically to intercontinental ships when ready for export. If cargo is not ready for export immediately, it is buffered automatically in a purpose-built container storage system. Since containers in our storage system are not directly stacked, any container in the system can be accessed on demand. The control process for this system is illustrated in Figure \ref{fig:arch_2}.
 
 \begin{figure}[h!]
 \centering
-	\includegraphics[width=0.75\textwidth]{images/arch_2}
-	\caption{}
+	\includegraphics[width=0.85\textwidth]{images/arch_2}
+	\caption{Control flow showing the process of transferring outbound cargo at an offshore port from the autonomous shuttle ships to the intercontinental ships.}
 	\label{fig:arch_2}
 \end{figure}
 
@@ -28,8 +29,8 @@ Each autonomous shuttle ship acts as an independent autonomous agent. Through a 
 
 \begin{figure}[h!]
 \centering
-	\includegraphics[width=0.75\textwidth]{images/arch_3}
-	\caption{}
+	\includegraphics[width=0.85\textwidth]{images/arch_3}
+	\caption{Navigation flow showing the process of hazard avoidance by autonomous shuttle ships.}
 	\label{fig:arch_3}
 \end{figure}
 
@@ -42,5 +43,3 @@ Offshore ports would take advantage of nuclear fission to ensure prolonged conti
 Ports will also be required to service shuttle ships by replenishing their onboard power. This is achieved through a combination of powerful fast wireless charging and a battery swapping system. Both of these systems are not currently fully capable of powering ships, but we anticipate that they will be by the year 2030. We have also assumed that the efficiency of solar panels will have improved substantially by 2030, allowing our shuttle ships to travel long distances.
 
 Finally, the shuttle ships will require an array of sensors and the use of many advanced techniques to ensure safe autonomous operation and navigation. More precise sensory equipment, such as LIDAR, will be required to ensure safe navigation around obstacles when in close proximity. We have taken advantage of anticipated future developments in LIDAR technology to allow our ships to conduct complex manoeuvres, such as docking at offshore ports, with complete autonomy.
-
-
