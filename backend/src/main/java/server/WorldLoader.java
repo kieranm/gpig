@@ -313,7 +313,7 @@ class WorldLoader {
             double randomVal = Math.random();
             for (Port p : this.portAgents.values()) {
                 randomVal -= probabilities.get(p);
-                if (randomVal < 0) {
+                if (randomVal < 0 && p.getAgentType() != AgentType.AID_PORT) {
                     try {
                         ships.add(spawnShip(p));
                     } catch (NoShipSpawnedException e) {
