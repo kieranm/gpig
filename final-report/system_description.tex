@@ -1,28 +1,30 @@
 \section{System Description}
 
-As outlined in the initial project report, the proposed system introduces novel semi-autonomous offshore ports to serve as a network of freight depots positioned at key locations in the sea. The system also deploys a fleet of autonomous shuttle ships to transfer cargo between the offshore port, and multiple local coastal ports. A key advantage of this approach is allowing existing shipping companies to maintain their development of larger capacity ships, without requiring heavy investment in port-side resources. This system will be developed by combining technological advances predicted to be accessible by the year 2030 with the existing infrastructure and systems used by the shipping industry. For further information about the architecture of the proposed system, see Section \ref{sec:system_architecture}.
-
-\subsection{Requirements}
-
 \noindent The overarching aim of the system is to fulfil the following objective, as proposed by the customer:
 
 \noindent\textbf{``Investigate and demonstrate the impact of collaborative autonomy on future transport infrastructures."}
 
-\noindent In order meet this desired objective, we define the following functional requirements:
+As outlined in the initial project report, the proposed system introduces novel semi-autonomous offshore ports to serve as a network of freight depots positioned at key locations in the sea. The system also deploys a fleet of autonomous shuttle ships to transfer cargo between the offshore port, and multiple local coastal ports. A key advantage of this approach is allowing existing shipping companies to maintain their development of larger capacity ships, without requiring heavy investment in port-side resources. This system will be developed by combining technological advances predicted to be accessible by the year 2030 with the existing infrastructure and systems used by the shipping industry. For further information about the architecture of the proposed system, see Section \ref{sec:system_architecture}.
+
+\subsection{System Requirements}
+
+\noindent In order meet the desired objective, we define the following system requirements:
 
 \begin{enumerate}[label={\textbf{(\arabic*)}}, itemsep=1pt, topsep=1pt]
-	\item \textbf{System shall introduce offshore ports, acting as intermediary depots for transporter cargo.}
+	\item \textbf{The system shall introduce offshore ports, acting as intermediary depots for cargo.}
 
 		These ports will operate autonomously, without requirement for human intervention except in case of emergency. One offshore port will serve many coastal ports, with autonomous shuttle ships transferring cargo between them. 
 
-	\item \textbf{Autonomous shuttle ships capable of transporting cargo between offshore and coastal ports.}
+	\item \textbf{The system shall leverage autonomous shuttle ships capable of transporting cargo between offshore and coastal ports.}
 
 		The much smaller size of these ships will enable a greater range of coastal ports to service ships, allowing the dispersal of cargo over a broader coastal area. The operation of a fleet of these shuttle ships will maximise the overall system efficiency. Collaboration and swarm intelligence will determine the optimal route for ships, considering position, local congestion, meteorological conditions, and cargo supply and demand.
 
-	\item \textbf{Automated loading and unloading of cargo on offshore ports.}
+	\item \textbf{The system shall automate the loading and unloading of cargo at offshore ports.}
 \end{enumerate}
 
-Subsequent to the initial design of our offshore port system, the customer requested further system requirements. These non-functional requirements presented several new challenge. Through negotiation with the customer, we proposed and agreed upon several modifications to these requirements. Our response to these requirements, and the changes incorporated into the system, are detailed below.
+\subsection{Additional Customer Requirements}
+
+Subsequent to the initial design of our offshore port system, the customer requested further system requirements. These requirements presented several new challenges. Through negotiation with the customer, we proposed and agreed upon several modifications to these requirements. Our response to these requirements, and the changes incorporated into the system, are detailed below.
 
 \begin{enumerate}[label={\textbf{(\arabic*)}}, itemsep=3pt, topsep=4pt]
 \item \textbf{``The solution shall address an expected increase in traffic throughput within the domain of tenfold compared to 2017."}
