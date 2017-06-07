@@ -28,6 +28,7 @@ Figure \ref{fig:class_diagram} shows a class diagram detailing all classes used 
 
 
 
+
 \newpage
 In order to make sure our model was accurate, we had to implement many of the processes that ships would have to follow in a real-world system. For example, we included a mechanism by which ports could request collection of cargo from nearby idle ships. This collaborative process is essential in ensuring that containers are able to flow efficiently through the system. For this purpose, we developed a heuristic algorithm capable of establishing the most suitable ship for collecting cargo awaiting transport. Specifically, idle ships servicing the port at which this cargo is based are required to submit a `bid’ detailing their suitability to collect the cargo. Each bid is a trade-off between the capacity of the ship and the number of containers that require collection. A ship that could collect all cargo but has a large amount of empty space is penalised, with the system instead favouring ships that can be utilized more efficiently. If all nearby ships are occupied, the port will instead request idle ships from other ports that are connected to it by shipping routes. Allowing each ship to create its own bid allows for a much more flexible system than one controlled centrally, which fundamentally increases the reliability of the overall system.
 

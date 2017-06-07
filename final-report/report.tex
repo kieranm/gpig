@@ -51,13 +51,20 @@
 
 \DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
 
-\titlespacing\section{0pt}{20pt plus 0pt minus 0pt}{6pt plus 0pt minus 0pt}
-\titlespacing\subsection{0pt}{8pt plus 0pt minus 0pt}{2pt plus 0pt minus 0pt}
 
+\titlespacing\section{0pt}{8pt plus 0pt minus 0pt}{6pt plus 0pt minus 0pt}
+\titlespacing\subsection{0pt}{3pt plus 0pt minus 0pt}{1pt plus 0pt minus 0pt}
+
+\usepackage{etoolbox}
+
+\makeatletter
+\pretocmd{\section}{\addtocontents{toc}{\protect\addvspace{1\p@}}}{}{}
+\pretocmd{\subsection}{\addtocontents{toc}{\protect\addvspace{-1\p@}}}{}{}
+\makeatother
 
 % Wordcount
 \newcommand\wordcount{
-\immediate\write18{texcount -inc -sum=1,1,0,0,0,1,1 -total report.tex  | grep "Sum count" | sed 's/Sum count: //' > 'wordcount.txt'}
+\immediate\write18{texcount -inc -sum=1,1,1,1,1,1,1 -total report.tex  | grep "Sum count" | sed 's/Sum count: //' > 'wordcount.txt'}
 \unskip\input{wordcount.txt}\unskip}
 
 \begin{document}

@@ -3,50 +3,50 @@
 As outlined in the initial project report, the proposed system introduces novel semi-autonomous offshore ports to serve as a network of freight depots positioned at key locations in the sea. The system also deploys a fleet of autonomous shuttle ships to transfer cargo between the offshore port, and multiple local coastal ports. A key advantage of this approach is allowing existing shipping companies to maintain their development of larger capacity ships, without requiring heavy investment in port-side resources. This system will be developed by combining technological advances predicted to be accessible by the year 2030 with the existing infrastructure and systems used by the shipping industry. For further information about the architecture of the proposed system, see Section \ref{sec:system_architecture}.
 
 \subsection{Requirements}
-\noindent The following represent the functional requirements of the proposed system:
 
-\begin{itemize}
-	\item System shall introduce offshore ports, acting as intermediary depots for transporter cargo.
-	\begin{itemize}
-		\item These ports will operate autonomously, without requirement for human intervention except in case of emergency. One offshore port will serve many coastal ports, with autonomous shuttle ships transferring cargo between them. 
-	\end{itemize}
-\item Large intercontinental ships capable of transporting cargo between offshore ports between continents.
-\item Autonomous shuttle ships capable of transporting cargo between offshore and coastal ports.
-\begin{itemize}
-	\item The much smaller size of these ships will enable a greater range of coastal ports to service ships, allowing the dispersal of cargo over a broader coastal area. The operation of a fleet of these shuttle ships will maximise the overall system efficiency. Collaboration and swarm intelligence will determine the optimal route for ships, considering position, local congestion, meteorological conditions, and cargo supply and demand.
-\end{itemize}
-\item Automated loading and unloading of cargo on offshore ports.
-\end{itemize}
+\noindent The overarching aim of the system is to fulfil the following objective, as proposed by the customer:
 
-\noindent These requirements aim to fulfil the main objective of this system as proposed by the customer:
+\noindent\textbf{``Investigate and demonstrate the impact of collaborative autonomy on future transport infrastructures."}
 
-``Investigate and demonstrate the impact of collaborative autonomy on future transport infrastructures."
+\noindent In order meet this desired objective, we define the following functional requirements:
 
-The customer subsequently presented several additions to the requirements of the project subsequent to our initial design of the offshore port system. The addition of these non-functional requirements was discussed and modified with the permission of the customer. Our response, as well as the changes incorporated into the system, are detailed in the following:
+\begin{enumerate}[label={\textbf{(\arabic*)}}, itemsep=1pt, topsep=1pt]
+	\item \textbf{System shall introduce offshore ports, acting as intermediary depots for transporter cargo.}
 
-\begin{description}[style=nextline]
-\item [``The solution shall address an expected increase in traffic throughput within the domain of tenfold compared to 2017."]
-\begin{itemize}
-\item According to our research, traffic is only estimated to increase by a factor of two by 2030 \cite{oecd}. Therefore, we have negotiated a reduction in the expected traffic target as this allows us to focus more on reducing congestion, environmental impact and operating costs. Further details on this evaluation are provided in Section~\ref{sec:market_assessment}.
-\end{itemize}
-\item [``The solution shall deliver the identified benefits without requiring any new infrastructure."]
-\begin{itemize}
-	\item The customer confirmed that this requirement does not impact the proposed offshore ports. Our proposal for inland (river-bank) docks was abandoned as a consequence.
-\end{itemize}
-\item ``The solution shall make it possible to reduce the environmental impact of transportation threefold compared to 2017."
-\begin{itemize}
-\item Naval transportation accounts for only 14\% of transport carbon emissions, whereas road transport accounts for 74\% \cite{atag}. Furthermore, the EU has set the target reduction for the shipping industry of at least 40\``% by 2050 \cite{eu-shipping}. Accounting for this, we have negotiated with the customer the lowering of the threefold environmental impact target in order to instead focus on the targets set out by the EU which include targets for the reduction of sulfur emissions and coastal port air pollution.
-\end{itemize}
-\item ``The solution shall ensure the protection of user privacy."
-\begin{itemize}
-\item We address this through the use of nondescript containers, which appear anonymous, along with ensuring sensitive data is stored securely and as per local regulations.
-\end{itemize}
-\item ``The solution shall be capable of collaboration with other domains in order to help identify and limit the consequences of crime, terrorism, natural disasters."
-\begin{itemize}
-\item Through discussion with the other 3 groups it was determined the air domain provided the best potential for effective cooperation. The most substantial application would be for disaster relief, with aircraft able to use our offshore ports to collect and distribute aid packets, along with refueling and restocking.
-\end{itemize}
-\item ``The final demonstration shall demonstrate the ability to interoperate with one or more solutions from another domain."
-\begin{itemize}
-\item To address this requirement change, we have implemented distribution of packets representing humanitarian aid in the event of a tsunami in the Haiti region.
-\end{itemize}
-\end{description}
+		These ports will operate autonomously, without requirement for human intervention except in case of emergency. One offshore port will serve many coastal ports, with autonomous shuttle ships transferring cargo between them. 
+
+	\item \textbf{Autonomous shuttle ships capable of transporting cargo between offshore and coastal ports.}
+
+		The much smaller size of these ships will enable a greater range of coastal ports to service ships, allowing the dispersal of cargo over a broader coastal area. The operation of a fleet of these shuttle ships will maximise the overall system efficiency. Collaboration and swarm intelligence will determine the optimal route for ships, considering position, local congestion, meteorological conditions, and cargo supply and demand.
+
+	\item \textbf{Automated loading and unloading of cargo on offshore ports.}
+\end{enumerate}
+
+Subsequent to the initial design of our offshore port system, the customer requested further system requirements. These non-functional requirements presented several new challenge. Through negotiation with the customer, we proposed and agreed upon several modifications to these requirements. Our response to these requirements, and the changes incorporated into the system, are detailed below.
+
+\begin{enumerate}[label={\textbf{(\arabic*)}}, itemsep=3pt, topsep=4pt]
+\item \textbf{``The solution shall address an expected increase in traffic throughput within the domain of tenfold compared to 2017."}
+
+	According to our research, traffic is only estimated to increase by a factor of two by 2030 \cite{oecd}. Therefore, we have negotiated a reduction in the expected traffic target as this allows us to focus more on reducing congestion, environmental impact and operating costs. Further details on this evaluation are provided in Section \ref{sec:market_assessment}.
+	
+\item \textbf{``The solution shall deliver the identified benefits without requiring any new infrastructure."}
+
+	The customer confirmed that this requirement does not impact the proposed offshore ports. Our proposal for inland (river-bank) docks was abandoned as a consequence.
+
+\item \textbf{``The solution shall make it possible to reduce the environmental impact of transportation threefold compared to 2017."}
+
+	Naval transportation accounts for only 14\% of transport carbon emissions, whereas road transport accounts for 74\% \cite{atag}. Furthermore, the EU has set the target reduction for the shipping industry of at least 40\% by 2050 \cite{eu-shipping}. Accounting for this, we have negotiated with the customer the lowering of the threefold environmental impact target in order to instead focus on the targets set out by the EU which include targets for the reduction of sulfur emissions and coastal port air pollution.
+
+\item \textbf{``The solution shall ensure the protection of user privacy."}
+
+	We address this through the use of nondescript containers, which appear anonymous, along with ensuring sensitive data is stored securely and as per local regulations.
+
+\item \textbf{``The solution shall be capable of collaboration with other domains in order to help identify and limit the consequences of crime, terrorism, natural disasters."}
+
+	Through discussion with the other 3 groups it was determined the air domain provided the best potential for effective cooperation. The most substantial application would be for disaster relief, with aircraft able to use our offshore ports to collect and distribute aid packets, along with refueling and restocking.
+
+\item \textbf{``The final demonstration shall demonstrate the ability to interoperate with one or more solutions from another domain."}
+
+	To address this requirement change, we have implemented distribution of packets representing humanitarian aid in the event of a tsunami in the Haiti region.
+
+\end{enumerate}
