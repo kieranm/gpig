@@ -20,12 +20,18 @@ export default class AgentLayer extends Layer {
     });
 
     this.context.gl.getExtension('OES_element_index_uint');
-    this.setState({model});
+    this.setState({
+        model,
+        lineWidth: this.props.lineWidth
+    });
   }
 
   updateState({props, changeFlags: {dataChanged}}) {
     if (dataChanged) {
       this.countVertices(props.data);
+      this.setState({
+          lineWidth: props.lineWidth
+      })
       this.state.attributeManager.invalidateAll();
     }
   }
@@ -42,6 +48,8 @@ export default class AgentLayer extends Layer {
       fragmentShader = airplaneFragmentShader;
     }
 
+    var self = this;
+
     return new Model({
       program: new Program(gl, assembleShaders(gl, {
         vs: vertexShader,
@@ -57,7 +65,7 @@ export default class AgentLayer extends Layer {
         gl.enable(gl.BLEND);
         gl.enable(gl.POLYGON_OFFSET_FILL);
         gl.polygonOffset(2.0, 1.0);
-        gl.lineWidth(this.props.lineWidth);
+        gl.lineWidth(self.state.lineWidth);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.blendEquation(gl.FUNC_ADD);
       },

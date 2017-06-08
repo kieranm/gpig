@@ -32,6 +32,7 @@ export default class Root extends Component {
             },
             mode: "legacy",
             mapStyle: "satellite",
+            weatherActive: false,
             autonomousShips: {},
             freightShips: {},
             aircraft: {},
@@ -41,6 +42,7 @@ export default class Root extends Component {
             southEastPortBars: [],
             southWestPortBars: [],
             northWestPortBars: [],
+            weather: [],
             hoveredFeature: null,
             time: 0,
             totalCargo: 0,
@@ -176,6 +178,29 @@ export default class Root extends Component {
     }
 
 
+    weather(weather) {
+
+        var polygon = [];
+        var r = weather.range;
+        var detected = weather.detected;
+        var latitude = weather.coordinates.latitude;
+        var longitude = weather.coordinates.longitude;
+
+        var n = 180;
+        for (var i = 0; i < n; i++) {
+            polygon.push([longitude + r * Math.sin(2 * Math.PI * i / n),
+                          latitude + r * Math.cos(2 * Math.PI * i / n)]);
+        }
+        polygon.push([longitude, latitude + r]);
+
+        return {
+            id: weather.id,
+            colour: detected ? [60, 179, 113] : [216, 100, 100],
+            height : 20,
+            polygon: polygon
+        };
+    }
+
     _processAgents(d) {
         // Parse the update from the backend
         var freightShips = {};
@@ -186,6 +211,7 @@ export default class Root extends Component {
         var southEastPortBars = [];
         var southWestPortBars = [];
         var northWestPortBars = [];
+        var weather = [];
 
         for (var i = 0; i < d.agents.length; i++) {
             var agent = d.agents[i];
@@ -202,6 +228,8 @@ export default class Root extends Component {
                 southEastPortBars.push(this.portBar("SE", agent));
                 southWestPortBars.push(this.portBar("SW", agent));
                 northWestPortBars.push(this.portBar("NW", agent));
+            } else if (agent.type === "WEATHER"){
+                weather.push(this.weather(agent))
             }
         }
 
@@ -213,7 +241,8 @@ export default class Root extends Component {
             northEastPortBars,
             southEastPortBars,
             southWestPortBars,
-            northWestPortBars
+            northWestPortBars,
+            weather
         });
 
     }
@@ -308,7 +337,22 @@ export default class Root extends Component {
         }
 
         if(scenario == "weather avoidance") {
-
+            this.setState({
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: 53.490970,
+                    longitude: -4.916830,
+                    zoom: 8,
+                    pitch: 45,
+                    bearing: 25
+                },
+                weatherActive: !this.state.weatherActive
+            }, () => {
+                this.connection.send(JSON.stringify({
+                    message_type: "change_weather",
+                    message_data: self.state.weatherActive
+                }));
+            });
         }
 
         if(scenario == "humanitarian aid") {
@@ -339,10 +383,15 @@ export default class Root extends Component {
     }
 
     _changeMode(mode) {
-        this.connection.send(JSON.stringify({
-            message_type: "change_mode",
-            message_data: mode
-        }));
+        this.setState({
+            mode: mode
+        }, () => {
+            this.connection.send(JSON.stringify({
+                message_type: "change_mode",
+                message_data: mode
+            }));
+        })
+
     }
 
     _changeSpeed(ratio) {
@@ -387,6 +436,7 @@ export default class Root extends Component {
             southEastPortBars,
             southWestPortBars,
             northWestPortBars,
+            weather,
             time,
             mapStyle,
             totalCargo,
@@ -434,6 +484,7 @@ export default class Root extends Component {
                                    southEastPortBars={southEastPortBars}
                                    southWestPortBars={southWestPortBars}
                                    northWestPortBars={northWestPortBars}
+                                   weather={weather}
                                    time={time}
                                    onHover={this._onHover.bind(this)}
                     />
