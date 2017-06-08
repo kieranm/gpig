@@ -222,7 +222,7 @@ export default class Root extends Component {
                 autonomousShips[agent.id] = this.processShip(agent, this.state.autonomousShips);
             } else if (agent.type === "AIRCRAFT") {
                 aircraft[agent.id] = this.processShip(agent, this.state.aircraft);
-            } else if (agent.type === "LAND_PORT" || agent.type === "SMART_PORT") {
+            } else if (agent.type === "LAND_PORT" || agent.type === "SMART_PORT" || agent.type === "AID_PORT") {
                 portBases.push(this.portBase(agent));
                 northEastPortBars.push(this.portBar("NE", agent));
                 southEastPortBars.push(this.portBar("SE", agent));

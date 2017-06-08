@@ -14,12 +14,7 @@ public class AidSite extends Port {
         super(AgentType.AID_PORT, name, node, capacity, dock_capacity);
     }
 
-    void produceCargo(int multiplier) {
-        int newCargo = ((int) (CAPACITY_CARGO_PRODUCTION_RATIO * ((double) this.cargoCapacity)));
-        newCargo *= multiplier;
-        newCargo = Math.min(newCargo, this.cargoCapacity - this.cargoLoad);
-        this.cargoLoad += newCargo;
-    }
+    void produceCargo(int multiplier) {}
 
     void unloadDockedShip(Ship ship, int multiplier){
         int requestedUnload = BASE_LOAD_UNLOAD_SPEED * ((ship.getCapacity() / SHIP_SIZE_LOADING_OFFSET) + 1);
@@ -27,6 +22,7 @@ public class AidSite extends Port {
         int amountUnloaded = ship.unloadCargo(requestedUnload);
         amountUnloaded =  Math.min(amountUnloaded, this.cargoCapacity - this.cargoLoad);
         this.stats.addDeliveredCargo(amountUnloaded);
+        this.cargoLoad += amountUnloaded;
         if (ship.isEmpty()) {
             this.dockLoad -= ship.getCapacity();
             ship.setState(Ship.ShipState.IDLE);
