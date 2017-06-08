@@ -12,7 +12,7 @@ import java.util.*;
 
 public class Simulation {
 
-    private final long PERIOD = 300;
+    private final long PERIOD = 150;
     private final long INITIAL_DELAY = 01;
 
     private final int NUMBER_OF_SHIPS = 1000;
