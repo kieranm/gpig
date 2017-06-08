@@ -359,9 +359,9 @@ export default class Root extends Component {
             this.setState({
                 viewport: {
                     ...this.state.viewport,
-                    latitude: 19.117760,
-                    longitude: -72.828369,
-                    zoom: 8,
+                    latitude: 19.982222,
+                    longitude: -73.811646,
+                    zoom: 7,
                     pitch: 0,
                     bearing: 0
                 }
