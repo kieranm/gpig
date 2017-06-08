@@ -40,6 +40,9 @@ public abstract class Agent implements JSONable {
         return id;
     }
 
+    public void kill (){ this.alive = false; }
+    public void revive() { this.alive = true; }
+
     public boolean isAlive() {
         return alive;
     }
