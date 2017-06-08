@@ -1,6 +1,7 @@
 package server;
 
 import domain.port.AidSite;
+import domain.extra.Weather;
 import domain.port.CoastalPort;
 import domain.port.OffshorePort;
 import domain.port.Port;
@@ -176,8 +177,7 @@ class WorldLoader {
     }
 
     private Node createNode(double latitude, double longitude) {
-        Node node = new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
-        return node;
+        return new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
     }
 
     private void generatePorts(List<JSONObject> jPorts) {
@@ -278,6 +278,8 @@ class WorldLoader {
      * @return
      */
     public List<Ship> generateShips(int numberOfShips) {
+        List<Ship> ships = new ArrayList<>();
+
         // initialise probabilities based on capacity of the ports
         Map<Port, Double> probabilities = new HashMap<>();
 
@@ -291,23 +293,27 @@ class WorldLoader {
 
             if (p.getAgentType() == AgentType.AID_PORT) {
                 for (int i = 0; i < 5; i++) {
-                    try {
-                        spawnShip(p);
-                    } catch (NoShipSpawnedException e) {
-                        e.printStackTrace();
-                    }
+                    // make sure the aid port has a few ships
+                    Coordinates c = new Coordinates(
+                            p.getCoordinates().getLatitude(),
+                            p.getCoordinates().getLongitude()
+                    );
+                    Ship s = new Aircraft(c, SmartShip.SMALL_CAPACITY);
+                    s.setState(Ship.ShipState.IDLE);
+                    p.addShip(s);
+                    ships.add(s);
+
                 }
             }
         }
 
-        List<Ship> ships = new ArrayList<>();
         for (int i = 0; i < numberOfShips; i++) {
 
             // weighted random selection of port
             double randomVal = Math.random();
             for (Port p : this.portAgents.values()) {
                 randomVal -= probabilities.get(p);
-                if (randomVal < 0) {
+                if (randomVal < 0 && p.getAgentType() != AgentType.AID_PORT) {
                     try {
                         ships.add(spawnShip(p));
                     } catch (NoShipSpawnedException e) {
@@ -347,12 +353,6 @@ class WorldLoader {
         double numTypes = 3; // so 3 types of ship
         int type = ((int) (Math.random() * numTypes));
 
-        if (atPort.getAgentType() == AgentType.AID_PORT) {
-            Ship s = new Aircraft(c, SmartShip.SMALL_CAPACITY);
-            s.setState(Ship.ShipState.IDLE);
-            atPort.addShip(s);
-        }
-
         // create ship based on port type and selected ship size
         Ship s = createShip(shiptype, c, type);
         s.setState(Ship.ShipState.IDLE);
@@ -376,5 +376,27 @@ class WorldLoader {
             }
         }
         throw new NoShipSpawnedException();
+    }
+
+    public List<Weather> generateWeather(Map<String, Port> ports) {
+        List<Weather> weatherList = new LinkedList<>();
+
+        Port p1 = ports.get("Irish Sea Offshore");
+        Port p2 = ports.get("Liverpool");
+        Route orgRoute = p1.getRoutes().get(p2).get(0);
+
+        Weather weather1 = new Weather(orgRoute.getNodes().get(2).getCoordinates(), 0.2);
+
+        weather1.addAffectedPort(p1);
+        weather1.addAffectedPort(p2);
+
+        List<Node> altNodes = new ArrayList<>();
+        altNodes.addAll(orgRoute.getNodes());
+        altNodes.set(2, new Node(IdGenerator.getId(), new Coordinates(53.7500794, -3.983348)));
+
+        weather1.addAltRoute(orgRoute, new Route(altNodes, orgRoute.getWeight()));
+        weatherList.add(weather1);
+
+        return weatherList;
     }
 }

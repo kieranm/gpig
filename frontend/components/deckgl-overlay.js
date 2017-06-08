@@ -29,10 +29,24 @@ export default class DeckGLOverlay extends Component {
             northEastPortBars,
             southEastPortBars,
             southWestPortBars,
-            northWestPortBars
+            northWestPortBars,
+            weather
         } = this.props;
 
         const layers = [
+
+            // weather
+            new PolygonLayer({
+                id: 'weather',
+                data: weather,
+                getFillColor: d =>  d.colour,
+                extruded: true,
+                filled: true,
+                getElevation: d => d.height,
+                lightSettings: LIGHT_SETTINGS,
+                pickable: false
+            }),
+
             // Ship spark-line layer
             new AgentLayer({
                 id: 'autonomousShips',
@@ -122,8 +136,7 @@ export default class DeckGLOverlay extends Component {
                 lightSettings: LIGHT_SETTINGS,
                 pickable: Boolean(this.props.onHover),
                 onHover: this.props.onHover
-            }),
-
+            })
         ];
 
         return (
