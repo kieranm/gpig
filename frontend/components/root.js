@@ -337,7 +337,6 @@ export default class Root extends Component {
         }
 
         if(scenario == "weather avoidance") {
-            var self = this;
             this.setState({
                 viewport: {
                     ...this.state.viewport,
@@ -348,8 +347,8 @@ export default class Root extends Component {
                     bearing: 25
                 },
                 weatherActive: !this.state.weatherActive
-            }, function () {
-                self.connection.send(JSON.stringify({
+            }, () => {
+                this.connection.send(JSON.stringify({
                     message_type: "change_weather",
                     message_data: self.state.weatherActive
                 }));
@@ -384,10 +383,15 @@ export default class Root extends Component {
     }
 
     _changeMode(mode) {
-        this.connection.send(JSON.stringify({
-            message_type: "change_mode",
-            message_data: mode
-        }));
+        this.setState({
+            mode: mode
+        }, () => {
+            this.connection.send(JSON.stringify({
+                message_type: "change_mode",
+                message_data: mode
+            }));
+        })
+
     }
 
     _changeSpeed(ratio) {
