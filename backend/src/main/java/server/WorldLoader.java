@@ -1,6 +1,7 @@
 package server;
 
 import domain.port.AidSite;
+import domain.extra.Weather;
 import domain.port.CoastalPort;
 import domain.port.OffshorePort;
 import domain.port.Port;
@@ -176,8 +177,7 @@ class WorldLoader {
     }
 
     private Node createNode(double latitude, double longitude) {
-        Node node = new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
-        return node;
+        return new Node(IdGenerator.getId(), new Coordinates(latitude, longitude));
     }
 
     private void generatePorts(List<JSONObject> jPorts) {
@@ -376,5 +376,27 @@ class WorldLoader {
             }
         }
         throw new NoShipSpawnedException();
+    }
+
+    public List<Weather> generateWeather(Map<String, Port> ports) {
+        List<Weather> weatherList = new LinkedList<>();
+
+        Port p1 = ports.get("Irish Sea Offshore");
+        Port p2 = ports.get("Liverpool");
+        Route orgRoute = p1.getRoutes().get(p2).get(0);
+
+        Weather weather1 = new Weather(orgRoute.getNodes().get(2).getCoordinates(), 0.2);
+
+        weather1.addAffectedPort(p1);
+        weather1.addAffectedPort(p2);
+
+        List<Node> altNodes = new ArrayList<>();
+        altNodes.addAll(orgRoute.getNodes());
+        altNodes.set(2, new Node(IdGenerator.getId(), new Coordinates(53.7500794, -3.983348)));
+
+        weather1.addAltRoute(orgRoute, new Route(altNodes, orgRoute.getWeight()));
+        weatherList.add(weather1);
+
+        return weatherList;
     }
 }

@@ -12,8 +12,8 @@ import java.util.*;
 
 public class Simulation {
 
-    private final long PERIOD = 100l;
-    private final long INITIAL_DELAY = 0l;
+    private final long PERIOD = 300;
+    private final long INITIAL_DELAY = 01;
 
     private final int NUMBER_OF_SHIPS = 1000;
 
@@ -73,6 +73,9 @@ public class Simulation {
         List<Agent> agents = new ArrayList<>(ships);
         agents.addAll(ports.values());
 
+        if(mapboxDatasetId.equals(MAPBOX_DATASET_ID_OCEANX))
+            agents.addAll(loader.generateWeather(ports));
+
         return new World(agents);
     }
 
@@ -104,17 +107,19 @@ public class Simulation {
         return this.world.getMultiplier();
     }
 
+    public void invertShowWeather(){
+        this.world.setShowWeather(!this.world.getShowWeather());
+    }
+
 
     /**
      * Method to embed message object in an object with details considering the message context (messageType).
      * Example types include 'update', 'settings', etc.
      */
     private JSONObject formatMessage(JSONObject jsonBody, String messageType) {
-        JSONObject obj = new JSONObject()
+        return new JSONObject()
                 .put("message_type", messageType)
                 .put("message_body", jsonBody);
-
-        return obj;
     }
 
     private void sendToRemote() {
