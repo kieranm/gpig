@@ -3,6 +3,8 @@ package server;
 import domain.Agent;
 import domain.World;
 import domain.port.Port;
+import domain.vessel.AidShip;
+import domain.vessel.Aircraft;
 import domain.vessel.Ship;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
@@ -73,8 +75,15 @@ public class Simulation {
         List<Agent> agents = new ArrayList<>(ships);
         agents.addAll(ports.values());
 
-        if(mapboxDatasetId.equals(MAPBOX_DATASET_ID_OCEANX))
+        if(mapboxDatasetId.equals(MAPBOX_DATASET_ID_OCEANX)) {
             agents.addAll(loader.generateWeather(ports));
+            for(int i = 0; i < 5; i++) {
+                for (int j = 0; j < 3; j++) {
+                    agents.add(new AidShip(null, 10));
+                }
+                agents.add(new Aircraft(null, 10));
+            }
+        }
 
         return new World(agents);
     }

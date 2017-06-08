@@ -1,13 +1,11 @@
 package server;
 
-import domain.port.AidSite;
 import domain.extra.Weather;
 import domain.port.CoastalPort;
 import domain.port.OffshorePort;
 import domain.port.Port;
 import domain.util.AgentType;
 import domain.util.Coordinates;
-import domain.vessel.Aircraft;
 import domain.vessel.FreightShip;
 import domain.vessel.Ship;
 import domain.vessel.SmartShip;
@@ -202,15 +200,6 @@ class WorldLoader {
                         //jPort.getJSONObject("properties").getInt("dock_capacity"),
                         5000
                 );
-            } else if (jPort.getJSONObject("properties").getString("type").equals("aid_port")) {
-                port = new AidSite(
-                        name,
-                        portNode,
-                        //jPort.getJSONObject("properties").getInt("capacity"),
-                        1000,
-                        //jPort.getJSONObject("properties").getInt("dock_capacity"),
-                        1000
-                );
             } else {
                 port = new OffshorePort(
                         name,
@@ -290,21 +279,6 @@ class WorldLoader {
         // create map of ports to probabilities
         for (Port p : this.portAgents.values()) {
             probabilities.put(p, ((double) p.getCapacity()) / total);
-
-            if (p.getAgentType() == AgentType.AID_PORT) {
-                for (int i = 0; i < 5; i++) {
-                    // make sure the aid port has a few ships
-                    Coordinates c = new Coordinates(
-                            p.getCoordinates().getLatitude(),
-                            p.getCoordinates().getLongitude()
-                    );
-                    Ship s = new Aircraft(c, SmartShip.SMALL_CAPACITY);
-                    s.setState(Ship.ShipState.IDLE);
-                    p.addShip(s);
-                    ships.add(s);
-
-                }
-            }
         }
 
         for (int i = 0; i < numberOfShips; i++) {
@@ -313,7 +287,7 @@ class WorldLoader {
             double randomVal = Math.random();
             for (Port p : this.portAgents.values()) {
                 randomVal -= probabilities.get(p);
-                if (randomVal < 0 && p.getAgentType() != AgentType.AID_PORT) {
+                if (randomVal < 0) {
                     try {
                         ships.add(spawnShip(p));
                     } catch (NoShipSpawnedException e) {
