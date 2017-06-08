@@ -32,6 +32,7 @@ export default class Root extends Component {
             },
             mode: "legacy",
             mapStyle: "satellite",
+            weatherActive: false,
             autonomousShips: {},
             freightShips: {},
             aircraft: {},
@@ -336,10 +337,23 @@ export default class Root extends Component {
         }
 
         if(scenario == "weather avoidance") {
-            this.connection.send(JSON.stringify({
-                message_type: "change_weather",
-                message_data: ""
-            }));
+            var self = this;
+            this.setState({
+                viewport: {
+                    ...this.state.viewport,
+                    latitude: 53.490970,
+                    longitude: -4.916830,
+                    zoom: 8,
+                    pitch: 45,
+                    bearing: 25
+                },
+                weatherActive: !this.state.weatherActive
+            }, function () {
+                self.connection.send(JSON.stringify({
+                    message_type: "change_weather",
+                    message_data: self.state.weatherActive
+                }));
+            });
         }
 
         if(scenario == "humanitarian aid") {

@@ -107,8 +107,8 @@ public class Simulation {
         return this.world.getMultiplier();
     }
 
-    public void invertShowWeather(){
-        this.world.setShowWeather(!this.world.getShowWeather());
+    public void setShowWeather(boolean bla){
+        this.world.setShowWeather(bla);
     }
 
 
