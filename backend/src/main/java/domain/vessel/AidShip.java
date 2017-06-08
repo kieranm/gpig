@@ -9,40 +9,25 @@ import utils.IdGenerator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 /**
- * Created by liamw on 27/05/2017.
+ * Created by liamw on 08/06/2017.
  */
-public class Aircraft extends Ship {
+public class AidShip extends Ship {
 
-    List<List<Node>> routes;
-    private List<Node> nodeList;
-    Node start;
-    int delay;
     int counter;
+    int delay;
+    List<Node> nodeList;
 
-    public Aircraft(Coordinates initialLoc, int capacity) {
-        super(AgentType.AIRCRAFT, initialLoc, capacity);
-
-        routes = new ArrayList<>();
-
-        nodeList = new ArrayList<>();
-        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(20.36487, -73.74395)));
-        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(18.59935, -72.2368)));
-        routes.add(nodeList);
+    public AidShip(Coordinates initialLoc, int capacity) {
+        super(AgentType.SMART_SHIP, initialLoc, capacity);
 
         nodeList = new ArrayList<>();
+        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(26.532482, -83.298281)));
+        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(23.82212, -82.74697)));
+        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(22.94117, -78.69682)));
         nodeList.add(new Node(IdGenerator.getId(), new Coordinates(20.36487, -73.74395)));
-        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(19.96937, -75.121)));
-        routes.add(nodeList);
 
-        nodeList = new ArrayList<>();
-        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(20.36487, -73.74395)));
-        nodeList.add(new Node(IdGenerator.getId(), new Coordinates(18.46162, -74.18643)));
-        routes.add(nodeList);
-
-        this.start = nodeList.get(0);
         this.setCoordinates(new Coordinates(nodeList.get(0).getCoordinates().getLatitude(),
                 nodeList.get(0).getCoordinates().getLongitude()));
         this.assignRoute(nodeList);
@@ -72,13 +57,7 @@ public class Aircraft extends Ship {
                     this.setLoad(this.getCapacity());
                 }
                 Collections.reverse(nodeList);
-                if (this.getCoordinates().equals(start.getCoordinates())) {
-                    Random rand = new Random();
-                    int val = rand.nextInt(3);
-                    this.assignRoute(routes.get(val));
-                } else {
-                    this.assignRoute(nodeList);
-                }
+                this.assignRoute(nodeList);
                 return;
             } else {
                 nextRouteStop();

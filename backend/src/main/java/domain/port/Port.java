@@ -352,15 +352,6 @@ public abstract class Port extends Agent implements Carrier {
 
     private boolean isValidDestination(Ship s, Port p) {
 
-        if ((this.getAgentType() == AgentType.AID_PORT && p.getAgentType() == AgentType.SMART_PORT) ||
-                (p.getAgentType() == AgentType.AID_PORT && this.getAgentType() == AgentType.SMART_PORT)) {
-            return s.getAgentType() == AgentType.SMART_SHIP;
-        }
-
-        if ((this.getAgentType() == AgentType.AID_PORT && p.getAgentType() == AgentType.AID_PORT)) {
-            return s.getAgentType() == AgentType.AIRCRAFT;
-        }
-
         // legacy case, only one type so all ship types valid
         if ((this.getAgentType() == AgentType.LAND_PORT) && (p.getAgentType() == AgentType.LAND_PORT)) {
             return true;

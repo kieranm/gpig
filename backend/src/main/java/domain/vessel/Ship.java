@@ -20,8 +20,8 @@ public abstract class Ship extends Agent implements Carrier {
     private static final double DISTANCE_PER_TICK_MULTIPLIER = 0.1;
 
     private List<Node> route;
-    private Node next;
-    private Coordinates positionUpdateVector;
+    Node next;
+    Coordinates positionUpdateVector;
 
     private ShipState state = ShipState.IDLE;
 
@@ -110,15 +110,15 @@ public abstract class Ship extends Agent implements Carrier {
         }
     }
 
-    private boolean hasReachedPoint() {
+    boolean hasReachedPoint() {
         return this.next.getCoordinates().equals(this.getCoordinates());
     }
 
-    private boolean routeEndReached() {
+    boolean routeEndReached() {
         return this.route.indexOf(this.next) == this.route.size()-1;
     }
 
-    private void calculatePositionUpdateVector() {
+    void calculatePositionUpdateVector() {
         // calculate distance include direction in vector
         double xdiff = this.next.getCoordinates().getLatitude() - this.getCoordinates().getLatitude();
         double ydiff = this.next.getCoordinates().getLongitude() - this.getCoordinates().getLongitude();
