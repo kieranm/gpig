@@ -51,7 +51,7 @@ export default class DeckGLOverlay extends Component {
             new AgentLayer({
                 id: 'autonomousShips',
                 data: autonomousShips,
-                lineWidth: 4,
+                lineWidth: 2,
                 lengthMultiplier: 1,
                 opacity: 1,
                 shader: "ship"
@@ -59,7 +59,7 @@ export default class DeckGLOverlay extends Component {
             new AgentLayer({
                 id: 'freightShips',
                 data: freightShips,
-                lineWidth: this.props.mode == "legacy" ? 4 : 8,
+                lineWidth: this.props.mode == "legacy" ? 2 : 4,
                 lengthMultiplier: this.props.mode == "legacy" ? 1 : 2,
                 opacity: 1,
                 shader: "ship"
@@ -67,7 +67,7 @@ export default class DeckGLOverlay extends Component {
             new AgentLayer({
                 id: 'aircraft',
                 data: aircraft,
-                lineWidth: 4,
+                lineWidth: 2,
                 lengthMultiplier: 1,
                 opacity: 1,
                 shader: "airplane"

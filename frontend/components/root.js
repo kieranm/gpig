@@ -31,7 +31,7 @@ export default class Root extends Component {
                 height: 500
             },
             mode: "legacy",
-            mapStyle: "satellite",
+            mapStyle: "light",
             weatherActive: false,
             autonomousShips: {},
             freightShips: {},
@@ -341,7 +341,7 @@ export default class Root extends Component {
                 viewport: {
                     ...this.state.viewport,
                     latitude: 53.490970,
-                    longitude: -4.916830,
+                    longitude: -4.50830,
                     zoom: 8,
                     pitch: 45,
                     bearing: 25
@@ -350,7 +350,7 @@ export default class Root extends Component {
             }, () => {
                 this.connection.send(JSON.stringify({
                     message_type: "change_weather",
-                    message_data: self.state.weatherActive
+                    message_data: this.state.weatherActive
                 }));
             });
         }
